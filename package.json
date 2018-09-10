@@ -1,0 +1,11 @@
+{
+	"name": "gameTime",
+	"version": "0.0.1",
+	"description": "",
+	"main": "server.js",
+	"repository": "",
+	"author": "Brett van Beynum <maildrop444@gmail.com>",
+	"dependencies": {
+		"express": "^4.15.3"
+	}
+}
