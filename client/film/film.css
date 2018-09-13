@@ -9,9 +9,14 @@
 .selected {
 	border: 3px solid rgb(255, 0, 0);
 }
+.dateSection:nth-child(1) {
+	border-top: 2px solid rgb(60,60,60);
+}
 
 .dateSection {
 	cursor: pointer;
+	text-align: center;
+	border-bottom: 2px solid rgb(60,60,60);
 }
 
 .leftNav {
