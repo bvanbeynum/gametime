@@ -30,7 +30,7 @@ filmApp.controller("filmController", function ($scope, $mdSidenav, $http, $timeo
 			.split("=")[1];
 	}
 	else if ($scope.token.length == 0) {
-		window.location.replace("https://accounts.google.com/o/oauth2/v2/auth?client_id=" + $scope.googleId + "&redirect_uri=http://server2.beynum.com:8080/film&response_type=token&scope=https://www.googleapis.com/auth/photoslibrary.readonly");
+		window.location.replace("https://accounts.google.com/o/oauth2/v2/auth?client_id=" + $scope.googleId + "&redirect_uri=http://<GT serverUrl >/film&response_type=token&scope=https://www.googleapis.com/auth/photoslibrary.readonly");
 	}
 	
 	log.scope = $scope;
@@ -75,7 +75,7 @@ filmApp.controller("filmController", function ($scope, $mdSidenav, $http, $timeo
 		video.isSelected = true;
 		
 		$http({
-			url: "http://server2.beynum.com:8080/film/loadvideo?photourl=" + video.url,
+			url: "http://<GT serverUrl >/film/loadvideo?photourl=" + video.url,
 			method: "GET"
 		})
 		.then(function (response) {

@@ -1,5 +1,7 @@
-var http = require("https");
-var fs = require("fs");
+var http = require("https"),
+	fs = require("fs"),
+	config = require("./config"),
+	path = require("path");
 
 module.exports = function (app) {
 	
@@ -79,9 +81,45 @@ module.exports = function (app) {
 			response.status(501).json({ error: "Could not download video file" });
 		});
 	});
+	
+	app.get("/film/film.js", (request, response) => {
+		fs.readFile(path.join(app.get("root"), "/client" + request.path), (error, fileContents) => {
+			if (error) {
+				console.log(JSON.stringify(error));
+				return;
+			}
+			
+			fileContents = fileContents + "";
+			
+			// Replace any variables
+			var regex;
+			config.serverVars.forEach((variable) => {
+				regex = new RegExp("<GT[ ]*" + variable.key + "[ ]*>", "gmi");
+				fileContents = fileContents.replace(regex, variable.value);
+			});
+			
+			response.status(200).send(fileContents);
+		});
+	});
 
 	app.get("/film/*", (request, response) => {
-		response.sendFile("/client" + request.path, { root: app.get("root") });
+		fs.readFile(path.join(app.get("root"), "/client" + request.path), (error, fileContents) => {
+			if (error) {
+				console.log(JSON.stringify(error));
+				return;
+			}
+			
+			fileContents = fileContents + "";
+			
+			// Replace any variables
+			var regex;
+			config.serverVars.forEach((variable) => {
+				regex = new RegExp("<GT[ ]*" + variable.key + "[ ]*>", "gmi");
+				fileContents = fileContents.replace(regex, variable.value);
+			});
+			
+			response.status(200).send(fileContents);
+		});
 	});
 		
 };
