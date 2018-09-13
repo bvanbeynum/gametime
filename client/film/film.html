@@ -1,0 +1,76 @@
+<html ng-app="filmApp" >
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.css">
+	<link rel="stylesheet" type="text/css" href="/film/film.css">
+</head>
+<body ng-controller="filmController" ng-cloak>
+
+<div layout="column">
+	
+	<md-sidenav md-component-id="left" class="md-sidenav-left leftNav">
+		<md-toolbar class="md-primary">
+			<div class="md-toolbar-tools" layout="row" >
+				<md-input-container flex="grow">
+					<label>Select</label>
+					
+					<md-select ng-model="selectedAlbum" ng-change="changeAlbum()">
+						<md-option ng-repeat="album in albums" ng-value="album">{{album.name}}</md-option>
+					</md-select>
+				</md-input-container>
+				
+				<md-button class="md-icon-button" aria-label="Close" ng-click="closeNav()">
+					<md-icon>
+						<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+							<path d="M0 0h24v24H0z" fill="none"/>
+						</svg>
+					</md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		
+		<md-list>
+			<md-subheader ng-repeat-start="date in videoDates" class="dateSection" ng-click="expandDate(date)">{{date.date}}</md-subheader>
+			<md-list-item ng-repeat="video in date.videos" ng-show="!date.isCollapsed">
+				<img ng-src="{{video.thumb}}" class="videoThumb" ng-class="{'selected': video.isSelected}" ng-click="loadVideo(video)" />
+			</md-list-item>
+			<div ng-repeat-end></div>
+		</md-list>
+	</md-sidenav>
+	
+	<div layout="row">
+		<md-button class="md-icon-button menuButton" aria-label="Settings" ng-click="openNav()">
+			<md-icon>
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+					<path d="M0 0h24v24H0z" fill="none"/>
+					<path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+				</svg>
+			</md-icon>
+		</md-button>
+	</div>
+	
+	<div layout="row" flex="90" layout-align="center center" ng-show="!isLoading">
+		<video id="videoPlayer" ng-show="!isLoading"></video>
+	</div>
+	
+	<div ng-show="isLoading" flex="90" layout="row" layout-align="center center">
+		<div layout="column" layout="center center">
+			<md-progress-circular class="md-primary md-margin" md-diameter="40"></md-progress-circular>
+			<div class="md-margin">Loading</div>
+		</div>
+	</div>
+	
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-aria.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-messages.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.js"></script>
+
+<script src="/film/film.js"></script>
+
+</body>
+</html>

@@ -6,6 +6,7 @@
 	"repository": "",
 	"author": "Brett van Beynum <maildrop444@gmail.com>",
 	"dependencies": {
-		"express": "^4.15.3"
+		"express": "^4.15.3",
+		"cookie-parser": "^1.4.3"
 	}
 }

@@ -1,0 +1,32 @@
+.videoThumb {
+	width: 250px;
+	margin: 5px;
+	border: 3px solid rgb(0, 150, 136);
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.selected {
+	border: 3px solid rgb(255, 0, 0);
+}
+
+.dateSection {
+	cursor: pointer;
+}
+
+.leftNav {
+	z-index: 200;
+}
+
+.menuButton {
+	z-index: 100;
+}
+
+#videoPlayer {
+	width: 100%;
+}
+
+.md-select-menu-container, 
+.md-open-menu-container {
+	z-index: 300;
+}

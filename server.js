@@ -5,6 +5,7 @@ var app = express();
 var port = process.env.PORT || 8080;
 
 var bodyParser = require("body-parser");
+var cookieParser = require("cookie-parser");
 
 // Config =======================================================================
 
@@ -13,9 +14,11 @@ app.set("root", __dirname);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Routes =======================================================================
 
+require("./server/film")(app);
 require("./server/app")(app);
 require("./server/static")(app);
 
