@@ -4,11 +4,26 @@ var mongoose = require("mongoose"),
 module.exports = function (app) {
 	
 	app.get("/data/player", (request, response) => {
-		if (request.query.playerId) {
-			data.player.findById(request.query.playerId)
-				.exec()
-				.then((playerDb) => {
-					var player = {
+		var filter = {};
+		
+		if (request.query.division) {
+			filter.division = request.query.division;
+		}
+		if (request.query.id) {
+			filter._id = request.query.id;
+		}
+		if (request.query.teamid) {
+			filter["team.id"] = request.query.teamId;
+		}
+		if (request.query.teamname) {
+			filter["team.name"] = { $regex: new RegExp(request.query.teamname, "i") };
+		}
+		
+		data.player.find(filter)
+			.exec()
+			.then((playersDb) => {
+				var players = playersDb.map((playerDb) => {
+					return {
 						id: playerDb._id,
 						division: playerDb.division,
 						draftNumber: playerDb.draftNumber,
@@ -42,9 +57,14 @@ module.exports = function (app) {
 							running: playerDb.spring2018.running,
 							runTime: playerDb.spring2018.runTime
 						} : null
-					}
-				})
-		}
+					};
+				});
+				
+				response.status(200).json({players: players});
+			})
+			.catch((error) => {
+				response.status(500).json({error: error.message});
+			});
 		
 	});
 	
@@ -154,6 +174,40 @@ module.exports = function (app) {
 		}
 	});
 	
+	app.get("/data/team", (request, response) => {
+		var filter = {};
+		
+		if (request.query.id) {
+			filter._id = request.query.id;
+		}
+		if (request.query.name) {
+			filter.name = { $regex: new RegExp(request.query.name, "i") };
+		}
+		if (request.query.division) {
+			filter.division = request.query.division;
+		}
+		
+		data.team.find(filter)
+			.exec()
+			.then((teamsDb) => {
+				var teams = teamsDb.map((teamDb) => {
+					return {
+						id: teamDb._id,
+						name: teamDb.name,
+						division: teamDb.division,
+						coach: teamDb.coach,
+						wins: teamDb.wins,
+						losses: teamDb.losses
+					};
+				});
+				
+				response.status(200).json({teams: teams});
+			})
+			.catch((error) => {
+				response.status(500).json({error: error.message});
+			});
+	});
+	
 	app.post("/data/team", (request, response) => {
 		if (!request.body.team || !request.body.team.name) {
 			response.status(500).json({error: "Invalid team save request" });
@@ -203,6 +257,63 @@ module.exports = function (app) {
 			
 		}
 		
+	});
+	
+	app.get("/data/game", (request, response) => {
+		var filter = {};
+		
+		if (request.query.date) {
+			var day = new Date(Date.parse(request.query.date)),
+				endDate = new Date(day);
+			
+			endDate.setDate(day.getDate() + 1);
+			filter.dateTime = { $gte: Date.parse(request.query.date), $lt: endDate };
+		}
+		if (request.query.division) {
+			filter.division = request.query.division;
+		}
+		if (request.query.teamid) {
+			filter.$or = [
+				{ "homeTeam.id": request.query.id },
+				{ "awayTeam.id": request.query.id }
+				];
+		}
+		if (request.query.teamname) {
+			filter.$or = [
+				{ "homeTeam.name": { $regex: new RegExp(request.query.teamname, "i") } },
+				{ "awayTeam.name": { $regex: new RegExp(request.query.teamname, "i") } }
+				];
+		}
+		
+		data.game.find(filter)
+			.exec()
+			.then((gamesDb) => {
+				var games = gamesDb.map((gameDb) => {
+					return {
+						id: gameDb._id,
+						dateTime: gameDb.dateTime,
+						division: gameDb.division,
+						field: gameDb.field,
+						homeTeam: (gameDb.homeTeam) ? {
+							id: gameDb.homeTeam.id,
+							name: gameDb.homeTeam.name,
+							score: gameDb.homeTeam.score,
+							isWinner: gameDb.homeTeam.isWinner
+						} : null,
+						awayTeam: (gameDb.awayTeam) ? {
+							id: gameDb.awayTeam.id,
+							name: gameDb.awayTeam.name,
+							score: gameDb.awayTeam.score,
+							isWinner: gameDb.awayTeam.isWinner
+						} :null
+					};
+				});
+				
+				response.status(200).json({games: games});
+			})
+			.catch((error) => {
+				response.status(500).json({error: error.message});
+			});
 	});
 	
 	app.post("/data/game", (request, response) => {
