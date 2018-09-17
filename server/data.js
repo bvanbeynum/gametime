@@ -4,6 +4,18 @@ var mongoose = require("mongoose"),
 module.exports = function (app) {
 	
 	app.get("/data/player", (request, response) => {
+		var validQueries = "|division|id|teamid|teamname|name|";
+		if (Object.keys(request.query).length > 0) {
+			var invalidQuery = Object.keys(request.query).filter((query) => {
+				return validQueries.indexOf("|" + query + "|") < 0;
+			});
+			
+			if (invalidQuery.length > 0) {
+				response.status(500).json({error: "Invalid query terms: " + invalidQuery.join(", ")});
+				return;
+			}
+		}
+		
 		var filter = {};
 		
 		if (request.query.division) {
@@ -13,10 +25,16 @@ module.exports = function (app) {
 			filter._id = request.query.id;
 		}
 		if (request.query.teamid) {
-			filter["team.id"] = request.query.teamId;
+			filter["team.id"] = request.query.teamid;
 		}
 		if (request.query.teamname) {
 			filter["team.name"] = { $regex: new RegExp(request.query.teamname, "i") };
+		}
+		if (request.query.name) {
+			filter.$or = [
+				{ firstName: { $regex: new RegExp(request.query.name, "i") }},
+				{ lastName: { $regex: new RegExp(request.query.name, "i") }}
+				];
 		}
 		
 		data.player.find(filter)
@@ -174,7 +192,62 @@ module.exports = function (app) {
 		}
 	});
 	
+	app.delete("/data/player", (request, response) => {
+		var validQueries = "|division|id|teamid|teamname|name|";
+		if (Object.keys(request.query).length > 0) {
+			var invalidQuery = Object.keys(request.query).filter((query) => {
+				return validQueries.indexOf("|" + query + "|") < 0;
+			});
+			
+			if (invalidQuery.length > 0) {
+				response.status(500).json({error: "Invalid query terms: " + invalidQuery.join(", ")});
+				return;
+			}
+		}
+		
+		var filter = {};
+		
+		if (request.query.division) {
+			filter.division = request.query.division;
+		}
+		if (request.query.id) {
+			filter._id = request.query.id;
+		}
+		if (request.query.teamid) {
+			filter["team.id"] = request.query.teamId;
+		}
+		if (request.query.teamname) {
+			filter["team.name"] = { $regex: new RegExp(request.query.teamname, "i") };
+		}
+		if (request.query.name) {
+			filter.$or = [
+				{ firstName: { $regex: new RegExp(request.query.name, "i") }},
+				{ lastName: { $regex: new RegExp(request.query.name, "i") }}
+				];
+		}
+		
+		data.player.deleteMany(filter)
+			.then(() => {
+				response.status(200).json({status: "ok"});
+			})
+			.catch((error) => {
+				response.status(500).json({error: error.message});
+			});
+	});
+	
 	app.get("/data/team", (request, response) => {
+		var validQueries = "|id|name|division|";
+		if (Object.keys(request.query).length > 0) {
+			var invalidQuery = Object.keys(request.query).filter((query) => {
+				return validQueries.indexOf("|" + query + "|") < 0;
+			});
+			
+			if (invalidQuery.length > 0) {
+				response.status(500).json({error: "Invalid query terms: " + invalidQuery.join(", ")});
+				return;
+			}
+		}
+		
 		var filter = {};
 		
 		if (request.query.id) {
@@ -259,7 +332,53 @@ module.exports = function (app) {
 		
 	});
 	
+	app.delete("/data/team", (request, response) => {
+		var validQueries = "|id|name|division|";
+		if (Object.keys(request.query).length > 0) {
+			var invalidQuery = Object.keys(request.query).filter((query) => {
+				return validQueries.indexOf("|" + query + "|") < 0;
+			});
+			
+			if (invalidQuery.length > 0) {
+				response.status(500).json({error: "Invalid query terms: " + invalidQuery.join(", ")});
+				return;
+			}
+		}
+		
+		var filter = {};
+		
+		if (request.query.id) {
+			filter._id = request.query.id;
+		}
+		if (request.query.name) {
+			filter.name = { $regex: new RegExp(request.query.name, "i") };
+		}
+		if (request.query.division) {
+			filter.division = request.query.division;
+		}
+		
+		data.team.deleteMany(filter)
+			.then(() => {
+				response.status(200).json({status: "ok"});
+			})
+			.catch((error) => {
+				response.status(500).json({error: error.message});
+			});
+	});
+	
 	app.get("/data/game", (request, response) => {
+		var validQueries = "|date|division|teamid|teamname|";
+		if (Object.keys(request.query).length > 0) {
+			var invalidQuery = Object.keys(request.query).filter((query) => {
+				return validQueries.indexOf("|" + query + "|") < 0;
+			});
+			
+			if (invalidQuery.length > 0) {
+				response.status(500).json({error: "Invalid query terms: " + invalidQuery.join(", ")});
+				return;
+			}
+		}
+		
 		var filter = {};
 		
 		if (request.query.date) {
@@ -384,6 +503,53 @@ module.exports = function (app) {
 			});
 			
 		}
+	});
+	
+	app.delete("/data/game", (request, response) => {
+		var validQueries = "|date|division|teamid|teamname|";
+		if (Object.keys(request.query).length > 0) {
+			var invalidQuery = Object.keys(request.query).filter((query) => {
+				return validQueries.indexOf("|" + query + "|") < 0;
+			});
+			
+			if (invalidQuery.length > 0) {
+				response.status(500).json({error: "Invalid query terms: " + invalidQuery.join(", ")});
+				return;
+			}
+		}
+		
+		var filter = {};
+		
+		if (request.query.date) {
+			var day = new Date(Date.parse(request.query.date)),
+				endDate = new Date(day);
+			
+			endDate.setDate(day.getDate() + 1);
+			filter.dateTime = { $gte: Date.parse(request.query.date), $lt: endDate };
+		}
+		if (request.query.division) {
+			filter.division = request.query.division;
+		}
+		if (request.query.teamid) {
+			filter.$or = [
+				{ "homeTeam.id": request.query.id },
+				{ "awayTeam.id": request.query.id }
+				];
+		}
+		if (request.query.teamname) {
+			filter.$or = [
+				{ "homeTeam.name": { $regex: new RegExp(request.query.teamname, "i") } },
+				{ "awayTeam.name": { $regex: new RegExp(request.query.teamname, "i") } }
+				];
+		}
+		
+		data.game.deleteMany(filter)
+			.then(() => {
+				response.status(200).json({status: "ok"});
+			})
+			.catch((error) => {
+				response.status(500).json({error: error.message});
+			});
 	});
 	
 };
