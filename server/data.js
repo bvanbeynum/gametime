@@ -3,6 +3,51 @@ var mongoose = require("mongoose"),
 
 module.exports = function (app) {
 	
+	app.get("/data/player", (request, response) => {
+		if (request.query.playerId) {
+			data.player.findById(request.query.playerId)
+				.exec()
+				.then((playerDb) => {
+					var player = {
+						id: playerDb._id,
+						division: playerDb.division,
+						draftNumber: playerDb.draftNumber,
+						team: (playerDb.team) ? { id: playerDb.team.id, name: playerDb.team.name } : null,
+						draftRound: playerDb.draftRound,
+						draftRank: playerDb.draftRank,
+						firstName: playerDb.firstName,
+						lastName: playerDb.lastName,
+						dateOfBirth: playerDb.dateOfBirth,
+						parentName: playerDb.parentName,
+						parentEmail: playerDb.parentEmail,
+						Phone: playerDb.Phone,
+						shirtSize: playerDb.shirtSize,
+						requests: playerDb.requests,
+						coachRequest: playerDb.coachRequest,
+						coachProtect: playerDb.coachProtect,
+						recThrowing: playerDb.recThrowing,
+						recCatching: playerDb.recCatching,
+						throwing: playerDb.throwing,
+						catching: playerDb.catching,
+						running: playerDb.running,
+						runTime: playerDb.runTime,
+						spring2018: (playerDb.spring2018) ? {
+							division: playerDb.spring2018.division,
+							recRank: playerDb.spring2018.recRank,
+							coachProtect: playerDb.spring2018.coachProtect,
+							coachRequest: playerDb.spring2018.coachRequest,
+							team: playerDb.spring2018.team,
+							throwing: playerDb.spring2018.throwing,
+							catching: playerDb.spring2018.catching,
+							running: playerDb.spring2018.running,
+							runTime: playerDb.spring2018.runTime
+						} : null
+					}
+				})
+		}
+		
+	});
+	
 	app.post("/data/player", (request, response) => {
 		if (!request.body.player) {
 			response.status(500).json({error: "Invalid player save request" });

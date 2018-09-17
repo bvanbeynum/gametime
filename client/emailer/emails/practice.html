@@ -1,0 +1,165 @@
+<html>
+<head>
+<title>Practice Reminder</title>
+
+<style>
+.html {
+	padding: 5px;
+}
+
+.innerhtml {
+	margin: 0;
+	padding: 0;
+	font-family: verdana, sans-serif;
+	font-size: .9em;
+	background-color: rgb(60, 45, 112);
+}
+
+.clear {
+	clear: both;
+}
+
+.header {
+	margin: 0 auto;
+	height: 168px;
+	text-align: center;
+	background: repeat-x url("/emailer/images/grass.jpg");
+}
+
+.header .logo {
+	margin: 24px auto;
+	height: 120px;
+}
+
+.content {
+	margin: 0 auto;
+	padding: 5px 15px;
+	background-color: rgb(255,255,255);
+	border-left: 5px solid rgb(213,202,148);
+	border-right: 5px solid rgb(213,202,148);
+	box-sizing: border-box;
+}
+
+.textHeader {
+	color: rgb(60, 45, 112);
+	text-align: center;
+}
+
+.textSubHeader {
+	color: rgb(181, 170, 116);
+}
+.highlight {
+	font-weight: bold;
+	background-color: rgb(255, 255, 0);
+}
+
+.contentIcon {
+	margin-right: 20px;
+	float: left;
+}
+.firstColumn {
+	width: 100%;
+}
+.map {
+	border: 1px solid rgb(60, 45, 112);
+	padding: 2px;
+}
+.practiceMap {
+	clear: both;
+	padding-top: 20px;
+}
+.practiceTime {
+	padding: 20px 0px;
+}
+.practiceLocation {
+	padding: 20px 0px;
+}
+.practiceAddress {
+	float: left;
+}
+.practiceComments {
+	clear: both;
+}
+
+.gohuskies {
+	margin: 15px 0px;
+	width: 250px;
+}
+
+@media (min-device-width: 650px) {
+	.header {
+		width: 650px;
+	}
+	
+	.content {
+		width: 650px;
+	}
+	.practiceInfo {
+		float: left;
+	}
+	.practiceMap {
+		clear: none;
+		float: right;
+	}
+	.practiceComments {
+		clear: both;
+		padding-top: 20px;
+	}
+}
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<div class="html">
+	<div class="innerhtml">
+		
+		<div class="header">
+			<img class="logo" src="/emailer/images/UW-logo.png" />
+		</div>
+		
+		<div class="content">
+			<h1 class="textHeader">Practice Reminder</h1>
+			
+			<h3 class="textSubHeader">Practice</h3>
+			
+			<div class="practiceInfo">
+				<div class="practiceTime">
+					<img class="contentIcon" src="/emailer/images/event.png" />
+					Tomorrow 6:30pm to 7:30pm
+				</div>
+				
+				<div class="practiceLocation">
+					<img class="contentIcon" src="/emailer/images/location.png" />
+					<div class="practiceAddress">
+						<a href="https://goo.gl/maps/KEY6chPjE1p" target="_new">1965 Newberry Ln<br>
+						Tega Cay, SC 29708</a>
+					</div>
+				</div>
+			</div>
+			
+			<br class="clear" />
+			
+			<p class="practiceComments">
+				Please let me know if you are unable to make it to practice.
+			</p>
+			
+			<p>
+				I will have shirts and socks for the kids at practice. They will need black shorts
+				for the game. Please make sure you get the jersey and socks from me before you leave
+				practice.
+			</p>
+			
+			<p>
+				<img class="gohuskies" src="/emailer/images/gohuskies.jpg" /><br>
+				<strong>Go Huskies!!!</strong><br>
+				-Brett van Beynum
+			</p>
+			
+			<br class="clear" />
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
