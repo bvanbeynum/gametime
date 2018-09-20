@@ -1,0 +1,87 @@
+<html ng-app="teamApp" >
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.css">
+	<link rel="stylesheet" type="text/css" href="/team/team.css">
+</head>
+<title>Game Time</title>
+<body ng-controller="teamController" ng-cloak>
+
+<div layout="column">
+	<md-toolbar class="toolbar" layout="row" layout-align="start center">
+		<md-button class="md-icon-button" aria-label="Close" ng-click="back()" >
+			<md-icon ng-show="state != 'confrence'">
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+					<path d="M0 0h24v24H0z" fill="none"/>
+					<path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="black"/>
+				</svg>
+			</md-icon>
+		</md-button>
+		
+		<h2 flex>Game Time</h2>
+	</md-toolbar>
+	
+	<div ng-show="state == 'loading'" flex="90" layout="row" layout-align="center center">
+		<div layout="column" layout="center center">
+			<md-progress-circular class="md-primary md-margin" md-diameter="40"></md-progress-circular>
+			<div class="md-margin">Loading</div>
+		</div>
+	</div>
+	
+	<div class="confrenceContainer" layout="row" layout-align="center" layout-wrap ng-show="state == 'confrence'">
+		<div class="confrence" ng-repeat="confrence in confrences" flex>
+			<table>
+			<tr>
+				<th colspan="2">{{confrence.name}}</th>
+				<th>W</th>
+				<th>L</th>
+				<th>Pct</th>
+			</tr>
+			<tr ng-repeat="team in confrence.teams" ng-click="selectTeam(team)">
+				<td><img ng-src="{{team.img}}" /></td>
+				<td>{{team.name}}</td>
+				<td>{{team.wins}}</td>
+				<td>{{team.losses}}</td>
+				<td>{{team.ratio | number: 3}}</td>
+			</tr>
+			</table>
+		</div>
+	</div>
+	
+	<div ng-show="state == 'schedule'" class="scheduleContainer" layout="column" layout-gt-xs="row" layout-wrap>
+		<div class="gameContainer" ng-repeat="game in schedule" ng-click="selectGame(game)" layout="row" flex-gt-xs="50">
+			<div class="scheduleTeams" layout="column" flex="80" layout-align="space-around">
+				<div class="scheduleTeam" layout="row" layout-align="start center">
+					<img ng-src="{{game.awayTeam.team.img}}" />
+					<div class="scheduleTeamName" flex>{{game.awayTeam.name}}</div>
+					<div class="scheduleTeamName">{{game.awayTeam.score}}</div>
+					<div class="scheduleWinner"><span ng-show="game.awayTeam.isWinner">&#9668;</span></div>
+				</div>
+				
+				<div class="scheduleTeam" layout="row" layout-align="start center">
+					<img ng-src="{{game.homeTeam.team.img}}" />
+					<div class="scheduleTeamName" flex>{{game.homeTeam.name}}</div>
+					<div class="scheduleTeamName">{{game.homeTeam.score}}</div>
+					<div class="scheduleWinner"><span ng-show="game.homeTeam.isWinner">&#9668;</span></div>
+				</div>
+			</div>
+			
+			<div class="scheduleDateContainer" layout="column" flex="20" layout-align="center center">
+				<div class="scheduleDate">{{game.dateTime | date: "EEE, M/d"}}</div>
+				<div class="scheduleTime">{{game.dateTime | date: "h:mm a"}}</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-aria.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-messages.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+<script src="/team/team.js"></script>
+
+</body>
+</html>

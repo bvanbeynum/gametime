@@ -111,38 +111,32 @@
 	height: 27px;
 }
 
-.division {
-	width: 100%;
-	border: 1px solid #E0E0E0;
-	padding: 8px 20px;
-	box-sizing: border-box;
-}
-
-.divisionname {
-	text-align: center;
-	font-weight: bold;
-}
-
-.divisionimage {
-	float: left;
+.contentIcon {
 	margin-right: 20px;
+	float: left;
 }
-
-.divisionteambox {
-	height: 48px;
-	margin: 10px 0px;
+.firstColumn {
+	width: 100%;
 }
-
-.divisionteam {
-	height: 48px;
+.map {
+	border: 1px solid rgb(60, 45, 112);
+	padding: 2px;
 }
-
-.coachname {
-	color: rgba(0,0,0,.5);
+.practiceMap {
+	clear: both;
+	padding-top: 20px;
 }
-
-.divteamimage {
-	width: 24px;
+.practiceTime {
+	padding: 20px 0px;
+}
+.practiceLocation {
+	padding: 20px 0px;
+}
+.practiceAddress {
+	float: left;
+}
+.practiceComments {
+	clear: both;
 }
 
 @media (min-device-width: 650px) {
@@ -176,7 +170,7 @@
 		</div>
 		
 		<div class="content">
-			<h1 class="textHeader">2018 Game Schedule</h1>
+			<h1 class="textHeader">2018 Game Schedule ** Updated</h1>
 			
 			<div class="gamebox">
 				<div class="teambox">
@@ -193,25 +187,6 @@
 					<div class="datebox">
 						9/08<br />
 						1:15 PM
-					</div>
-				</div>
-			</div>
-			
-			<div class="gamebox">
-				<div class="teambox">
-					<div class="team">
-						<img src="/emailer/images/gamecocks.png" class="teamimage" />
-						<span class="teamname">Gamecocks</span>
-					</div>
-					<div class="team">
-						<img src="/emailer/images/huskies.png" class="teamimage" />
-						<span class="teamname">Huskies</span>
-					</div>
-				</div>
-				<div class="datecontainer">
-					<div class="datebox">
-						9/15<br />
-						2:30 PM
 					</div>
 				</div>
 			</div>
@@ -313,14 +288,33 @@
 			<div class="gamebox">
 				<div class="teambox">
 					<div class="team">
+						<img src="/emailer/images/gamecocks.png" class="teamimage" />
+						<span class="teamname">Gamecocks</span>
+					</div>
+					<div class="team">
+						<img src="/emailer/images/huskies.png" class="teamimage" />
+						<span class="teamname">Huskies</span>
+					</div>
+				</div>
+				<div class="datecontainer">
+					<div class="datebox highlight">
+						10/27<br />
+						2:30 PM
+					</div>
+				</div>
+			</div>
+			
+			<div class="gamebox">
+				<div class="teambox">
+					<div class="team">
 					</div>
 					<div class="team">
 						<span class="teamname">Bowl Games</span>
 					</div>
 				</div>
 				<div class="datecontainer">
-					<div class="datebox">
-						10/27<br />
+					<div class="datebox highlight">
+						11/03<br />
 						TBD
 					</div>
 				</div>
@@ -329,122 +323,25 @@
 			<br class="clear" />
 			
 			<p>
-				The game schedule is posted at the Tega Cay website below. I recommend checking the website
-				a few days after the games because they will update with the winners for each week.<br />
+				They have just posted the updated game schedule to the website. The Gamecocks game has been moved to 
+				the end of the season, 10/27, and the bowl game has been pushed back to the first week in November, 11/3.
+				All other game times remain the same though.
 				<a href="https://www.tegacaysc.org/882/Youth-Football">https://www.tegacaysc.org/882/Youth-Football</a>
 			</p>
 			
-			<h3 class="textSubHeader">Divisions</h3>
+			<h3 class="textSubHeader">Extra Practice</h3>
 			
-			<p>
-				The teams have been split up into separate divisions. This season the bowl games will be played based 
-				on the position the teams rank in their division (1st vs 1st, 2nd vs 2nd, etc). We will look to
-				get first in the SoCon division to be able to play the 1st place from the Big South division.
-			</p>
-			
-			<div class="division">
-				<div class="divisionname">Big South</div>
-				
-				<div class="divisionteambox">
-					<div class="divisionimage">
-						<img src="/emailer/images/bruins.png" class="divteamimage" />
-					</div>
-					<div class="divisionteam">
-						Bruins<br>
-						<span class="coachname">Rhett Crocker</span>
-					</div>
+			<div class="practiceInfo">
+				<div class="practiceTime">
+					<img class="contentIcon" src="/emailer/images/event.png" />
+					<span class="highlight">Tomorrow, Wednesday 5:30pm to 6:30pm</span>
 				</div>
 				
-				<div class="divisionteambox">
-					<div class="divisionimage">
-						<img src="/emailer/images/bulldogs.png" class="divteamimage" />
-					</div>
-					<div class="divisionteam">
-						Bulldogs<br>
-						<span class="coachname">Ryan Mitcheson</span>
-					</div>
-				</div>
-				
-				<div class="divisionteambox">
-					<div class="divisionimage">
-						<img src="/emailer/images/gators.png" class="divteamimage" />
-					</div>
-					<div class="divisionteam">
-						Gators<br>
-						<span class="coachname">Terry Henderson</span>
-					</div>
-				</div>
-				
-				<div class="divisionteambox">
-					<div class="divisionimage">
-						<img src="/emailer/images/tigers.png" class="divteamimage" />
-					</div>
-					<div class="divisionteam">
-						Tigers<br>
-						<span class="coachname">Brian Kelly</span>
-					</div>
-				</div>
-				
-				<div class="divisionteambox">
-					<div class="divisionimage">
-						<img src="/emailer/images/wildcats.png" class="divteamimage" />
-					</div>
-					<div class="divisionteam">
-						Wildcats<br>
-						<span class="coachname">Kenrick Church</span>
-					</div>
-				</div>
-			</div>
-			
-			<div class="division">
-				<div class="divisionname">SoCon</div>
-				
-				<div class="divisionteambox">
-					<div class="divisionimage">
-						<img src="/emailer/images/boilermakers.png" class="divteamimage" />
-					</div>
-					<div class="divisionteam">
-						Boilermakers<br>
-						<span class="coachname">Ben Yeakley</span>
-					</div>
-				</div>
-				
-				<div class="divisionteambox">
-					<div class="divisionimage">
-						<img src="/emailer/images/gamecocks.png" class="divteamimage" />
-					</div>
-					<div class="divisionteam">
-						Gamecocks<br>
-						<span class="coachname">Nathan Greene</span>
-					</div>
-				</div>
-				
-				<div class="divisionteambox">
-					<div class="divisionimage">
-						<img src="/emailer/images/huskies.png" class="divteamimage" />
-					</div>
-					<div class="divisionteam">
-						Huskies<br>
-						<span class="coachname">Brett van Beynum</span>
-					</div>
-				</div>
-				
-				<div class="divisionteambox">
-					<div class="divisionimage">
-						<img src="/emailer/images/irish.png" class="divteamimage" />
-					</div>
-					<div class="divisionteam">
-						Notre Dame<br>
-						<span class="coachname">Matt Ventimiglia</span>
-					</div>
-				</div>
-				
-				<div class="divisionteambox">
-					<div class="divisionimage">
-					</div>
-					<div class="divisionteam">
-						Fighting Pickles<br>
-						<span class="coachname">Jason Dayton</span>
+				<div class="practiceLocation">
+					<img class="contentIcon" src="/emailer/images/location.png" />
+					<div class="practiceAddress">
+						<a href="https://goo.gl/maps/KEY6chPjE1p" target="_new">1965 Newberry Ln<br>
+						Tega Cay, SC 29708</a>
 					</div>
 				</div>
 			</div>
@@ -452,8 +349,18 @@
 			<br class="clear" />
 			
 			<p>
+				I hope everyone was able to stay dry and safe this weekend. Now that the fields have dried out
+				(a little bit), I thought we could use some extra practice to get ready for the game this 
+				weekend. This was the only time slot available, and I understand if not everyone will be able 
+				to make this time. We will still also have the regular Friday practice time also.
+			</p>
+			
+			<br class="clear" />
+			
+			<p>
 				<img class="gohuskies" src="/emailer/images/go-dogs.jpg" /><br>
 				<strong>Go Huskies!!!</strong><br>
+				Thank you<br>
 				-Brett van Beynum
 			</p>
 			

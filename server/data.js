@@ -268,6 +268,7 @@ module.exports = function (app) {
 						id: teamDb._id,
 						name: teamDb.name,
 						division: teamDb.division,
+						confrence: teamDb.confrence,
 						coach: teamDb.coach,
 						wins: teamDb.wins,
 						losses: teamDb.losses
@@ -298,6 +299,7 @@ module.exports = function (app) {
 					
 					teamDb.name = teamSave.name ? teamSave.name : teamDb.name;
 					teamDb.division = teamSave.division ? teamSave.division : teamDb.division;
+					teamDb.confrence = teamSave.confrence ? teamSave.confrence : teamDb.confrence;
 					teamDb.coach = teamSave.coach ? teamSave.coach : teamDb.coach;
 					teamDb.wins = teamSave.wins ? teamSave.wins : teamDb.wins;
 					teamDb.losses = teamSave.losses ? teamSave.losses : teamDb.losses;
@@ -316,6 +318,7 @@ module.exports = function (app) {
 			new data.team({
 				name: teamSave.name,
 				division: teamSave.division,
+				confrence: teamSave.confrence,
 				coach: teamSave.coach,
 				wins: teamSave.wins,
 				losses: teamSave.losses

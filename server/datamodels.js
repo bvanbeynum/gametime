@@ -61,6 +61,7 @@ module.exports = {
 	team: mongoose.model("team", {
 		name: String,
 		division: String,
+		confrence: String,
 		coach: String,
 		wins: Number,
 		losses: Number
