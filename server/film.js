@@ -35,26 +35,32 @@ module.exports = function (app) {
 		// Get the URL from the passed in URL
 		http.get(request.query.photourl, (webResponse) => {
 			if (webResponse.statusCode == 200) {
+		console.log("opened url 1");
 				// Pipe the output to the file stream
 				webResponse.pipe(tempFile);
+				console.log("piped file 1");
 				
 				tempFile.on("finish", () => {
 					// Close the file stream
+					tempFile.close();
+					console.log("closed file 1");
 					
 					// Send the URL to access the file
 					response.status(200).json({ url: "http://" + request.headers.host + "/temp/" + tempFileName});
-					tempFile.close();
 				});
 			}
 			else if (webResponse.statusCode == 302) {
 				// Google redirected the url to a new location
 				http.get(webResponse.headers.location, (webResponse) => {
+		console.log("opened url 2");
 					// Pipe to the file stream
 					webResponse.pipe(tempFile);
+				console.log("piped file 2");
 					
 					tempFile.on("finish", () => {
 						// Close the file stream
 						tempFile.close();
+					console.log("closed file 2");
 						
 						// Send the url to access the file
 						response.status(200).json({ url: "http://" + request.headers.host + "/temp/" + tempFileName});
@@ -65,7 +71,7 @@ module.exports = function (app) {
 					fs.unlink(tempFolder + tempFileName);
 					
 					console.log(error);
-					response.status(503).json({ error: "Could not download video file" });
+					response.status(553).json({ error: "Could not download video file" });
 				});
 			}
 			else {
@@ -74,15 +80,16 @@ module.exports = function (app) {
 				fs.unlink(tempFolder + tempFileName);
 				
 				// Send the error to the user
-				response.status(502).json({ error: webResponse.statusCode + ": Could not download video file" });
+				response.status(552).json({ error: webResponse.statusCode + ": Could not download video file" });
 			}
 		})
 		.on("error", (error) => {
+			console.log("couldn't load file");
 			// Some error from the file
 			fs.unlink(tempFolder + tempFileName);
 			
 			console.log(error);
-			response.status(501).json({ error: "Could not download video file" });
+			response.status(551).json({ error: "Could not download video file" });
 		});
 	});
 	
