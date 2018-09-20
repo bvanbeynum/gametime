@@ -104,6 +104,19 @@ teamApp.controller("teamController", function ($scope, $http, $mdToast, $mdDialo
 		$scope.selectedGame = game;
 		
 		var httpSuccess = function (response) {
+			if (response.data.players.length == 0) {
+				$mdToast.show(
+					$mdToast.simple()
+						.textContent("No players found")
+						.position("bottom left")
+						.hideDelay(3000)
+				);
+				
+				console.log(response);
+				$scope.selectedGame = null;
+				$scope.state = "schedule";
+			}
+			
 			var players = response.data.players.sort(function (prev, curr) {
 				if (prev.draftRank || curr.draftRank) {
 					return (prev.draftRank ? prev.draftRank : 99) - (curr.draftRank ? curr.draftRank : 99);
