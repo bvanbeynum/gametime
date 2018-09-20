@@ -80,3 +80,57 @@ table {
 	border-right: solid 1px rgb(224, 224, 224);
 	margin-right: 10px;
 }
+
+.gamePageSchedule {
+	border-bottom: solid 1px rgb(224, 224, 224);
+	padding: 20px 10px;
+}
+
+.teamScore {
+	text-align: center;
+	font-size: 2.5em;
+	margin: 0px 15px;
+}
+
+.teamRecord {
+	color: rgb(150,150,150);
+	font-size: 0.8em;
+}
+
+.gamePageTeamContainer {
+	margin: 20px 0px 10px 0px;
+}
+
+.gamePageStatsTeam {
+	font-weight: bold;
+}
+
+.gamePageTeamStats {
+	width: 95%;
+	border-collapse: collapse;
+}
+
+.gamePageTeamStats th {
+	border-bottom: solid 1px rgb(224, 224, 224);
+	font-weight: normal;
+}
+
+.gamePageTeamStats th, .gamePageTeamStats td {
+	padding: 8px 5px;
+}
+
+.gamePageTeamStats th:nth-child(2) {
+	text-align: left;
+}
+
+.gamePageTeamStats td:nth-child(1), .gamePageTeamStats td:nth-child(n+3) {
+	text-align: center;
+}
+
+.gamePageTeamStats td {
+	font-size: 0.85em;
+}
+
+.gamePageStatsContainer {
+	margin: 20px 0px;
+}

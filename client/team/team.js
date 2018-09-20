@@ -67,6 +67,7 @@ teamApp.controller("teamController", function ($scope, $http, $mdToast, $mdDialo
 		
 		case "game":
 			$scope.selectTeam($scope.selectedTeam);
+			$scope.state = "schedule";
 			break;
 		}
 	};
@@ -99,7 +100,46 @@ teamApp.controller("teamController", function ($scope, $http, $mdToast, $mdDialo
 	};
 	
 	$scope.selectGame = function (game) {
+		$scope.state = "loading";
+		$scope.selectedGame = game;
 		
-	}
+		var httpSuccess = function (response) {
+			var players = response.data.players.sort(function (prev, curr) {
+				if (prev.draftRank || curr.draftRank) {
+					return (prev.draftRank ? prev.draftRank : 99) - (curr.draftRank ? curr.draftRank : 99);
+				}
+				else {
+					return prev.firstName > curr.firstName;
+				}
+			});
+			
+			if ($scope.selectedGame.awayTeam.id == players[0].team.id) {
+				$scope.selectedGame.awayTeam.players = players;
+			}
+			else {
+				$scope.selectedGame.homeTeam.players = players;
+			}
+			
+			if ($scope.selectedGame.homeTeam.players && $scope.selectedGame.awayTeam.players) {
+				$scope.state = "game";
+			}
+		};
+		
+		var httpError = function (response) {
+			$mdToast.show(
+				$mdToast.simple()
+					.textContent("There was an error loading")
+					.position("bottom left")
+					.hideDelay(3000)
+			);
+			
+			console.log(response);
+			$scope.selectedGame = null;
+			$scope.state = "schedule";
+		};
+		
+		$http({url: "/data/player?division=10U&teamname=" + game.awayTeam.name}).then(httpSuccess, httpError);
+		$http({url: "/data/player?division=10U&teamname=" + game.homeTeam.name}).then(httpSuccess, httpError);
+	};
 	
 });

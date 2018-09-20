@@ -54,15 +54,15 @@
 				<div class="scheduleTeam" layout="row" layout-align="start center">
 					<img ng-src="{{game.awayTeam.team.img}}" />
 					<div class="scheduleTeamName" flex>{{game.awayTeam.name}}</div>
-					<div class="scheduleTeamName">{{game.awayTeam.score}}</div>
-					<div class="scheduleWinner"><span ng-show="game.awayTeam.isWinner">&#9668;</span></div>
+					<div class="scheduleTeamName" flex="10">{{game.awayTeam.score}}</div>
+					<div class="scheduleWinner" flex="5"><span ng-show="game.awayTeam.isWinner">&#9668;</span></div>
 				</div>
 				
 				<div class="scheduleTeam" layout="row" layout-align="start center">
 					<img ng-src="{{game.homeTeam.team.img}}" />
 					<div class="scheduleTeamName" flex>{{game.homeTeam.name}}</div>
-					<div class="scheduleTeamName">{{game.homeTeam.score}}</div>
-					<div class="scheduleWinner"><span ng-show="game.homeTeam.isWinner">&#9668;</span></div>
+					<div class="scheduleTeamName" flex="10">{{game.homeTeam.score}}</div>
+					<div class="scheduleWinner" flex="5"><span ng-show="game.homeTeam.isWinner">&#9668;</span></div>
 				</div>
 			</div>
 			
@@ -71,6 +71,79 @@
 				<div class="scheduleTime">{{game.dateTime | date: "h:mm a"}}</div>
 			</div>
 		</div>
+	</div>
+	
+	<div ng-show="state == 'game'" class="gamePage" layout="column">
+		<div class="gamePageSchedule" layout="row" layout-align="center center">
+			<div class="header" layout="column" flex flex-gt-xs="80">
+				<div layout="row">{{selectedGame.field}} Field &bull; {{selectedGame.dateTime | date: "EEE, M/d, h:mm a"}}</div>
+				
+				<div layout="row" layout-align="center center" class="gamePageTeamContainer">
+					<div layout="column" class="gamePageTeam" flex="10" layout-align="center center">
+						<div><img ng-src="{{selectedGame.awayTeam.team.img}}" class="teamImage" /></div>
+						<div class="teamName">{{selectedGame.awayTeam.name}}</div>
+						<div class="teamRecord">({{selectedGame.awayTeam.team.wins}} - {{selectedGame.awayTeam.team.losses}})</div>
+					</div>
+					
+					<div class="teamScore" flex="20">{{selectedGame.awayTeam.score}}</div>
+					
+					<div class="teamSeparator">{{ (selectedGame.awayTeam.score) ? "&mdash;" : "At" }}</div>
+					
+					<div class="teamScore" flex="20">{{selectedGame.homeTeam.score}}</div>
+					
+					<div layout="column" class="gamePageTeam" flex="10" layout-align="center center">
+						<div><img ng-src="{{selectedGame.homeTeam.team.img}}" class="teamImage" /></div>
+						<div class="teamName">{{selectedGame.homeTeam.name}}</div>
+						<div class="teamRecord">({{selectedGame.homeTeam.team.wins}} - {{selectedGame.homeTeam.team.losses}})</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div layout="column" layout-gt-xs="row">
+			<div class="gamePageStatsContainer" layout="column" flex-gt-xs="50" layout-align="start center">
+				<div class="gamePageStatsTeam">{{selectedGame.awayTeam.name}}</div>
+				
+				<table class="gamePageTeamStats">
+				<tr>
+					<th>Rk</th>
+					<th>Player</th>
+					<th>Th</th>
+					<th>C</th>
+					<th>Run</th>
+				</tr>
+				<tr ng-repeat="player in selectedGame.awayTeam.players">
+					<td>{{ player.draftRank ? player.draftRank : "-"}}</td>
+					<td>{{ player.firstName + " " + player.lastName}}</td>
+					<td>{{ player.throwing ? player.throwing : "-"}}</td>
+					<td>{{ player.catching ? player.catching : "-"}}</td>
+					<td>{{ player.runTime ? player.runTime : "-"}}</td>
+				</tr>
+				</table>
+			</div>
+			
+			<div class="gamePageStatsContainer" layout="column" flex-gt-xs="50" layout-align="start center">
+				<div class="gamePageStatsTeam">Wildcats</div>
+				
+				<table class="gamePageTeamStats">
+				<tr>
+					<th>Rk</th>
+					<th>Player</th>
+					<th>Th</th>
+					<th>C</th>
+					<th>Run</th>
+				</tr>
+				<tr ng-repeat="player in selectedGame.homeTeam.players">
+					<td>{{ player.draftRank ? player.draftRank : "-"}}</td>
+					<td>{{ player.firstName + " " + player.lastName}}</td>
+					<td>{{ player.throwing ? player.throwing : "-"}}</td>
+					<td>{{ player.catching ? player.catching : "-"}}</td>
+					<td>{{ player.runTime ? player.runTime : "-"}}</td>
+				</tr>
+				</table>
+			</div>
+		</div>
+		
 	</div>
 </div>
 
