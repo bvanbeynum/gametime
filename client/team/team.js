@@ -78,7 +78,9 @@ teamApp.controller("teamController", function ($scope, $http, $mdToast, $mdDialo
 		$http({url: "/data/game?division=10U&teamname=" + team.name}).then(
 			function (response) {
 				$scope.selectedTeam = team;
-				$scope.schedule = response.data.games;
+				$scope.schedule = response.data.games.sort(function (prev, curr) {
+					return new Date(prev.dateTime) - new Date(curr.dateTime);
+				});
 				
 				$scope.schedule.forEach(function (game) {
 					game.awayTeam.team = $scope.teams.find(function (team) { return team.id == game.awayTeam.id });
@@ -115,6 +117,7 @@ teamApp.controller("teamController", function ($scope, $http, $mdToast, $mdDialo
 				console.log(response);
 				$scope.selectedGame = null;
 				$scope.state = "schedule";
+				return;
 			}
 			
 			var players = response.data.players.sort(function (prev, curr) {
