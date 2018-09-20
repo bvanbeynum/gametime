@@ -10,7 +10,7 @@ module.exports = function (app) {
 	});
 	
 	app.get("/film/loadvideo", (request, response) => {
-		try {
+		console.log("start load");
 		var now = new Date(),
 			tempFolder = "client/temp/",
 			tempFileName = "" + now.getFullYear() + now.getMonth() + now.getDate() + now.getHours() + now.getMinutes() + now.getSeconds() + ".mp4";
@@ -18,6 +18,7 @@ module.exports = function (app) {
 		// Delete all existing temp files
 		fs.readdir(tempFolder, (error, files) => {
 			if (error) {
+				console.log(error.message);
 				return;
 			}
 			
@@ -25,9 +26,11 @@ module.exports = function (app) {
 				fs.unlink(tempFolder + file);
 			});
 		});
+		console.log("deleted files");
 		
 		// Open the file for writing
 		var tempFile = fs.createWriteStream(tempFolder + tempFileName);
+		console.log("opened stream");
 		
 		// Get the URL from the passed in URL
 		http.get(request.query.photourl, (webResponse) => {
@@ -81,11 +84,6 @@ module.exports = function (app) {
 			console.log(error);
 			response.status(501).json({ error: "Could not download video file" });
 		});
-		}
-		catch (error) {
-			console.log(error.message);
-			response.status(504).json({ error: error.message });
-		}
 	});
 	
 	app.get("/film/film.js", (request, response) => {
