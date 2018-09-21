@@ -1,9 +1,9 @@
 @media print {
+	@page {
+		size: letter portrait;
+	}
 	md-toolbar.toolbar {
 		display: none;
-	}
-	html, body {
-		font-size: 10px;
 	}
 }
 
