@@ -1,3 +1,12 @@
+@media print {
+	md-toolbar.toolbar {
+		display: none;
+	}
+	html, body {
+		font-size: 10px;
+	}
+}
+
 html, body {
 	font-family: verdana, sans-serif;
 	font-size: 12px;
