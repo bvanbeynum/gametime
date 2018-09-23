@@ -29,7 +29,7 @@
 	</div>
 	
 	<div class="confrenceContainer" layout="row" layout-align="center" layout-wrap ng-show="state == 'confrence'">
-		<div class="confrence" ng-repeat="confrence in confrences" flex>
+		<div class="confrence" ng-repeat="confrence in confrences | orderBy: 'name'" flex>
 			<table>
 			<tr>
 				<th colspan="2">{{confrence.name}}</th>
