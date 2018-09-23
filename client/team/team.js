@@ -28,11 +28,6 @@ teamApp.controller("teamController", function ($scope, $http, $mdToast, $mdDialo
 						return new Date(prev.dateTime) - new Date(curr.dateTime);
 					});
 					
-					$scope.schedule.forEach(function (game) {
-						game.awayTeam.team = teams.find(function (team) { return team.id == game.awayTeam.id });
-						game.homeTeam.team = teams.find(function (team) { return team.id == game.homeTeam.id });
-					});
-					
 					$scope.teams = teams.map(function (team) {
 						return {
 							id: team.id,
@@ -54,6 +49,11 @@ teamApp.controller("teamController", function ($scope, $http, $mdToast, $mdDialo
 					
 					$scope.teams.forEach(function (team) {
 						team.ratio = (team.wins + team.losses > 0) ? team.wins / (team.wins + team.losses) : 0;
+					});
+					
+					$scope.schedule.forEach(function (game) {
+						game.awayTeam.team = $scope.teams.find(function (team) { return team.id == game.awayTeam.id });
+						game.homeTeam.team = $scope.teams.find(function (team) { return team.id == game.homeTeam.id });
 					});
 					
 					$scope.confrences = d3.nest()
