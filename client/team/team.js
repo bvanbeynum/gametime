@@ -109,6 +109,9 @@ teamApp.controller("teamController", function ($scope, $http, $mdToast, $mdDialo
 	
 	$scope.selectTeam = function (team) {
 		$scope.selectedTeam = team;
+		$scope.teamSchedule = $scope.schedule.filter(function (game) {
+			return game.awayTeam.id == team.id || game.homeTeam.id == team.id;
+		});
 		$scope.state = "schedule";
 	};
 	

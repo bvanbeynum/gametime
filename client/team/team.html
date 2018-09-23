@@ -49,7 +49,7 @@
 	</div>
 	
 	<div ng-show="state == 'schedule'" class="scheduleContainer" layout="column" layout-gt-xs="row" layout-wrap>
-		<div class="gameContainer" ng-repeat="game in schedule" ng-click="selectGame(game)" layout="row" flex-gt-xs="50">
+		<div class="gameContainer" ng-repeat="game in teamSchedule" ng-click="selectGame(game)" layout="row" flex-gt-xs="50">
 			<div class="scheduleTeams" layout="column" flex="80" layout-align="space-around">
 				<div class="scheduleTeam" layout="row" layout-align="start center">
 					<img ng-src="{{game.awayTeam.team.img}}" />
