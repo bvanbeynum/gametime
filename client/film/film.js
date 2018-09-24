@@ -75,7 +75,7 @@ filmApp.controller("filmController", function ($scope, $mdSidenav, $http, $timeo
 		video.isSelected = true;
 		
 		$http({
-			url: "http://<GT serverUrl >/film/loadvideo?photourl=" + video.url,
+			url: "/film/loadvideo?photourl=" + video.url,
 			method: "GET"
 		})
 		.then(function (response) {
@@ -95,6 +95,7 @@ filmApp.controller("filmController", function ($scope, $mdSidenav, $http, $timeo
 	
 	$scope.loadAlbum = function (albumId, nextPage) {
 		$scope.isLoading = true;
+		$scope.rawVideo = [];
 		
 		$http({
 			url:"https://photoslibrary.googleapis.com/v1/mediaItems:search", 
@@ -110,6 +111,7 @@ filmApp.controller("filmController", function ($scope, $mdSidenav, $http, $timeo
 		})
 		.then(function (response) { 
 			if (response.data.mediaItems) {
+				$scope.rawVideo = $scope.rawVideo.concat(response.data.mediaItems);
 				$scope.videos = $scope.videos.concat(response.data.mediaItems
 					.filter(function (item) {
 						return item.mimeType == "video/mp4";
@@ -144,7 +146,9 @@ filmApp.controller("filmController", function ($scope, $mdSidenav, $http, $timeo
 									(new Date(dateGroup.key)).getDate() + "/" + 
 									(new Date(dateGroup.key)).getFullYear(),
 								isCollapsed: true,
-								videos: dateGroup.values
+								videos: dateGroup.values.sort(function (prev, curr) {
+									return prev.created - curr.created;
+								})
 							};
 						});
 					

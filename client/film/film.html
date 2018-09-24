@@ -32,7 +32,7 @@
 		
 		<md-list>
 			<md-subheader ng-repeat-start="date in videoDates" class="dateSection" ng-click="expandDate(date)">{{date.date}}</md-subheader>
-			<md-list-item ng-repeat="video in date.videos" ng-show="!date.isCollapsed">
+			<md-list-item ng-repeat="video in date.videos" ng-show="!date.isCollapsed" layout="column">
 				<img ng-src="{{video.thumb}}" class="videoThumb" ng-class="{'selected': video.isSelected}" ng-click="loadVideo(video)" />
 			</md-list-item>
 			<div ng-repeat-end></div>
