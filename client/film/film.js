@@ -57,7 +57,7 @@ filmApp.controller("filmController", function ($scope, $mdSidenav, $http, $timeo
 		isPlayable = true;
 	};
 	
-	$scope.loadVideo = function (video) {
+	$scope.loadVideo = function (video, isNext, isPrev) {
 		$scope.closeNav();
 		$scope.isLoading = true;
 		
@@ -67,12 +67,25 @@ filmApp.controller("filmController", function ($scope, $mdSidenav, $http, $timeo
 		}
 		
 		$scope.videoDates.forEach(function (section) {
-			section.videos.forEach(function (otherVideo) {
-				otherVideo.isSelected = false;
+			section.videos.forEach(function (otherVideo, videoIndex) {
+				if (otherVideo.isSelected && isPrev) {
+					// Select prev video
+					video = section.videos[videoIndex - 1];
+					otherVideo.isSelected = false;
+				}
+				else if (otherVideo.isSelected && isNext) {
+					// Select next video
+					video = section.videos[videoIndex + 1];
+					otherVideo.isSelected = false;
+				}
+				else if (otherVideo.isSelected) {
+					otherVideo.isSelected = false;
+				}
 			});
 		});
 		
 		video.isSelected = true;
+		$scope.selectedVideo = video;
 		
 		$http({
 			url: "/film/loadvideo?photourl=" + video.url,
@@ -203,6 +216,12 @@ document.body.onkeyup = function (event) {
 				videoPlayer.currentTime = 0;
 			}
 		}
+	}
+	else if (event.keyCode == 78 || event.which == 78) {// n
+		angular.element(document.body).scope().loadVideo(null, 1);
+	}
+	else if (event.keyCode == 80 || event.which == 80) {// p
+		angular.element(document.body).scope().loadVideo(null, 0, 1);
 	}
 	else {
 		console.log(event);

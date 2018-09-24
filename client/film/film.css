@@ -35,3 +35,10 @@
 .md-open-menu-container {
 	z-index: 300;
 }
+
+.videoDate {
+	position: relative;
+	top: -30px;
+	background: rgba(20,20,20,.7);
+	padding: 5px;
+}
