@@ -12,7 +12,7 @@ module.exports = function (app) {
 	app.get("/film/loadvideo", (request, response) => {
 		console.log("start load");
 		var now = new Date(),
-			tempFolder = "client/temp/",
+			tempFolder = path.join(app.get("root"), "/client/temp/"),
 			tempFileName = "" + now.getFullYear() + now.getMonth() + now.getDate() + now.getHours() + now.getMinutes() + now.getSeconds() + ".mp4";
 		
 		// Delete all existing temp files
