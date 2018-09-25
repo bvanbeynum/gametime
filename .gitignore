@@ -63,3 +63,6 @@ typings/
 
 # configuration
 server/config.js
+
+#Server temp files
+client/temp/*

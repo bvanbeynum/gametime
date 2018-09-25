@@ -51,7 +51,7 @@
 	</div>
 	
 	<div layout="column" flex="90" layout-align="center center" ng-show="!isLoading">
-		<video id="videoPlayer" ng-show="!isLoading"></video>
+		<video id="videoPlayer" ng-show="!isLoading" ng-click="videoClick($event)"></video>
 		<div class="videoDate">{{selectedVideo.created | date: "EEE, M/d h:mm:ss a"}}</div>
 	</div>
 	

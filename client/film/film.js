@@ -186,6 +186,54 @@ filmApp.controller("filmController", function ($scope, $mdSidenav, $http, $timeo
 	$timeout(function () {
 		$scope.openNav();
 	});
+	
+	$scope.videoClick = function (event) {
+		console.log(event.x + ", " + event.y);
+		
+		if (event.x < event.srcElement.clientWidth * .25 && event.y < event.srcElement.clientHeight * .5) {
+			// top left
+			if (isPlayable) {
+				if (videoPlayer.currentTime - 1 > 0) {
+					videoPlayer.currentTime -= 1;
+				}
+				else {
+					videoPlayer.currentTime = 0;
+				}
+			}
+		}
+		else if (event.x > event.srcElement.clientWidth - (event.srcElement.clientWidth * .25) && event.y < event.srcElement.clientHeight * .5) {
+			// top right
+			if (isPlayable) {
+				if (videoPlayer.currentTime + 1 < videoPlayer.duration) {
+					videoPlayer.currentTime += 1;
+				}
+			}
+		}
+		else if (event.x < event.srcElement.clientWidth * .25 && event.y > event.srcElement.clientHeight * .5) {
+			// bottom left
+			if (isPlayable) {
+				if (videoPlayer.currentTime - .1 > 0) {
+					videoPlayer.currentTime -= .1;
+				}
+				else {
+					videoPlayer.currentTime = 0;
+				}
+			}
+		}
+		else if (event.x > event.srcElement.clientWidth - (event.srcElement.clientWidth * .25) && event.y > event.srcElement.clientHeight * .5) {
+			// bottom right
+			if (isPlayable) {
+				if (videoPlayer.currentTime + .1 < videoPlayer.duration) {
+					videoPlayer.currentTime += .1;
+				}
+			}
+		}
+		else {
+			if (isPlayable) {
+				(videoPlayer.paused) ? videoPlayer.play() : videoPlayer.pause();
+			}
+		}
+	};
 });
 
 document.body.onkeyup = function (event) {

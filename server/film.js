@@ -10,7 +10,6 @@ module.exports = function (app) {
 	});
 	
 	app.get("/film/loadvideo", (request, response) => {
-		console.log("start load");
 		var now = new Date(),
 			tempFolder = path.join(app.get("root"), "/client/temp/"),
 			tempFileName = "" + now.getFullYear() + now.getMonth() + now.getDate() + now.getHours() + now.getMinutes() + now.getSeconds() + ".mp4";
@@ -26,25 +25,20 @@ module.exports = function (app) {
 				fs.unlink(tempFolder + file);
 			});
 		});
-		console.log("deleted files");
-		
+
 		// Open the file for writing
 		var tempFile = fs.createWriteStream(tempFolder + tempFileName);
-		console.log("opened stream");
-		
+
 		// Get the URL from the passed in URL
 		http.get(request.query.photourl, (webResponse) => {
 			if (webResponse.statusCode == 200) {
-		console.log("opened url 1");
 				// Pipe the output to the file stream
 				webResponse.pipe(tempFile);
-				console.log("piped file 1");
-				
+
 				tempFile.on("finish", () => {
 					// Close the file stream
 					tempFile.close();
-					console.log("closed file 1");
-					
+
 					// Send the URL to access the file
 					response.status(200).json({ url: "http://" + request.headers.host + "/temp/" + tempFileName});
 				});
@@ -52,16 +46,13 @@ module.exports = function (app) {
 			else if (webResponse.statusCode == 302) {
 				// Google redirected the url to a new location
 				http.get(webResponse.headers.location, (webResponse) => {
-		console.log("opened url 2");
 					// Pipe to the file stream
 					webResponse.pipe(tempFile);
-				console.log("piped file 2");
-					
+
 					tempFile.on("finish", () => {
 						// Close the file stream
 						tempFile.close();
-					console.log("closed file 2");
-						
+
 						// Send the url to access the file
 						response.status(200).json({ url: "http://" + request.headers.host + "/temp/" + tempFileName});
 					});
@@ -84,7 +75,6 @@ module.exports = function (app) {
 			}
 		})
 		.on("error", (error) => {
-			console.log("couldn't load file");
 			// Some error from the file
 			fs.unlink(tempFolder + tempFileName);
 			
