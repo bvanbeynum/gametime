@@ -1,0 +1,32 @@
+
+<div ng-show="isLoading" flex="90" layout="row" layout-align="center center">
+	<div layout="column" layout="center center">
+		<md-progress-circular class="md-primary md-margin" md-diameter="40"></md-progress-circular>
+		<div class="md-margin">Loading</div>
+	</div>
+</div>
+
+<div ng-show="!isLoading" class="scheduleContainer" layout="column" layout-gt-xs="row" layout-wrap>
+	<div class="gameContainer" ng-repeat="game in teamSchedule" ng-click="selectGame(game)" layout="row" flex-gt-xs="50">
+		<div class="scheduleTeams" layout="column" flex="80" layout-align="space-around">
+			<div class="scheduleTeam" layout="row" layout-align="start center">
+				<img ng-src="{{game.awayTeam.team.img}}" />
+				<div class="scheduleTeamName" flex>{{game.awayTeam.name}}</div>
+				<div class="scheduleTeamName" flex="10">{{game.awayTeam.score}}</div>
+				<div class="scheduleWinner" flex="5"><span ng-show="game.awayTeam.isWinner">&#9668;</span></div>
+			</div>
+			
+			<div class="scheduleTeam" layout="row" layout-align="start center">
+				<img ng-src="{{game.homeTeam.team.img}}" />
+				<div class="scheduleTeamName" flex>{{game.homeTeam.name}}</div>
+				<div class="scheduleTeamName" flex="10">{{game.homeTeam.score}}</div>
+				<div class="scheduleWinner" flex="5"><span ng-show="game.homeTeam.isWinner">&#9668;</span></div>
+			</div>
+		</div>
+		
+		<div class="scheduleDateContainer" layout="column" flex="20" layout-align="center center">
+			<div class="scheduleDate">{{game.dateTime | date: "EEE, M/d"}}</div>
+			<div class="scheduleTime">{{game.dateTime | date: "h:mm a"}}</div>
+		</div>
+	</div>
+</div>

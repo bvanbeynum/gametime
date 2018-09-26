@@ -1,21 +1,39 @@
 /* global angular */
 /* global d3 */
 
-var teamApp = angular.module("teamApp", ["ngMaterial"]);
+var teamApp = angular.module("teamApp", ["ngMaterial", "ngRoute"]);
 
 var log = {};
 
-teamApp.config(function($mdThemingProvider) {
+teamApp.config(function($mdThemingProvider, $routeProvider) {
 	$mdThemingProvider.theme("default")
 		.primaryPalette("teal")
 		.accentPalette("blue");
+	
+	$routeProvider
+	.when("/standings", {
+		templateUrl: "/team/standings.html",
+		controller: "standingsCtl"
+	})
+	.when("/schedule", {
+		templateUrl: "/team/schedule.html",
+		controller: "scheduleCtl"
+	})
+	.when("/game", {
+		templateUrl: "/team/game.html",
+		controller: "gameCtl"
+	})
+	.otherwise({
+		redirectTo: "/standings"
+	});
 });
 
-teamApp.controller("teamController", function ($scope, $http, $mdToast, $mdDialog) {
-	log.scope = $scope;
-	log.http = $http;
+teamApp.controller("standingsCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
+	log.standings = $scope;
+	$rootScope.isLoading = true;
 	
-	$scope.state = "loading";
+	$rootScope.selectedTeam = null;
+	$rootScope.selectedGame = null;
 	
 	$http({url: "/data/team?division=10U"}).then(
 		function (response) {
@@ -24,21 +42,21 @@ teamApp.controller("teamController", function ($scope, $http, $mdToast, $mdDialo
 			$http({url: "/data/game?division=10U"}).then(
 				function (response) {
 					
-					$scope.schedule = response.data.games.sort(function (prev, curr) {
+					$rootScope.schedule = response.data.games.sort(function (prev, curr) {
 						return new Date(prev.dateTime) - new Date(curr.dateTime);
 					});
 					
-					$scope.teams = teams.map(function (team) {
+					$rootScope.teams = teams.map(function (team) {
 						return {
 							id: team.id,
 							name: team.name,
 							confrence: team.confrence,
 							img: "/team/media/" + team.name.toLowerCase().replace(/ /, "") + ".png",
-							wins: $scope.schedule.filter(function (game) {
+							wins: $rootScope.schedule.filter(function (game) {
 									return (game.awayTeam.id == team.id && game.awayTeam.isWinner) ||
 										(game.homeTeam.id == team.id && game.homeTeam.isWinner);
 								}).length,
-							losses: $scope.schedule.filter(function (game) {
+							losses: $rootScope.schedule.filter(function (game) {
 									return (new Date(game.dateTime)) < (new Date()) && (
 											(game.awayTeam.id == team.id && !game.awayTeam.isWinner) ||
 											(game.homeTeam.id == team.id && !game.homeTeam.isWinner)
@@ -47,18 +65,18 @@ teamApp.controller("teamController", function ($scope, $http, $mdToast, $mdDialo
 						};
 					});
 					
-					$scope.teams.forEach(function (team) {
+					$rootScope.teams.forEach(function (team) {
 						team.ratio = (team.wins + team.losses > 0) ? team.wins / (team.wins + team.losses) : 0;
 					});
 					
-					$scope.schedule.forEach(function (game) {
-						game.awayTeam.team = $scope.teams.find(function (team) { return team.id == game.awayTeam.id });
-						game.homeTeam.team = $scope.teams.find(function (team) { return team.id == game.homeTeam.id });
+					$rootScope.schedule.forEach(function (game) {
+						game.awayTeam.team = $rootScope.teams.find(function (team) { return team.id == game.awayTeam.id });
+						game.homeTeam.team = $rootScope.teams.find(function (team) { return team.id == game.homeTeam.id });
 					});
 					
 					$scope.confrences = d3.nest()
 						.key(function (team) { return team.confrence })
-						.entries($scope.teams)
+						.entries($rootScope.teams)
 						.map(function (group) {
 							return { 
 								name: group.key, 
@@ -68,7 +86,7 @@ teamApp.controller("teamController", function ($scope, $http, $mdToast, $mdDialo
 							};
 						});
 					
-					$scope.state = "confrence";
+					$rootScope.isLoading = false;
 				}, function (response) {
 					$mdToast.show(
 						$mdToast.simple()
@@ -78,7 +96,7 @@ teamApp.controller("teamController", function ($scope, $http, $mdToast, $mdDialo
 					);
 					
 					console.log(response);
-					$scope.state = "confrence";
+					$rootScope.isLoading = false;
 				});
 			
 		}, function (response) {
@@ -90,86 +108,115 @@ teamApp.controller("teamController", function ($scope, $http, $mdToast, $mdDialo
 			);
 			
 			console.log(response);
-			$scope.state = null;
+			$rootScope.isLoading = false;
 		});
-	
-	$scope.back = function () {
-		switch ($scope.state) {
-		case "schedule":
-			$scope.selectedTeam = null;
-			$scope.state = "confrence";
-			break;
-		
-		case "game":
-			$scope.selectTeam($scope.selectedTeam);
-			$scope.state = "schedule";
-			break;
-		}
-	};
 	
 	$scope.selectTeam = function (team) {
-		$scope.selectedTeam = team;
-		$scope.teamSchedule = $scope.schedule.filter(function (game) {
-			return game.awayTeam.id == team.id || game.homeTeam.id == team.id;
-		});
-		$scope.state = "schedule";
+		$rootScope.selectedTeam = team;
+		$location.path("/schedule");
 	};
 	
+});
+
+teamApp.controller("scheduleCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
+	if (!$rootScope.selectedTeam) {
+		$location.path("/standings");
+	}
+	
+	log.schedule = $scope;
+	$rootScope.selectedGame = null;
+	
+	$scope.teamSchedule = $rootScope.schedule.filter(function (game) {
+		return game.awayTeam.id == $rootScope.selectedTeam.id || game.homeTeam.id == $rootScope.selectedTeam.id;
+	});
+	
 	$scope.selectGame = function (game) {
-		$scope.state = "loading";
-		$scope.selectedGame = game;
-		
-		var httpSuccess = function (response) {
-			if (response.data.players.length == 0) {
-				$mdToast.show(
-					$mdToast.simple()
-						.textContent("No players found")
-						.position("bottom left")
-						.hideDelay(3000)
-				);
-				
-				console.log(response);
-				$scope.selectedGame = null;
-				$scope.state = "schedule";
-				return;
-			}
-			
-			var players = response.data.players.sort(function (prev, curr) {
-				if (prev.draftRank || curr.draftRank) {
-					return (prev.draftRank ? prev.draftRank : 99) - (curr.draftRank ? curr.draftRank : 99);
-				}
-				else {
-					return prev.firstName > curr.firstName;
-				}
-			});
-			
-			if ($scope.selectedGame.awayTeam.id == players[0].team.id) {
-				$scope.selectedGame.awayTeam.players = players;
-			}
-			else {
-				$scope.selectedGame.homeTeam.players = players;
-			}
-			
-			if ($scope.selectedGame.homeTeam.players && $scope.selectedGame.awayTeam.players) {
-				$scope.state = "game";
-			}
-		};
-		
-		var httpError = function (response) {
+		$rootScope.isLoading = true;
+		$rootScope.selectedGame = game;
+		$location.path("/game");
+	};
+	
+});
+
+teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
+	if (!$rootScope.selectedTeam) {
+		$location.path("/standings");
+	}
+	else if (!$rootScope.selectedGame) {
+		$location.path("/schedule");
+	}
+	
+	log.game = $scope;
+	
+	var httpSuccess = function (response) {
+		if (response.data.players.length == 0) {
 			$mdToast.show(
 				$mdToast.simple()
-					.textContent("There was an error loading")
+					.textContent("No players found")
 					.position("bottom left")
 					.hideDelay(3000)
 			);
 			
 			console.log(response);
 			$scope.selectedGame = null;
-			$scope.state = "schedule";
-		};
+			$location.path("/schedule");
+			return;
+		}
 		
-		$http({url: "/data/player?division=10U&teamname=" + game.awayTeam.name}).then(httpSuccess, httpError);
-		$http({url: "/data/player?division=10U&teamname=" + game.homeTeam.name}).then(httpSuccess, httpError);
+		var players = response.data.players.sort(function (prev, curr) {
+			if (prev.draftRank || curr.draftRank) {
+				return (prev.draftRank ? prev.draftRank : 99) - (curr.draftRank ? curr.draftRank : 99);
+			}
+			else {
+				return prev.firstName > curr.firstName;
+			}
+		});
+		
+		if ($rootScope.selectedGame.awayTeam.id == players[0].team.id) {
+			$rootScope.selectedGame.awayTeam.players = players;
+		}
+		else {
+			$rootScope.selectedGame.homeTeam.players = players;
+		}
+		
+		if ($rootScope.selectedGame.homeTeam.players && $rootScope.selectedGame.awayTeam.players) {
+			$rootScope.isLoading = false;
+		}
+	};
+	
+	var httpError = function (response) {
+		$mdToast.show(
+			$mdToast.simple()
+				.textContent("There was an error loading")
+				.position("bottom left")
+				.hideDelay(3000)
+		);
+		
+		console.log(response);
+		$scope.selectedGame = null;
+		$location.path("/schedule");
+	};
+	
+	$http({url: "/data/player?division=10U&teamname=" + $rootScope.selectedGame.awayTeam.name}).then(httpSuccess, httpError);
+	$http({url: "/data/player?division=10U&teamname=" + $rootScope.selectedGame.homeTeam.name}).then(httpSuccess, httpError);
+});
+
+teamApp.controller("teamController", function ($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
+	log = {root: $rootScope, team: $scope};
+	log.http = $http;
+	
+	$rootScope.isLoading = false;
+	
+	$scope.back = function () {
+		switch ($location.path()) {
+		case "/schedule":
+			$location.path("/standings");
+			break;
+		
+		case "/game":
+			$location.path("/schedule");
+			break;
+		}
 	};
 	
 });

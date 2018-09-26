@@ -1,0 +1,28 @@
+
+<div ng-show="isLoading" flex="90" layout="row" layout-align="center center">
+	<div layout="column" layout="center center">
+		<md-progress-circular class="md-primary md-margin" md-diameter="40"></md-progress-circular>
+		<div class="md-margin">Loading</div>
+	</div>
+</div>
+
+<div class="confrenceContainer" layout="row" layout-align="center" layout-wrap ng-show="!isLoading">
+	<div>{{test}}</div>
+	<div class="confrence" ng-repeat="confrence in confrences | orderBy: 'name'" flex>
+		<table>
+		<tr>
+			<th colspan="2">{{confrence.name}}</th>
+			<th>W</th>
+			<th>L</th>
+			<th>Pct</th>
+		</tr>
+		<tr ng-repeat="team in confrence.teams" ng-click="selectTeam(team)">
+			<td><img ng-src="{{team.img}}" /></td>
+			<td>{{team.name}}</td>
+			<td>{{team.wins}}</td>
+			<td>{{team.losses}}</td>
+			<td>{{team.ratio | number: 3}}</td>
+		</tr>
+		</table>
+	</div>
+</div>
