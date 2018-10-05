@@ -134,13 +134,18 @@ teamApp.controller("standingsCtl", function($rootScope, $scope, $http, $location
 							confrence: team.confrence,
 							img: "/team/media/" + team.name.toLowerCase().replace(/ /, "") + ".png",
 							wins: $rootScope.schedule.filter(function (game) {
-									return (game.awayTeam.id == team.id && game.awayTeam.isWinner) ||
-										(game.homeTeam.id == team.id && game.homeTeam.isWinner);
+									return (
+											(game.awayTeam.id == team.id && game.awayTeam.isWinner) ||
+											(game.homeTeam.id == team.id && game.homeTeam.isWinner)
+										);
 								}).length,
 							losses: $rootScope.schedule.filter(function (game) {
-									return (new Date(game.dateTime)) < (new Date()) && (
-											(game.awayTeam.id == team.id && !game.awayTeam.isWinner) ||
-											(game.homeTeam.id == team.id && !game.homeTeam.isWinner)
+									return (
+											(game.awayTeam.isWinner || game.homeTeam.isWinner) && 
+											(
+												(game.awayTeam.id == team.id && !game.awayTeam.isWinner) ||
+												(game.homeTeam.id == team.id && !game.homeTeam.isWinner)
+											)
 										);
 								}).length
 						};
@@ -239,6 +244,31 @@ teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $md
 	}
 	
 	log.game = $scope;
+	
+	$scope.editGame = function () {
+		$scope.isLoading = true;
+		
+		$mdDialog.show({
+			templateUrl: "/team/editgame.html",
+			controller: editGameCtl,
+			locals: { game: $rootScope.selectedGame },
+			clickOutsideToClose: false,
+			escapeToClose: false,
+			openFrom: {
+				top: document.documentElement.clientHeight,
+				left: 0
+			},
+			closeTo: {
+				top: document.documentElement.clientHeight,
+				left: 0
+			}
+		})
+		.then(function () {
+			$scope.isLoading = false;
+		}, function () {
+			$scope.isLoading = false;
+		});
+	};
 	
 	var httpSuccess = function (response) {
 		if (response.data.players.length == 0) {
