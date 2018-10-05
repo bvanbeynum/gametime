@@ -5,7 +5,7 @@ var teamApp = angular.module("teamApp", ["ngMaterial", "ngRoute"]);
 
 var log = {};
 
-teamApp.config(function($mdThemingProvider, $routeProvider) {
+teamApp.config(function($mdThemingProvider, $routeProvider, $locationProvider) {
 	$mdThemingProvider.theme("default")
 		.primaryPalette("teal")
 		.accentPalette("blue");
@@ -27,6 +27,8 @@ teamApp.config(function($mdThemingProvider, $routeProvider) {
 		templateUrl: "/team/division.html",
 		controller: "divisionCtl"
 	});
+	
+	$locationProvider.html5Mode(true);
 });
 
 teamApp.controller("divisionCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
