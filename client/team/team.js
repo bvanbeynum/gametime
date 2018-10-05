@@ -319,6 +319,12 @@ teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $md
 			}
 		});
 		
+		var cutOffDate = new Date($rootScope.selectedGame.gameDivision.year, 8, 1);
+		
+		players.forEach(function (player) {
+			player.age = (player.dateOfBirth) ? Math.floor((cutOffDate - (new Date(player.dateOfBirth))) / 31536000000) : null;
+		});
+		
 		if ($rootScope.selectedGame.awayTeam.id == players[0].team.id) {
 			$rootScope.selectedGame.awayTeam.players = players;
 		}

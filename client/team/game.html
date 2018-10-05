@@ -53,6 +53,7 @@
 				<th>Th</th>
 				<th>C</th>
 				<th>Run</th>
+				<th>Age</th>
 			</tr>
 			<tr ng-repeat="player in selectedGame.awayTeam.players">
 				<td>{{ player.draftRank ? player.draftRank : "-"}}</td>
@@ -60,6 +61,7 @@
 				<td>{{ player.throwing ? player.throwing : "-"}}</td>
 				<td>{{ player.catching ? player.catching : "-"}}</td>
 				<td>{{ player.runTime ? player.runTime : "-"}}</td>
+				<td>{{ player.age ? player.age : "-"}}</td>
 			</tr>
 			</table>
 		</div>
@@ -74,6 +76,7 @@
 				<th>Th</th>
 				<th>C</th>
 				<th>Run</th>
+				<th>Age</th>
 			</tr>
 			<tr ng-repeat="player in selectedGame.homeTeam.players">
 				<td>{{ player.draftRank ? player.draftRank : "-"}}</td>
@@ -81,6 +84,7 @@
 				<td>{{ player.throwing ? player.throwing : "-"}}</td>
 				<td>{{ player.catching ? player.catching : "-"}}</td>
 				<td>{{ player.runTime ? player.runTime : "-"}}</td>
+				<td>{{ player.age ? player.age : "-"}}</td>
 			</tr>
 			</table>
 		</div>
