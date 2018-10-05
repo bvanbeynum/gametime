@@ -5,6 +5,9 @@
 	md-toolbar.toolbar {
 		display: none;
 	}
+	.gameEditButton {
+		display: none;
+	}
 }
 
 html, body {
