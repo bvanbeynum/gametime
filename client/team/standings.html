@@ -6,22 +6,62 @@
 	</div>
 </div>
 
-<div class="confrenceContainer" layout-gt-xs="row" layout-align="center" layout-wrap ng-show="!isLoading">
-	<div class="confrence" ng-repeat="confrence in confrences | orderBy: 'name'" flex>
-		<table>
-		<tr>
-			<th colspan="2">{{confrence.name}}</th>
-			<th>W</th>
-			<th>L</th>
-			<th>Pct</th>
-		</tr>
-		<tr ng-repeat="team in confrence.teams" ng-click="selectTeam(team)">
-			<td><img ng-src="{{team.img}}" /></td>
-			<td>{{team.name}}</td>
-			<td>{{team.wins}}</td>
-			<td>{{team.losses}}</td>
-			<td>{{team.ratio | number: 3}}</td>
-		</tr>
-		</table>
+
+<div layout="column" ng-show="!isLoading">
+	<h2 class="standingsHeader">Standings</h2>
+	
+	<div layout-gt-xs="row" layout-align="center" layout-wrap>
+		<div class="confrence" ng-repeat="confrence in confrences | orderBy: 'name'" flex>
+			<table>
+			<tr>
+				<th colspan="2">{{confrence.name}}</th>
+				<th>W</th>
+				<th>L</th>
+				<th>Pct</th>
+			</tr>
+			<tr ng-repeat="team in confrence.teams" ng-click="selectTeam(team)">
+				<td><img ng-src="{{team.img}}" /></td>
+				<td>{{team.name}}</td>
+				<td>{{team.wins}}</td>
+				<td>{{team.losses}}</td>
+				<td>{{team.ratio | number: 3}}</td>
+			</tr>
+			</table>
+		</div>
+	</div>
+	
+	<h2 class="standingsHeader">Schedule</h2>
+	
+	<div layout="column">
+		<div layout="column" class="confrence" ng-repeat="gameDay in scheduleDates">
+			<div class="standingDate" ng-class="{gameHighlight: gameDay.isNext}">Week {{($index + 1)}} - {{gameDay.day | date: "M/d/yyyy" }}</div>
+			
+			<div layout="row" layout-wrap layout-align="center">
+				
+				<div class="gameContainer standingsGame" ng-click="selectGame(game)" layout="row" ng-repeat="game in gameDay.games">
+					<div class="scheduleTeams" layout="column" flex="75" layout-align="space-around">
+						<div class="scheduleTeam" layout="row" layout-align="start center">
+							<img ng-src="{{game.awayTeam.team.img}}" />
+							<div class="scheduleTeamName" flex>{{game.awayTeam.team.name}}</div>
+							<div class="scheduleTeamName" flex="10">{{game.awayTeam.team.score}}</div>
+							<div class="scheduleWinner" flex="5"><span ng-show="game.awayTeam.isWinner">&#9668;</span></div>
+						</div>
+						
+						<div class="scheduleTeam" layout="row" layout-align="start center">
+							<img ng-src="{{game.homeTeam.team.img}}" />
+							<div class="scheduleTeamName" flex>{{game.homeTeam.team.name}}</div>
+							<div class="scheduleTeamName" flex="10">{{game.homeTeam.team.score}}</div>
+							<div class="scheduleWinner" flex="5"><span ng-show="game.homeTeam.isWinner">&#9668;</span></div>
+						</div>
+					</div>
+					
+					<div class="scheduleDateContainer" layout="column" flex="25" layout-align="center center">
+						<div class="scheduleDate">{{game.dateTime | date: "EEE, M/d"}}</div>
+						<div class="scheduleTime">{{game.dateTime | date: "h:mm a"}}</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
 	</div>
 </div>

@@ -158,6 +158,9 @@ teamApp.controller("standingsCtl", function($rootScope, $scope, $http, $location
 					$rootScope.schedule.forEach(function (game) {
 						game.awayTeam.team = $rootScope.teams.find(function (team) { return team.id == game.awayTeam.id });
 						game.homeTeam.team = $rootScope.teams.find(function (team) { return team.id == game.homeTeam.id });
+						
+						game.dateTime = new Date(game.dateTime);
+						game.date = new Date(game.dateTime.getFullYear(), game.dateTime.getMonth(), game.dateTime.getDate());
 					});
 					
 					$scope.confrences = d3.nest()
@@ -171,6 +174,21 @@ teamApp.controller("standingsCtl", function($rootScope, $scope, $http, $location
 								})
 							};
 						});
+					
+					$scope.scheduleDates = d3.nest()
+						.key(function (game) { return game.date })
+						.entries($rootScope.schedule)
+						.map(function (group) {
+							return {
+								day: new Date(group.key),
+								games: group.values
+							};
+						});
+						
+					var nextGame = $scope.scheduleDates
+						.filter(function (game) { return game.day >= (new Date()) })
+						.slice(0,1)[0];
+					nextGame.isNext = true;
 					
 					$rootScope.isLoading = false;
 				}, function (response) {
@@ -200,6 +218,12 @@ teamApp.controller("standingsCtl", function($rootScope, $scope, $http, $location
 	$scope.selectTeam = function (team) {
 		$rootScope.selectedTeam = team;
 		$location.path("/schedule");
+	};
+	
+	$scope.selectGame = function (game) {
+		$rootScope.isLoading = true;
+		$rootScope.selectedGame = game;
+		$location.path("/game");
 	};
 	
 });
@@ -234,12 +258,13 @@ teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $md
 		$location.path("/");
 		return;
 	}
-	else if (!$rootScope.selectedTeam) {
-		$location.path("/standings");
-		return;
-	}
 	else if (!$rootScope.selectedGame) {
-		$location.path("/schedule");
+		if ($rootScope.selectedTeam) {
+			$location.path("/schedule");
+		}
+		else {
+			$location.path("/standings");
+		}
 		return;
 	}
 	
@@ -339,7 +364,12 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 			break;
 		
 		case "/game":
-			$location.path("/schedule");
+			if ($rootScope.selectedTeam) {
+				$location.path("/schedule");
+			}
+			else {
+				$location.path("/standings");
+			}
 			break;
 		}
 	};

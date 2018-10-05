@@ -28,8 +28,13 @@ table {
 	font-size: 12px;
 }
 
+.standingsHeader {
+	color: rgb(100,100,100);
+	margin: 10px 5px;
+}
+
 .confrence {
-	margin: 30px 20px;
+	margin: 20px;
 }
 
 .confrence img {
@@ -67,6 +72,16 @@ table {
 	text-align: center;
 }
 
+.standingDate {
+	margin: 8px 0px;
+	font-size: 1.1em;
+	color: rgb(100,100,100);
+}
+
+.gameHighlight {
+	font-weight: bold;
+	color: black;
+}
 
 .scheduleContainer {
 	padding: 30px 10px;
@@ -78,10 +93,14 @@ table {
 	margin-right: 10px;
 }
 
+.standingsGame {
+	width: 320px;
+}
+
 .gameContainer {
-	padding: 10px;
 	padding: 10px 20px;
 	border: solid 1px rgb(224, 224, 224);
+	border-collapse: collapse;
 	cursor: pointer;
 }
 
@@ -150,6 +169,7 @@ table {
 	width: 100px;
 	height: 100px;
 	margin: 20px;
+	cursor: pointer;
 }
 
 .divisionTeamSeason {
