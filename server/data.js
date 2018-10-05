@@ -1,10 +1,110 @@
-var mongoose = require("mongoose"),
-	data = require("./datamodels");
+var data = require("./datamodels");
 
 module.exports = function (app) {
 	
+	app.get("/data/division", (request, response) => {
+		var validQueries = "|divisionid|";
+		if (Object.keys(request.query).length > 0) {
+			var invalidQuery = Object.keys(request.query).filter((query) => {
+				return validQueries.indexOf("|" + query + "|") < 0;
+			});
+			
+			if (invalidQuery.length > 0) {
+				response.status(500).json({error: "Invalid query terms: " + invalidQuery.join(", ")});
+				return;
+			}
+		}
+		
+		var filter = {};
+		
+		if (request.query.divisionid) {
+			filter._id = request.query.divisionid;
+		}
+		
+		data.division.find(filter)
+			.exec()
+			.then((divisionsDb) => {
+				var divisions = divisionsDb.map((divisionDb) => {
+					return {
+						id: divisionDb._id,
+						name: divisionDb.name,
+						year: divisionDb.year,
+						season: divisionDb.season
+					};
+				});
+				
+				response.status(200).json({divisions: divisions});
+			})
+			.catch((error) => {
+				response.status(500).json({error: error.message});
+			});
+	});
+	
+	app.post("/data/division", (request, response) => {
+		if (!request.body.division) {
+			response.status(500).json({error: "Invalid division save request" });
+		}
+		
+		var divisionSave = request.body.division;
+		
+		if (divisionSave.id) {
+			data.team.findById(divisionSave.id)
+				.exec()
+				.then((divisionDb) => {
+					if (!divisionDb) {
+						throw new Error("Division is not found");
+					}
+					
+					divisionDb.name = divisionSave.name ? divisionSave.name : divisionDb.name;
+					divisionDb.year = divisionSave.year ? divisionSave.year : divisionDb.year;
+					divisionDb.season = divisionSave.season ? divisionSave.season : divisionDb.season;
+					
+					return divisionDb.save();
+				})
+				.then((divisionDb) => {
+					response.status(200).json({ divisionId: divisionDb._id });
+				})
+				.catch((error) => {
+					response.status(500).json({ error: error.message });
+				});
+		}
+		else {
+			
+			new data.division({
+				name: divisionSave.name,
+				year: divisionSave.year,
+				season: divisionSave.season
+			})
+			.save()
+			.then((divisionDb) => {
+				response.status(200).json({ divisionId: divisionDb._id });
+			})
+			.catch((error) => {
+				response.status(500).json({ error: error.message });
+			});
+			
+		}
+		
+	});
+	
+	app.delete("/data/division", (request, response) => {
+		if (!request.query.divisionid) {
+			response.status(500).json({error: "Invalid delete request"});
+		}
+		
+		var filter = { _id: request.query.divisionid };
+		
+		data.division.deleteOne(filter)
+			.then(() => {
+				response.status(200).json({status: "ok"});
+			})
+			.catch((error) => {
+				response.status(500).json({error: error.message});
+			});
+	});
+	
 	app.get("/data/player", (request, response) => {
-		var validQueries = "|division|id|teamid|teamname|name|";
+		var validQueries = "|division|divisionid|id|teamid|teamname|name|";
 		if (Object.keys(request.query).length > 0) {
 			var invalidQuery = Object.keys(request.query).filter((query) => {
 				return validQueries.indexOf("|" + query + "|") < 0;
@@ -19,7 +119,12 @@ module.exports = function (app) {
 		var filter = {};
 		
 		if (request.query.division) {
-			filter.division = request.query.division;
+			filter["playerDivision.name"] = request.query.division;
+			filter["playerDivision.year"] = 2018;
+			filter["playerDivision.season"] = "fall";
+		}
+		if (request.query.divisionid) {
+			filter["playerDivision.id"] = request.query.divisionid;
 		}
 		if (request.query.id) {
 			filter._id = request.query.id;
@@ -43,6 +148,12 @@ module.exports = function (app) {
 				var players = playersDb.map((playerDb) => {
 					return {
 						id: playerDb._id,
+						playerDivision: playerDb.playerDivision ? {
+							id: playerDb.playerDivision.id,
+							name: playerDb.playerDivision.name,
+							year: playerDb.playerDivision.year,
+							season: playerDb.playerDivision.season
+						}: null,
 						division: playerDb.division,
 						draftNumber: playerDb.draftNumber,
 						team: (playerDb.team) ? { id: playerDb.team.id, name: playerDb.team.name } : null,
@@ -102,6 +213,12 @@ module.exports = function (app) {
 						throw new Error("Player not found");
 					}
 					
+					playerDb.playerDivision = playerSave.playerDivision ? {
+						id: playerSave.playerDivision.id ? playerSave.playerDivision.id : playerDb.playerDivision.id,
+						name: playerSave.playerDivision.name ? playerSave.playerDivision.name : playerDb.playerDivision.name,
+						year: playerSave.playerDivision.year ? playerSave.playerDivision.year : playerDb.playerDivision.year,
+						season: playerSave.playerDivision.season ? playerSave.playerDivision.season : playerDb.playerDivision.season
+					} : playerDb.playerDivision;
 					playerDb.division = playerSave.division ? playerSave.division : playerDb.division;
 					playerDb.draftNumber = playerSave.draftNumber ? playerSave.draftNumber : playerDb.draftNumber;
 					playerDb.team = (playerSave.team) ? { id: playerSave.team.id, name: playerSave.team.name } : playerDb.team;
@@ -148,6 +265,12 @@ module.exports = function (app) {
 		else {
 			
 			new data.player({
+				playerDivision: playerSave.playerDivision ? {
+					id: playerSave.playerDivision.id,
+					name: playerSave.playerDivision.name,
+					year: playerSave.playerDivision.year,
+					season: playerSave.playerDivision.season
+				} : null,
 				division: playerSave.division,
 				draftNumber: playerSave.draftNumber,
 				team: (playerSave.team) ? { id: playerSave.team.id, name: playerSave.team.name } : null,
@@ -193,7 +316,7 @@ module.exports = function (app) {
 	});
 	
 	app.delete("/data/player", (request, response) => {
-		var validQueries = "|division|id|teamid|teamname|name|";
+		var validQueries = "|division|divisionid|id|teamid|teamname|name|";
 		if (Object.keys(request.query).length > 0) {
 			var invalidQuery = Object.keys(request.query).filter((query) => {
 				return validQueries.indexOf("|" + query + "|") < 0;
@@ -208,7 +331,12 @@ module.exports = function (app) {
 		var filter = {};
 		
 		if (request.query.division) {
-			filter.division = request.query.division;
+			filter["playerDivision.name"] = request.query.division;
+			filter["playerDivision.year"] = 2018;
+			filter["playerDivision.season"] = "fall";
+		}
+		if (request.query.divisionid) {
+			filter["playerDivision.id"] = request.query.divisionid;
 		}
 		if (request.query.id) {
 			filter._id = request.query.id;
@@ -236,7 +364,7 @@ module.exports = function (app) {
 	});
 	
 	app.get("/data/team", (request, response) => {
-		var validQueries = "|id|name|division|";
+		var validQueries = "|id|name|division|divisionid|managed|";
 		if (Object.keys(request.query).length > 0) {
 			var invalidQuery = Object.keys(request.query).filter((query) => {
 				return validQueries.indexOf("|" + query + "|") < 0;
@@ -257,7 +385,15 @@ module.exports = function (app) {
 			filter.name = { $regex: new RegExp(request.query.name, "i") };
 		}
 		if (request.query.division) {
-			filter.division = request.query.division;
+			filter["teamDivision.name"] = request.query.division;
+			filter["teamDivision.year"] = 2018;
+			filter["teamDivision.season"] = "fall";
+		}
+		if (request.query.divisionid) {
+			filter["teamDivision.id"] = request.query.divisionid;
+		}
+		if (request.query.managed) {
+			filter.isManaged = true;
 		}
 		
 		data.team.find(filter)
@@ -267,11 +403,16 @@ module.exports = function (app) {
 					return {
 						id: teamDb._id,
 						name: teamDb.name,
+						teamDivision: teamDb.teamDivision ? {
+							id: teamDb.teamDivision.id,
+							name: teamDb.teamDivision.name,
+							year: teamDb.teamDivision.year,
+							season: teamDb.teamDivision.season
+						} : null,
 						division: teamDb.division,
 						confrence: teamDb.confrence,
 						coach: teamDb.coach,
-						wins: teamDb.wins,
-						losses: teamDb.losses
+						isManaged: teamDb.isManaged
 					};
 				});
 				
@@ -298,11 +439,16 @@ module.exports = function (app) {
 					}
 					
 					teamDb.name = teamSave.name ? teamSave.name : teamDb.name;
+					teamDb.teamDivision = teamSave.teamDivision ? {
+						id: teamSave.teamDivision.id ? teamSave.teamDivision.id : teamDb.teamDivision.id,
+						name: teamSave.teamDivision.name ? teamSave.teamDivision.name : teamDb.teamDivision.name,
+						year: teamSave.teamDivision.year ? teamSave.teamDivision.year : teamDb.teamDivision.year,
+						season: teamSave.teamDivision.season ? teamSave.teamDivision.season : teamDb.teamDivision.season
+					} : teamDb.teamDivision;
 					teamDb.division = teamSave.division ? teamSave.division : teamDb.division;
 					teamDb.confrence = teamSave.confrence ? teamSave.confrence : teamDb.confrence;
 					teamDb.coach = teamSave.coach ? teamSave.coach : teamDb.coach;
-					teamDb.wins = teamSave.wins ? teamSave.wins : teamDb.wins;
-					teamDb.losses = teamSave.losses ? teamSave.losses : teamDb.losses;
+					teamDb.isManaged = teamSave.isManaged ? teamSave.isManaged : teamDb.isManaged;
 					
 					return teamDb.save();
 				})
@@ -317,11 +463,16 @@ module.exports = function (app) {
 			
 			new data.team({
 				name: teamSave.name,
+				teamDivision: teamSave.teamDivision ? {
+					id: teamSave.teamDivision.id,
+					name: teamSave.teamDivision.name,
+					year: teamSave.teamDivision.year,
+					season: teamSave.teamDivision.season
+				} : null,
 				division: teamSave.division,
 				confrence: teamSave.confrence,
 				coach: teamSave.coach,
-				wins: teamSave.wins,
-				losses: teamSave.losses
+				isManaged: teamSave.isManaged
 			})
 			.save()
 			.then((teamDb) => {
@@ -357,7 +508,12 @@ module.exports = function (app) {
 			filter.name = { $regex: new RegExp(request.query.name, "i") };
 		}
 		if (request.query.division) {
-			filter.division = request.query.division;
+			filter["teamDivision.name"] = request.query.division;
+			filter["teamDivision.year"] = 2018;
+			filter["teamDivision.season"] = "fall";
+		}
+		if (request.query.divisionid) {
+			filter["teamDivision.id"] = request.query.divisionid;
 		}
 		
 		data.team.deleteMany(filter)
@@ -370,7 +526,7 @@ module.exports = function (app) {
 	});
 	
 	app.get("/data/game", (request, response) => {
-		var validQueries = "|date|division|teamid|teamname|";
+		var validQueries = "|date|division|divisionid|teamid|teamname|";
 		if (Object.keys(request.query).length > 0) {
 			var invalidQuery = Object.keys(request.query).filter((query) => {
 				return validQueries.indexOf("|" + query + "|") < 0;
@@ -392,7 +548,12 @@ module.exports = function (app) {
 			filter.dateTime = { $gte: Date.parse(request.query.date), $lt: endDate };
 		}
 		if (request.query.division) {
-			filter.division = request.query.division;
+			filter["gameDivision.name"] = request.query.division;
+			filter["gameDivision.year"] = 2018;
+			filter["gameDivision.season"] = "fall";
+		}
+		if (request.query.divisionid) {
+			filter["gameDivision.id"] = request.query.divisionid;
 		}
 		if (request.query.teamid) {
 			filter.$or = [
@@ -414,6 +575,12 @@ module.exports = function (app) {
 					return {
 						id: gameDb._id,
 						dateTime: gameDb.dateTime,
+						gameDivision: gameDb.gameDivision ? {
+							id: gameDb.gameDivision.id,
+							name: gameDb.gameDivision.name,
+							year: gameDb.gameDivision.year,
+							season: gameDb.gameDivision.season
+						} : null,
 						division: gameDb.division,
 						field: gameDb.field,
 						homeTeam: (gameDb.homeTeam) ? {
@@ -453,6 +620,12 @@ module.exports = function (app) {
 						throw new Error("Game can't be found");
 					}
 					
+					gameDb.gameDivision = gameSave.gameDivision ? {
+						id: gameSave.gameDivision.id ? gameSave.gameDivision.id : gameDb.gameDivision.id,
+						name: gameSave.gameDivision.name ? gameSave.gameDivision.name : gameDb.gameDivision.name,
+						year: gameSave.gameDivision.year ? gameSave.gameDivision.year : gameDb.gameDivision.year,
+						season: gameSave.gameDivision.season ? gameSave.gameDivision.season : gameDb.gameDivision.season
+					} : gameDb.gameDivision;
 					gameDb.division = gameSave.division ? gameSave.division : gameDb.division;
 					gameDb.dateTime = gameSave.dateTime ? gameSave.dateTime : gameDb.dateTime;
 					gameDb.field = gameSave.field ? gameSave.field : gameDb.field;
@@ -481,6 +654,12 @@ module.exports = function (app) {
 		else {
 			
 			new data.game({
+				gameDivision: gameSave.gameDivision ? {
+					id: gameSave.gameDivision.id,
+					name: gameSave.gameDivision.name,
+					year: gameSave.gameDivision.year,
+					season: gameSave.gameDivision.season
+				} : null,
 				division: gameSave.division,
 				dateTime: gameSave.dateTime,
 				field: gameSave.field,
@@ -509,7 +688,7 @@ module.exports = function (app) {
 	});
 	
 	app.delete("/data/game", (request, response) => {
-		var validQueries = "|date|division|teamid|teamname|";
+		var validQueries = "|date|division|divisionid|teamid|teamname|";
 		if (Object.keys(request.query).length > 0) {
 			var invalidQuery = Object.keys(request.query).filter((query) => {
 				return validQueries.indexOf("|" + query + "|") < 0;
@@ -531,7 +710,12 @@ module.exports = function (app) {
 			filter.dateTime = { $gte: Date.parse(request.query.date), $lt: endDate };
 		}
 		if (request.query.division) {
-			filter.division = request.query.division;
+			filter["gameDivision.name"] = request.query.division;
+			filter["gameDivision.year"] = 2018;
+			filter["gameDivision.season"] = "fall";
+		}
+		if (request.query.divisionid) {
+			filter["gameDivision.id"] = request.query.divisionid;
 		}
 		if (request.query.teamid) {
 			filter.$or = [

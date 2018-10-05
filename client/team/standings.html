@@ -6,8 +6,7 @@
 	</div>
 </div>
 
-<div class="confrenceContainer" layout="row" layout-align="center" layout-wrap ng-show="!isLoading">
-	<div>{{test}}</div>
+<div class="confrenceContainer" layout-gt-xs="row" layout-align="center" layout-wrap ng-show="!isLoading">
 	<div class="confrence" ng-repeat="confrence in confrences | orderBy: 'name'" flex>
 		<table>
 		<tr>

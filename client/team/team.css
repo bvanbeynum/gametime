@@ -143,3 +143,16 @@ table {
 .gamePageStatsContainer {
 	margin: 20px 0px;
 }
+
+.divisionTeam {
+	border: solid 1px rgb(200,200,200);
+	box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.10);
+	width: 100px;
+	height: 100px;
+	margin: 20px;
+}
+
+.divisionTeamSeason {
+	font-size: .8em;
+	color: rgb(150,150,150);
+}

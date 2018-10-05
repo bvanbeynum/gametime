@@ -24,22 +24,103 @@ teamApp.config(function($mdThemingProvider, $routeProvider) {
 		controller: "gameCtl"
 	})
 	.otherwise({
-		redirectTo: "/standings"
+		templateUrl: "/team/division.html",
+		controller: "divisionCtl"
 	});
+});
+
+teamApp.controller("divisionCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
+	log.division = $scope;
+	$rootScope.managedTeam = null;
+	$rootScope.isLoading = true;
+	
+	$http({url: "/data/division"}).then(function (response) {
+		$scope.divisions = response.data.divisions.sort(function (prev, curr) {
+			return prev.name < curr.name ? -1 : 1;
+		});
+		
+		$http({url: "/data/team?managed=true"}).then(function (response) {
+			var teams = response.data.teams;
+			
+			$scope.divisions.forEach(function (division) {
+				division.teams = teams.filter(function (team) { return team.teamDivision.id == division.id });
+			});
+			
+			$scope.divisions = d3.nest()
+				.key(function (division) { return division.name })
+				.entries($scope.divisions)
+				.map(function (group) {
+					return {
+						name: group.key, 
+						teams: teams.filter(function (team) { return team.teamDivision.name == group.key })
+							.map(function (team) {
+								return {
+									id: team.id,
+									name: team.name,
+									teamDivision: {
+										id: team.teamDivision.id,
+										name: team.teamDivision.name,
+										year: team.teamDivision.year,
+										season: team.teamDivision.season.replace(/\w\S*/g, function (text) { return text.charAt(0).toUpperCase() + text.substr(1).toLowerCase() })
+									},
+									img: "/team/media/" + team.name.toLowerCase().replace(/ /, "") + ".png"
+								};
+							})
+							.sort(function (prev, next) { 
+								if (prev.teamDivision.year < next.teamDivision.year) {
+									return -1;
+								}
+								else if (prev.teamDivision.year > next.teamDivision.year) {
+									return 1;
+								}
+								else {
+									return prev.teamDivision.season > next.teamDivision.season ? -1 : 1;
+								}
+							})
+					};
+				})
+				.sort(function (prev, next) { 
+					return prev.name < next.name ? -1 : 1;
+				});
+			
+			$scope.isLoading = false;
+		});
+	}, function (error) {
+		$mdToast.show(
+			$mdToast.simple()
+				.textContent("There was an error loading")
+				.position("bottom left")
+				.hideDelay(3000)
+		);
+		
+		console.log(error);
+		$rootScope.isLoading = false;
+	});
+	
+	$scope.selectTeam = function (team) {
+		$rootScope.managedTeam = team;
+		$location.path("/standings");
+	};
 });
 
 teamApp.controller("standingsCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
 	log.standings = $scope;
+	
+	if (!$rootScope.managedTeam) {
+		$location.path("/");
+		return;
+	}
+	
 	$rootScope.isLoading = true;
 	
 	$rootScope.selectedTeam = null;
 	$rootScope.selectedGame = null;
 	
-	$http({url: "/data/team?division=10U"}).then(
+	$http({url: "/data/team?divisionid=" + $rootScope.managedTeam.teamDivision.id}).then(
 		function (response) {
 			var teams = response.data.teams;
 			
-			$http({url: "/data/game?division=10U"}).then(
+			$http({url: "/data/game?divisionid=" + $rootScope.managedTeam.teamDivision.id}).then(
 				function (response) {
 					
 					$rootScope.schedule = response.data.games.sort(function (prev, curr) {
@@ -119,8 +200,13 @@ teamApp.controller("standingsCtl", function($rootScope, $scope, $http, $location
 });
 
 teamApp.controller("scheduleCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
-	if (!$rootScope.selectedTeam) {
+	if (!$rootScope.managedTeam) {
+		$location.path("/");
+		return;
+	}
+	else if (!$rootScope.selectedTeam) {
 		$location.path("/standings");
+		return;
 	}
 	
 	log.schedule = $scope;
@@ -139,11 +225,17 @@ teamApp.controller("scheduleCtl", function($rootScope, $scope, $http, $location,
 });
 
 teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
-	if (!$rootScope.selectedTeam) {
+	if (!$rootScope.managedTeam) {
+		$location.path("/");
+		return;
+	}
+	else if (!$rootScope.selectedTeam) {
 		$location.path("/standings");
+		return;
 	}
 	else if (!$rootScope.selectedGame) {
 		$location.path("/schedule");
+		return;
 	}
 	
 	log.game = $scope;
@@ -209,6 +301,9 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 	
 	$scope.back = function () {
 		switch ($location.path()) {
+		case "/standings":
+			$location.path("/");
+			break;
 		case "/schedule":
 			$location.path("/standings");
 			break;

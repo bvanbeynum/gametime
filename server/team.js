@@ -1,7 +1,7 @@
 module.exports = (app) => {
 		
-	app.get("/team", (request, response) => {
-		response.sendFile("/client/team/team.html", { root: app.get("root") });
+	app.get("/", (request, response) => {
+		response.sendFile("/client/team/index.html", { root: app.get("root") });
 	});
 
 };

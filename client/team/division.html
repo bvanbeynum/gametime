@@ -1,0 +1,19 @@
+
+<div ng-show="isLoading" flex="90" layout="row" layout-align="center center">
+	<div layout="column" layout="center center">
+		<md-progress-circular class="md-primary md-margin" md-diameter="40"></md-progress-circular>
+		<div class="md-margin">Loading</div>
+	</div>
+</div>
+
+<div ng-show="!isLoading" class="divisionsContainer" layout="column" layout-align="center" flex="90">
+	<div ng-repeat="division in divisions" layout="row" class="divisionTeams" layout-align="center">
+		
+		<div ng-repeat="team in division.teams" ng-click="selectTeam(team)" layout="column" class="divisionTeam" layout="column" layout-align="center center">
+			<div><img ng-src="{{team.img}}"></div>
+			<div class="divisionTeamName">{{team.name}}</div>
+			<div class="divisionTeamSeason">{{team.teamDivision.season}} - {{team.teamDivision.year}}</div>
+		</div>
+		
+	</div>
+</div>

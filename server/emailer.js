@@ -9,7 +9,9 @@ var nodemailer = require("nodemailer"),
 var toGroup = {
 	self: ["\"Brett\" <maildrop444@gmail.com>"],
 	family: ["\"Brett\" <maildrop444@gmail.com>", "\"Sita van Beynum\" <svanbeynum@gmail.com>"],
-	parents: ["\"Grandma\" <msanborng@gmail.com>", "\"Grandpa\" <fabman54@gmail.com>"],
+	mom: ["\"Grandma\" <msanborng@gmail.com>", "\"Grandpa\" <fabman54@gmail.com>"],
+	dad: ["\"Opa\" <rvanbeynum@gmail.com>", "\"Oma\" <sarvanbeynum@gmail.com>"],
+	great: ["\"Great Grandma\" <goldenquill@frontier.com>"],
 	team: [
 		"\"Brett van Beynum\" <bvanbeynum@gmail.com>",
 		"\"Carissa Wiand\" <carissabertalan@hotmail.com>",

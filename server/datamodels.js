@@ -2,8 +2,34 @@ var mongoose = require("mongoose");
 
 module.exports = {
 	
+	division: mongoose.model("division", {
+		name: String,
+		year: Number,
+		season: String
+	}),
+	
+	team: mongoose.model("team", {
+		name: String,
+		teamDivision: {
+			id: String,
+			name: String,
+			year: Number,
+			season: String
+		},
+		division: String,
+		confrence: String,
+		coach: String,
+		isManaged: Boolean
+	}),
+	
 	player: mongoose.model("player", {
 		draftNumber: Number,
+		playerDivision: {
+			id: String,
+			name: String,
+			year: Number,
+			season: String
+		},
 		division: String,
 		team: {
 			id: String,
@@ -41,6 +67,12 @@ module.exports = {
 	}),
 	
 	game: mongoose.model("game", {
+		gameDivision: {
+			id: String,
+			name: String,
+			year: Number,
+			season: String
+		},
 		division: String,
 		dateTime: Date,
 		homeTeam: {
@@ -56,15 +88,6 @@ module.exports = {
 			isWinner: Boolean
 		},
 		field: String
-	}),
-	
-	team: mongoose.model("team", {
-		name: String,
-		division: String,
-		confrence: String,
-		coach: String,
-		wins: Number,
-		losses: Number
 	})
 	
 };
