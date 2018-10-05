@@ -2,6 +2,14 @@ function editGameCtl(game, $scope, $mdDialog, $http, $mdToast) {
 	log.editGame = $scope;
 
 	$scope.game = game;
+	
+	if ($scope.game.awayTeam.isWinner) {
+		$scope.winningTeamId = $scope.game.awayTeam.id;
+	}
+	else if ($scope.game.homeTeam.isWinner) {
+		$scope.winningTeamId = $scope.game.homeTeam.id;
+	}
+	
 	$scope.original = {
 		awayTeam: {
 			isWinner: game.awayTeam.isWinner,
