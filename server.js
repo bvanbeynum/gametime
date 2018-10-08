@@ -33,7 +33,6 @@ require("./server/data")(app);
 require("./server/film")(app);
 require("./server/emailer")(app);
 require("./server/team")(app);
-require("./server/stats")(app);
 require("./server/static")(app);
 
 // listen (start app with node server.js) ======================================
