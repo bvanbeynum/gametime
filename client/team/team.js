@@ -190,7 +190,10 @@ teamApp.controller("standingsCtl", function($rootScope, $scope, $http, $location
 					var nextGame = $scope.scheduleDates
 						.filter(function (game) { return game.day >= (new Date()) })
 						.slice(0,1)[0];
-					nextGame.isNext = true;
+					
+					if (nextGame) {
+						nextGame.isNext = true;
+					}
 					
 					$rootScope.isLoading = false;
 				}, function (response) {
