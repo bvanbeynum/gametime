@@ -9,7 +9,7 @@
 <body ng-controller="teamController" ng-cloak>
 
 <div layout="column" class="pageContainer">
-	<md-toolbar class="toolbar" layout="row" layout-align="start center">
+	<md-toolbar class="toolbar md-menu-toolbar" layout="row" layout-align="start center">
 		<md-button class="md-icon-button" aria-label="Back" ng-click="back()" >
 			<md-icon>
 				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -20,6 +20,23 @@
 		</md-button>
 		
 		<h2 flex>Game Time</h2>
+		
+		<md-menu ng-show="managedTeam">
+			<md-button class="md-icon-button" aria-label="Menu" ng-click="openMenu($mdMenu, $event)">
+				<md-icon md-menu-origin>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+						<path d="M0 0h24v24H0z" fill="none"/>
+						<path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+					</svg>
+				</md-icon>
+			</md-button>
+			
+			<md-menu-content width="4">
+				<md-menu-item>
+					<md-button md-menu-align-target ng-click="openPlaybook()">Play Book</md-button>
+				</md-menu-item>
+			</md-menu-content>
+		</md-menu>
 	</md-toolbar>
 	
 	<div ng-view layout="column"></div>
@@ -35,6 +52,7 @@
 <script src="https://d3js.org/d3.v5.min.js"></script>
 
 <script src="/team/team.js"></script>
+<script src="/team/directives.js"></script>
 <script src="/team/dialog.js"></script>
 
 </body>

@@ -6,7 +6,7 @@
 	</div>
 </div>
 
-<div ng-show="!isLoading" class="divisionsContainer" layout="column" layout-align="center" flex="90">
+<div ng-show="!isLoading" class="divisionsContainer" layout="column" layout-align="center" flex="90" ng-click="test()">
 	<div ng-repeat="division in divisions" layout="row" class="divisionTeams" layout-align="center">
 		
 		<div ng-repeat="team in division.teams" ng-click="selectTeam(team)" layout="column" class="divisionTeam" layout="column" layout-align="center center">

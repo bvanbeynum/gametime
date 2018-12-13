@@ -1,5 +1,16 @@
 var mongoose = require("mongoose");
 
+var locationSchema = new mongoose.Schema({
+	x: Number,
+	y: Number
+});
+
+var playerSchema = new mongoose.Schema({
+	positionType: String,
+	location: { type: locationSchema },
+	route: [{type: locationSchema}]
+});
+
 module.exports = {
 	
 	division: mongoose.model("division", {
@@ -88,6 +99,19 @@ module.exports = {
 			isWinner: Boolean
 		},
 		field: String
+	}),
+	
+	play: mongoose.model("play", {
+		division: {
+			id: String,
+			name: String,
+			year: Number,
+			season: String
+		},
+		category: String,
+		name: String,
+		scrimageLine: Number,
+		players: [playerSchema]
 	})
 	
 };

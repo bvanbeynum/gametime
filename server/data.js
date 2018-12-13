@@ -739,4 +739,153 @@ module.exports = function (app) {
 			});
 	});
 	
+	app.get("/data/play", (request, response) => {
+		var validQueries = "|divisionid|id|name|category|";
+		if (Object.keys(request.query).length > 0) {
+			var invalidQuery = Object.keys(request.query).filter((query) => {
+				return validQueries.indexOf("|" + query + "|") < 0;
+			});
+			
+			if (invalidQuery.length > 0) {
+				response.status(500).json({error: "Invalid query terms: " + invalidQuery.join(", ")});
+				return;
+			}
+		}
+		
+		var filter = {};
+		
+		if (request.query.divisionid) {
+			filter["division.id"] = request.query.divisionid;
+		}
+		if (request.query.id) {
+			filter._id = request.query.id;
+		}
+		if (request.query.name) {
+			filter["name"] = { $regex: new RegExp(request.query.name, "i") };
+		}
+		if (request.query.category) {
+			filter["category"] = { $regex: new RegExp(request.query.category, "i") };
+		}
+		
+		data.play.find(filter)
+			.exec()
+			.then((playsDb) => {
+				var plays = playsDb.map((playDb) => {
+					return {
+						id: playDb._id,
+						division: playDb.division ? {
+							id: playDb.division.id,
+							name: playDb.division.name,
+							year: playDb.division.year,
+							season: playDb.division.season
+						}: null,
+						category: playDb.category,
+						name: playDb.name,
+						scrimageLine: playDb.scrimageLine,
+						players: playDb.players.map((player) => {
+							return {
+								type: player.positionType,
+								location: player.location,
+								route: player.route
+							};
+						})
+					};
+				});
+				
+				response.status(200).json({plays: plays});
+			})
+			.catch((error) => {
+				response.status(500).json({error: error.message});
+			});
+		
+	});
+	
+	app.post("/data/play", (request, response) => {
+		if (!request.body.play || !request.body.play.division || !request.body.play.players || !request.body.play.name) {
+			response.status(500).json({ error: "Invalid save request"});
+		}
+		
+		var playSave = request.body.play;
+		
+		if (playSave.id) {
+			data.play.findById(playSave.id)
+				.exec()
+				.then((playDb) => {
+					if (!playDb) {
+						throw new Error("Play can't be found");
+					}
+					
+					playDb.division = playSave.division ? {
+						id: playSave.division.id ? playSave.division.id : playDb.division.id,
+						name: playSave.division.name ? playSave.division.name : playDb.division.name,
+						year: playSave.division.year ? playSave.division.year : playDb.division.year,
+						season: playSave.division.season ? playSave.division.season : playDb.division.season
+					} : playSave.division;
+					playDb.category = playSave.category ? playSave.category : playDb.category;
+					playDb.name = playSave.name ? playSave.name : playDb.name;
+					playDb.scrimageLine = playSave.scrimageLine ? playSave.scrimageLine : playDb.scrimageLine;
+					playDb.players = playSave.players ? playSave.players.map((player) => {
+						return {
+							positionType: player.type,
+							location: player.location ? {x: player.location.x, y: player.location.y} : null,
+							route: player.route ? player.route.map((route) => { return { x: route.x, y: route.y }; }) : null
+						};
+					}) : playDb.players;
+					
+					return playDb.save();
+				})
+				.then((playDb) => {
+					response.status(200).json({ playId: playDb._id });
+				})
+				.catch((error) => {
+					response.status(500).json({ error: error.message });
+				});
+		}
+		else {
+			
+			new data.play({
+				division: playSave.division ? {
+					id: playSave.division.id,
+					name: playSave.division.name,
+					year: playSave.division.year,
+					season: playSave.division.season
+				} : null,
+				category: playSave.category,
+				name: playSave.name,
+				scrimageLine: playSave.scrimageLine,
+				players: playSave.players ? playSave.players.map((player) => {
+					return {
+						positionType: player.type,
+						location: player.location ? {x: player.location.x, y: player.location.y} : null,
+						route: player.route ? player.route.map((route) => { return { x: route.x, y: route.y }; }) : null
+					};
+				}) : null
+			})
+			.save()
+			.then((playDb) => {
+				response.status(200).json({ playId: playDb._id });
+			})
+			.catch((error) => {
+				response.status(500).json({ error: error.message });
+			});
+			
+		}
+	});
+	
+	app.delete("/data/play", (request, response) => {
+		if (!request.query.id) {
+			response.status(500).json({error: "Invalid delete request"});
+		}
+		
+		var filter = { _id: request.query.id };
+		
+		data.play.deleteOne(filter)
+			.then(() => {
+				response.status(200).json({status: "ok"});
+			})
+			.catch((error) => {
+				response.status(500).json({error: error.message});
+			});
+	});
+	
 };

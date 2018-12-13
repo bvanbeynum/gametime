@@ -1,7 +1,7 @@
 /* global angular */
 /* global d3 */
 
-var teamApp = angular.module("teamApp", ["ngMaterial", "ngRoute"]);
+var teamApp = angular.module("teamApp", ["ngMaterial", "ngRoute", "ngMessages"]);
 
 var log = {};
 
@@ -22,6 +22,14 @@ teamApp.config(function($mdThemingProvider, $routeProvider, $locationProvider) {
 	.when("/game", {
 		templateUrl: "/team/game.html",
 		controller: "gameCtl"
+	})
+	.when("/playbook", {
+		templateUrl: "/team/playbook.html",
+		controller: "playbookCtl"
+	})
+	.when("/playmaker", {
+		templateUrl: "/team/playmaker.html",
+		controller: "playCtl"
 	})
 	.otherwise({
 		templateUrl: "/team/division.html",
@@ -359,6 +367,153 @@ teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $md
 	$http({url: "/data/player?division=10U&teamname=" + $rootScope.selectedGame.homeTeam.name}).then(httpSuccess, httpError);
 });
 
+teamApp.controller("playbookCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
+	if (!$rootScope.managedTeam) {
+		$location.path("/");
+		return;
+	}
+	
+	$rootScope.selectedPlay = null;
+	$scope.isLoading = true;
+	log.playBook = $scope;
+	
+	$http({url: "/data/play?divisionid=" + $rootScope.managedTeam.teamDivision.id}).then(function (response) {
+		$scope.plays = response.data.plays;
+		$scope.isLoading = false;
+	}, function (error) {
+		$mdToast.show(
+			$mdToast.simple()
+				.textContent("There was an error loading")
+				.position("bottom left")
+				.hideDelay(3000)
+		);
+		
+		console.log(error);
+		$location.path("/standings");
+	});
+	
+	$scope.openPlay = function (play) {
+		if (play) {
+			$rootScope.selectedPlay = play;
+		}
+		else {
+			$rootScope.selectedPlay = {
+				division: {
+					id: $rootScope.managedTeam.teamDivision.id,
+					name: $rootScope.managedTeam.teamDivision.name,
+					year: $rootScope.managedTeam.teamDivision.year,
+					season: $rootScope.managedTeam.teamDivision.season,
+				},
+				players: []
+			};
+		}
+		
+		$location.path("/playmaker");
+	};
+});
+
+teamApp.controller("playCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
+	if (!$rootScope.managedTeam) {
+		$location.path("/");
+		return;
+	}
+	else if (!$rootScope.selectedPlay) {
+		$location.path("/playbook");
+		return;
+	}
+	
+	log.playMaker = $scope;
+	$scope.playData = $rootScope.selectedPlay;
+	
+	$scope.addMenu = function (menu, event) {
+		menu.open(event);
+	};
+	
+	$scope.modeMenu = function (menu, event) {
+		menu.open(event);
+	};
+	
+	$scope.addPlayer = function (playerType) {
+		$scope.playData.players.push({ type: playerType });
+		$scope.controller.refresh();
+	};
+	
+	$scope.changeMode = function (newMode) {
+		$scope.controller.lineMode = newMode;
+	};
+	
+	$scope.save = function () {
+		if (!$scope.playForm.$invalid) {
+			$scope.isLoading = true;
+			
+			var savePlay = {
+				id: $scope.playData.id,
+				division: $scope.playData.division,
+				name: $scope.playData.name,
+				scrimageLine: $scope.playData.scrimageLine,
+				players: $scope.playData.players.map(function (player) {
+					return {
+						type: player.type,
+						location: player.location,
+						route: player.route
+					};
+				})
+			};
+			
+			$http({url: "/data/play", method: "POST", data: { play: savePlay }}).then(
+				function (response) {
+					$rootScope.selectedPlay = null;
+					$location.path("/playbook");
+				}, function (error) {
+					$scope.isLoading = false;
+					
+					console.log(error);
+					
+					$mdToast.show(
+						$mdToast.simple()
+							.textContent("There was an error saving the play")
+							.position("bottom left")
+							.hideDelay(3000)
+					);
+				});
+		}
+		else {
+			$mdToast.show(
+				$mdToast.simple()
+					.textContent("Must enter a name for the play")
+					.position("bottom left")
+					.hideDelay(3000)
+			);
+		}
+	};
+	
+	$scope.cancel = function () {
+		$rootScope.selectedPlay = null;
+		$location.path("/playbook");
+	};
+	
+	$scope.delete = function () {
+		$scope.isLoading = true;
+		
+		$http({url: "/data/play?id=" + $scope.playData.id, method: "DELETE"}).then(
+			function (response) {
+				$rootScope.selectedPlay = null;
+				$location.path("/playbook");
+			}, function (error) {
+				$scope.isLoading = false;
+				console.log(error);
+				
+				$mdToast.show(
+					$mdToast.simple()
+						.textContent("There was an error deleting the play")
+						.position("bottom left")
+						.hideDelay(3000)
+				);
+			});
+	};
+	
+});
+
 teamApp.controller("teamController", function ($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
 	log = {root: $rootScope, team: $scope};
 	log.http = $http;
@@ -382,7 +537,23 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 				$location.path("/standings");
 			}
 			break;
+		
+		case "/playbook":
+			$location.path("/standings");
+			break;
+		
+		case "/playmaker":
+			$location.path("/playbook");
+			break;
 		}
+	};
+	
+	$scope.openMenu = function ($mdMenu, event) {
+		$mdMenu.open(event);
+	};
+	
+	$scope.openPlaybook = function () {
+		$location.path("/playbook");
 	};
 	
 });

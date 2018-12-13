@@ -1,0 +1,69 @@
+@media (max-device-width: 820px) {
+	.playContainer {
+		width: 95%;
+	}
+}
+
+.playContainer {
+	margin: 25px 10px;
+	max-width: 800px;
+}
+
+.playPage .scrimage {
+	stroke: none;
+	fill: rgb(255,255,0);
+}
+
+.playPage .player {
+	stroke: rgb(220,220,220);
+	stroke-width: 2px;
+	fill: black;
+	fill-opacity: .01;
+}
+
+.playPage .playerSelected {
+	stroke: rgb(255, 238, 88);
+}
+
+.playPage .playerDefense rect {
+	stroke: none;
+}
+
+.playPage .playerPath {
+	stroke: rgb(220,220,220);
+	stroke-width: 4px;
+	stroke-linecap: round;
+	fill: none;
+}
+
+.playPage .snapguide {
+	stroke: rgb(255, 0, 0);
+	stroke-width: 0.5px;
+}
+
+.playPage .modeButton {
+	text-transform: capitalize;
+}
+
+.lineSelected {
+	background-color: rgb(180,180,180);
+	border-radius: 0px;
+}
+
+.playPage .editorMenu {
+	background-color: rgb(220,220,220);
+	border-left: 2px solid rgb(150,150,150);
+	border-right: 2px solid rgb(150,150,150);
+	border-bottom: 2px solid rgb(150,150,150);
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	max-width: 800px;
+}
+
+.playPage .editorMenu button {
+	min-width: inherit;
+}
+
+.playPage .actions {
+	margin: 20px 0px;
+}
