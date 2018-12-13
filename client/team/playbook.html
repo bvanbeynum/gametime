@@ -8,7 +8,7 @@
 </div>
 
 <div ng-show="!isLoading" class="playbookPage" layout="column" layout-align="center">
-	<div layout="row" layout-wrap="true" layout-align="space-around">
+	<div layout="row" layout-wrap="true" layout-align="space-around" layout-align-gt-xs="start">
 		<div class="playTile" ng-click="openPlay()" md-whiteframe="1">New Play</div>
 		
 		<div class="playTile" ng-repeat="play in plays | orderBy: 'name'" ng-click="openPlay(play)" md-whiteframe="1">{{play.name}}</div>

@@ -492,24 +492,43 @@ teamApp.controller("playCtl", function($rootScope, $scope, $http, $location, $md
 		$location.path("/playbook");
 	};
 	
-	$scope.delete = function () {
-		$scope.isLoading = true;
+	$scope.delete = function (event) {
 		
-		$http({url: "/data/play?id=" + $scope.playData.id, method: "DELETE"}).then(
-			function (response) {
-				$rootScope.selectedPlay = null;
-				$location.path("/playbook");
-			}, function (error) {
-				$scope.isLoading = false;
-				console.log(error);
-				
-				$mdToast.show(
-					$mdToast.simple()
-						.textContent("There was an error deleting the play")
-						.position("bottom left")
-						.hideDelay(3000)
-				);
-			});
+		$mdDialog.show($mdDialog.confirm()
+			.title("Confirm Delete")
+			.textContent("Are you sure you want to delete the play?")
+			.ariaLabel("Confirm Delete")
+			.targetEvent(event)
+			.ok("Delete")
+			.cancel("Cancel")
+		)
+		.then(function () {
+			$scope.isLoading = true;
+			
+			$http({url: "/data/play?id=" + $scope.playData.id, method: "DELETE"}).then(
+				function (response) {
+					
+					$scope.isLoading = false;
+					$rootScope.selectedPlay = null;
+					$location.path("/playbook");
+					
+				}, function (error) {
+					
+					$scope.isLoading = false;
+					console.log(error);
+					
+					$mdToast.show(
+						$mdToast.simple()
+							.textContent("There was an error deleting the play")
+							.position("bottom left")
+							.hideDelay(3000)
+					);
+					
+				});
+		}, function () {
+			// Cancel
+		});
+		
 	};
 	
 });
