@@ -262,7 +262,7 @@ teamApp.directive("playmaker", function ($interval) {
 											// Select the player
 											var playerBox = d3.selectAll(".player.playerSelected");
 											if (!playerBox.empty()) {
-												playerBox.attr("transform", "translate(" + scope.converter.x(player.location.x) + "," + scope.converter.y(player.location.y) + ") scale(2)");
+												playerBox.attr("transform", "translate(" + scope.converter.x(player.location.x) + "," + scope.converter.y(player.location.y) + ") scale(4)");
 											}
 										}
 									}
@@ -304,7 +304,7 @@ teamApp.directive("playmaker", function ($interval) {
 										player.location.y = newY;
 										
 										d3.select(this)
-											.attr("transform", "translate(" + scope.converter.x(player.location.x) + "," + scope.converter.y(player.location.y) + ") scale(2)");
+											.attr("transform", "translate(" + scope.converter.x(player.location.x) + "," + scope.converter.y(player.location.y) + ") scale(4)");
 									}
 									else if (scope.controller.lineMode == "curved") {
 										if (player.newPath) {
