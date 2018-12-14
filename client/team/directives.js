@@ -2,6 +2,46 @@
 /* global teamApp */
 
 teamApp.directive("playmaker", function ($interval) {
+	
+	function getArrow(player) {
+		var prevPoint = player.route.length - 1,
+			distance = 0;
+		while (distance < 25 && prevPoint > 0) {
+			prevPoint -= 1;
+			distance = Math.abs(player.route[player.route.length - 1].x - player.route[prevPoint].x) + Math.abs(player.route[player.route.length - 1].y - player.route[prevPoint].y);
+		}
+		
+		// Get the angle based on where the point was 4 points ago and the last point
+		var px = player.route[prevPoint].x,
+			py = player.route[prevPoint].y,
+			cx = player.route[player.route.length - 1].x,
+			cy = player.route[player.route.length - 1].y;
+		
+		// Get the difference between the points
+		var dx = px - cx, 
+			dy = py - cy;
+		
+		// Get the angle by using the atan (have to convert from radians to degrees)
+		var theta = Math.atan2(dy, dx) * (180 / Math.PI);
+		
+		// Set 1 angle 35 degrees away from the calculated angle
+		var angle1 = theta + 35, 
+			angle2 = theta - 35, 
+			radius = 10;
+		
+		// Get the end point for each angle using cos for the X and sin for the Y
+		var handle1X = cx + radius * Math.cos(angle1 * (Math.PI / 180)),
+			handle1Y = cy + radius * Math.sin(angle1 * (Math.PI / 180)),
+			handle2X = cx + radius * Math.cos(angle2 * (Math.PI / 180)),
+			handle2Y = cy + radius * Math.sin(angle2 * (Math.PI / 180));
+		
+		return {
+			start: { x: cx, y: cy },
+			handle1: { x: handle1X, y: handle1Y },
+			handle2: { x: handle2X, y: handle2Y }
+		};
+	}
+	
 	return {
 		restrict: "E",
 		scope: {
@@ -21,14 +61,20 @@ teamApp.directive("playmaker", function ($interval) {
 				outer.width = element[0].offsetWidth > 800 ? 800 : element[0].offsetWidth;
 				outer.height = element[0].offsetWidth > 800 ? 533 : (element[0].offsetWidth * 2) / 3;
 				
+				// outer.width = 800;
+				// outer.height = 533;
+				
 				scope.converter.x.range([0, outer.width]);
 				scope.converter.x.domain([0, 500]);
+				// scope.converter.x.domain([0, outer.width]);
 				
 				scope.converter.y.range([0, outer.height]);
 				scope.converter.y.domain([0, 333]);
+				// scope.converter.y.domain([0, outer.height]);
 				
 				scope.objects.svg = d3.select(element[0])
 					.append("svg")
+					.attr("preserveAspectRatio", "none")
 					.attr("width", outer.width)
 					.attr("height", outer.height)
 					.on("click", function () {
@@ -39,7 +85,7 @@ teamApp.directive("playmaker", function ($interval) {
 								player.route = [{ x: Math.floor(player.location.x), y: Math.floor(player.location.y) }];
 							}
 							
-							var snapWidth = 15,
+							var snapWidth = 20,
 								newX = Math.floor(scope.converter.x.invert(d3.event.offsetX)),
 								newY = Math.floor(scope.converter.y.invert(d3.event.offsetY));
 							
@@ -135,6 +181,8 @@ teamApp.directive("playmaker", function ($interval) {
 						.attr("transform", function (player) { return "translate(" + scope.converter.x(player.location.x) + "," + scope.converter.y(player.location.y) + ")" })
 						.attr("class", function (player) { return player.type == "offense" ? "player playerOffense" : "player playerDefense" })
 						.on("click", function (player) {
+							var routeBox, arrow;
+							
 							if (player.selected) {
 								scope.playdata.players.forEach(function (player) { player.selected = false; });
 								
@@ -143,54 +191,44 @@ teamApp.directive("playmaker", function ($interval) {
 								
 								// Draw the arrows - exclude short lines
 								if (player.route && player.route.length > 0) {
-									var routeBox = d3.select("g[start = '" + player.location.x + "," + player.location.y + "']");
-									
-									var prevPoint = player.route.length - 1,
-										distance = 0;
-									while (distance < 25 && prevPoint > 0) {
-										prevPoint -= 1;
-										distance = Math.abs(player.route[player.route.length - 1].x - player.route[prevPoint].x) + Math.abs(player.route[player.route.length - 1].y - player.route[prevPoint].y);
-									}
-									
-									// Get the angle based on where the point was 4 points ago and the last point
-									var px = player.route[prevPoint].x,
-										py = player.route[prevPoint].y,
-										cx = player.route[player.route.length - 1].x,
-										cy = player.route[player.route.length - 1].y;
-									
-									// Get the difference between the points
-									var dx = px - cx, 
-										dy = py - cy;
-									
-									// Get the angle by using the atan (have to convert from radians to degrees)
-									var theta = Math.atan2(dy, dx) * (180 / Math.PI);
-									
-									// Set 1 angle 35 degrees away from the calculated angle
-									var angle1 = theta + 35, 
-										angle2 = theta - 35, 
-										radius = 10;
-									
-									// Get the end point for each angle using cos for the X and sin for the Y
-									var handle1X = cx + radius * Math.cos(angle1 * (Math.PI / 180)),
-										handle1Y = cy + radius * Math.sin(angle1 * (Math.PI / 180)),
-										handle2X = cx + radius * Math.cos(angle2 * (Math.PI / 180)),
-										handle2Y = cy + radius * Math.sin(angle2 * (Math.PI / 180));
-									
+									routeBox = d3.select("g[start = '" + player.location.x + "," + player.location.y + "']");
+									arrow = getArrow(player);
+										
 									// Add the 2 handles
 									routeBox.append("path")
 										.attr("class", "playerPath")
-										.attr("d", "M " + scope.converter.x(cx) + "," + scope.converter.y(cy) + " " + scope.converter.x(handle1X) + "," + scope.converter.y(handle1Y));
+										.attr("d", "M " + scope.converter.x(arrow.start.x) + "," + scope.converter.y(arrow.start.y) + " " + scope.converter.x(arrow.handle1.x) + "," + scope.converter.y(arrow.handle1.y));
 									routeBox.append("path")
 										.attr("class", "playerPath")
-										.attr("d", "M " + scope.converter.x(cx) + "," + scope.converter.y(cy) + " " + scope.converter.x(handle2X) + "," + scope.converter.y(handle2Y));
+										.attr("d", "M " + scope.converter.x(arrow.start.x) + "," + scope.converter.y(arrow.start.y) + " " + scope.converter.x(arrow.handle2.x) + "," + scope.converter.y(arrow.handle2.y));
 								}
 								
 							}
 							else {
 								// Unselect all players
-								scope.playdata.players.forEach(function (player) { player.selected = false; });
-								d3.selectAll(".player")
-									.attr("class", function (player) { return player.type == "offense" ? "player playerOffense" : "player playerDefense" });
+								var selectedPlayer = scope.playdata.players.find(function (player) { return player.selected; });
+								
+								if (selectedPlayer) {
+									selectedPlayer.selected = false;
+									
+									// Remove the highlight
+									d3.selectAll(".player")
+										.attr("class", function (player) { return player.type == "offense" ? "player playerOffense" : "player playerDefense" });
+									
+									// Add arrows
+									routeBox = d3.selectAll("g[start = '" + selectedPlayer.location.x + "," + selectedPlayer.location.y + "']");
+									if (player.route && player.route.length > 0 && routeBox.selectAll("path").size() == 1) {
+										arrow = getArrow(selectedPlayer);
+										
+										routeBox.append("path")
+											.attr("class", "playerPath")
+											.attr("d", "M " + scope.converter.x(arrow.start.x) + "," + scope.converter.y(arrow.start.y) + " " + scope.converter.x(arrow.handle1.x) + "," + scope.converter.y(arrow.handle1.y));
+										
+										routeBox.append("path")
+											.attr("class", "playerPath")
+											.attr("d", "M " + scope.converter.x(arrow.start.x) + "," + scope.converter.y(arrow.start.y) + " " + scope.converter.x(arrow.handle2.x) + "," + scope.converter.y(arrow.handle2.y));
+									}
+								}
 								
 								// Select only selected player
 								player.selected = true;
@@ -212,13 +250,21 @@ teamApp.directive("playmaker", function ($interval) {
 							.on("start", function (player) {
 								if (player.selected) {
 									if (scope.controller.lineMode == "move") {
-										
-										// Fitler for and remove the path for the player
-										if (player.route) {
-											d3.select("g[start = '" + player.location.x + "," + player.location.y + "']")
-												.remove();
+										if (!player.dragging) {
+											player.dragging = true;
+											
+											// Fitler for and remove the path for the player
+											if (player.route) {
+												d3.select("g[start = '" + player.location.x + "," + player.location.y + "']")
+													.remove();
+											}
+											
+											// Select the player
+											var playerBox = d3.selectAll(".player.playerSelected");
+											if (!playerBox.empty()) {
+												playerBox.attr("transform", "translate(" + scope.converter.x(player.location.x) + "," + scope.converter.y(player.location.y) + ") scale(2)");
+											}
 										}
-										
 									}
 									else if (scope.controller.lineMode == "curved") {
 										player.newPath = true;
@@ -229,7 +275,7 @@ teamApp.directive("playmaker", function ($interval) {
 								if (player.selected) {
 									
 									if (scope.controller.lineMode == "move") {
-										var snapWidth = 18,
+										var snapWidth = 25,
 											newX = Math.floor(scope.converter.x.invert(d3.event.x)),
 											newY = Math.floor(scope.converter.y.invert(d3.event.y));
 										
@@ -258,7 +304,7 @@ teamApp.directive("playmaker", function ($interval) {
 										player.location.y = newY;
 										
 										d3.select(this)
-											.attr("transform", "translate(" + scope.converter.x(player.location.x) + "," + scope.converter.y(player.location.y) + ")");
+											.attr("transform", "translate(" + scope.converter.x(player.location.x) + "," + scope.converter.y(player.location.y) + ") scale(2)");
 									}
 									else if (scope.controller.lineMode == "curved") {
 										if (player.newPath) {
@@ -290,6 +336,17 @@ teamApp.directive("playmaker", function ($interval) {
 								}
 							})
 							.on("end", function (player) {
+								if (scope.controller.lineMode == "move") {
+									if (player.dragging) {
+										player.dragging = false;
+										
+										// Select the player
+										var playerBox = d3.selectAll(".player.playerSelected");
+										if (!playerBox.empty()) {
+											playerBox.attr("transform", "translate(" + scope.converter.x(player.location.x) + "," + scope.converter.y(player.location.y) + ")");
+										}
+									}
+								}
 							})
 							
 						);
@@ -331,71 +388,19 @@ teamApp.directive("playmaker", function ($interval) {
 					// Add first arrow
 					newRoutes.append("path")
 						.attr("d", function (player) {
-							var prevPoint = player.route.length - 1,
-								distance = 0;
-							while (distance < 25 && prevPoint > 0) {
-								prevPoint -= 1;
-								distance = Math.abs(player.route[player.route.length - 1].x - player.route[prevPoint].x) + Math.abs(player.route[player.route.length - 1].y - player.route[prevPoint].y);
-							}
-							
-							// Get the angle based on where the point was 4 points ago and the last point
-							var px = player.route[prevPoint].x,
-								py = player.route[prevPoint].y,
-								cx = player.route[player.route.length - 1].x,
-								cy = player.route[player.route.length - 1].y;
-							
-							// Get the difference between the points
-							var dx = px - cx, 
-								dy = py - cy;
-							
-							// Get the angle by using the atan (have to convert from radians to degrees)
-							var theta = Math.atan2(dy, dx) * (180 / Math.PI);
-							
-							// Set 1 angle 35 degrees away from the calculated angle
-							var angle1 = theta + 35, 
-								radius = 10;
-							
-							// Get the end point for each angle using cos for the X and sin for the Y
-							var handle1X = cx + radius * Math.cos(angle1 * (Math.PI / 180)),
-								handle1Y = cy + radius * Math.sin(angle1 * (Math.PI / 180));
+							var arrow = getArrow(player);
 							
 							// return the handle
-							return "M " + scope.converter.x(cx) + "," + scope.converter.y(cy) + " " + scope.converter.x(handle1X) + "," + scope.converter.y(handle1Y);
+							return "M " + scope.converter.x(arrow.start.x) + "," + scope.converter.y(arrow.start.y) + " " + scope.converter.x(arrow.handle1.x) + "," + scope.converter.y(arrow.handle1.y);
 						});
 					
 					// Add second arrow
 					newRoutes.append("path")
 						.attr("d", function (player) {
-							var prevPoint = player.route.length - 1,
-								distance = 0;
-							while (distance < 25 && prevPoint > 0) {
-								prevPoint -= 1;
-								distance = Math.abs(player.route[player.route.length - 1].x - player.route[prevPoint].x) + Math.abs(player.route[player.route.length - 1].y - player.route[prevPoint].y);
-							}
-							
-							// Get the angle based on where the point was 4 points ago and the last point
-							var px = player.route[prevPoint].x,
-								py = player.route[prevPoint].y,
-								cx = player.route[player.route.length - 1].x,
-								cy = player.route[player.route.length - 1].y;
-							
-							// Get the difference between the points
-							var dx = px - cx, 
-								dy = py - cy;
-							
-							// Get the angle by using the atan (have to convert from radians to degrees)
-							var theta = Math.atan2(dy, dx) * (180 / Math.PI);
-							
-							// Set 1 angle 35 degrees away from the calculated angle
-							var angle2 = theta - 35, 
-								radius = 10;
-							
-							// Get the end point for each angle using cos for the X and sin for the Y
-							var handle2X = cx + radius * Math.cos(angle2 * (Math.PI / 180)),
-								handle2Y = cy + radius * Math.sin(angle2 * (Math.PI / 180));
+							var arrow = getArrow(player);
 							
 							// return the handle
-							return "M " + scope.converter.x(cx) + "," + scope.converter.y(cy) + " " + scope.converter.x(handle2X) + "," + scope.converter.y(handle2Y);
+							return "M " + scope.converter.x(arrow.start.x) + "," + scope.converter.y(arrow.start.y) + " " + scope.converter.x(arrow.handle2.x) + "," + scope.converter.y(arrow.handle2.y);
 						});
 				};
 				
