@@ -725,7 +725,7 @@ function teamManageCtl(team, allTeams, $scope, $mdDialog, $mdToast) {
 	$scope.team = team;
 	
 	$scope.close = function () {
-		var dupTeams = allTeams.filter(function (allTeam) { return allTeam.id != $scope.team.id && allTeam.draftRound == $scope.team.draftRound });
+		var dupTeams = allTeams.filter(function (allTeam) { return allTeam.id != $scope.team.id && $scope.team.draftRound && allTeam.draftRound == $scope.team.draftRound });
 		
 		if ($scope.team.name.length == 0) {
 			$scope.errorMessage = "You must enter a team name";
