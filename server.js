@@ -31,6 +31,7 @@ app.use(cookieParser());
 
 require("./server/data")(app);
 require("./server/film")(app);
+require("./server/draft")(app);
 require("./server/emailer")(app);
 require("./server/team")(app);
 require("./server/static")(app);

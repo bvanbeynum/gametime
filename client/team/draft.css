@@ -1,0 +1,89 @@
+.draftPage a {
+	color: blue;
+}
+
+.draftPage a:focus {
+	outline: none;
+}
+
+.draftPageTable {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.draftPageTable th {
+	border-bottom: solid 1px rgb(224, 224, 224);
+	font-weight: normal;
+}
+
+.draftPageTable th, .draftPageTable td {
+	padding: 8px 5px;
+}
+
+.draftPageTable td {
+	font-size: 0.85em;
+	text-align: center;
+}
+
+.draftPageTable md-input-container {
+	margin: 0;
+}
+
+.draftPageTable .md-errors-spacer {
+	min-height: 0px;
+}
+
+.draftPageDraftTable th:nth-child(-n+4) {
+	width: 50px;
+}
+
+.draftPageDraftTable th:last-child {
+	min-width: 150px;
+}
+
+.draftPageDraftTable input {
+	width: 50px;
+}
+
+.draftPagePlayerTable td:nth-child(6) {
+	color: rgb(150,150,150);
+	text-align: left;
+	font-size: 0.65em;
+}
+
+.draftPagePlayerTable td:nth-child(5) {
+	text-align: left;
+}
+
+.draftProtected {
+	color: rgb(150,150,150);
+}
+
+.draftPicked {
+	text-decoration: line-through;
+	color: rgb(150,150,150);
+}
+
+.draftAvailable {
+	color: rgb(0, 125, 0);
+}
+
+.draftPagePlayerTable .draftSorted {
+	font-weight: bold;
+}
+
+.draftPageAdd {
+	float: right;
+}
+
+.draftPickName {
+	text-align: center;
+}
+
+.draftIsSelected {
+	color: red;
+}
+
+.draftAlternate {
+	background-color: rgb(225,225,225);
+}

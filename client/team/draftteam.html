@@ -1,0 +1,121 @@
+<md-dialog aria-label="Team" flex-xs="75" flex="40" flex-gt-md="20">
+	<md-dialog-content>
+		
+		<md-toolbar>
+			<div class="md-toolbar-tools" layout="row">
+				<h2 flex="grow">{{editType}} Team</h2>
+				
+				<md-button class="md-icon-button" aria-label="Save" ng-click="close()" ng-disabled="isLoading">
+					<md-icon>
+						<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M0 0h24v24H0z" fill="none"/>
+							<path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+						</svg>
+					</md-icon>
+				</md-button>
+				
+			</div>
+		</md-toolbar>
+		
+		<div class="panelError" ng-show="errorMessage && errorMessage.length > 0">
+			{{errorMessage}}
+		</div>
+		
+		<md-list>
+			<md-list-item layout="row" layout-align="start center">
+				<md-input-container flex>
+					<label>Coach</label>
+					<input ng-model="team.coach">
+				</md-input-container>
+			</md-list-item>
+			
+			<md-list-item layout="row" layout-align="start center">
+				<md-input-container flex required>
+					<label>Name</label>
+					<input ng-model="team.name">
+				</md-input-container>
+			</md-list-item>
+			
+			<md-list-item layout="row" layout-align="start center">
+				<md-input-container flex>
+					<label>Round</label>
+					<input ng-model="team.draftRound" type="number">
+				</md-input-container>
+			</md-list-item>
+			
+			<md-list-item layout="row" layout-align="start center">
+				<md-input-container flex>
+					<label>Day</label>
+					<md-select ng-model="team.practiceDay">
+						<md-option ng-value="">Select</md-option>
+						<md-option ng-value="'Monday'">Monday</md-option>
+						<md-option ng-value="'Tuesday'">Tuesday</md-option>
+						<md-option ng-value="'Wednesday'">Wednesday</md-option>
+						<md-option ng-value="'Thursday'">Thursday</md-option>
+						<md-option ng-value="'Friday'">Friday</md-option>
+					</md-select>
+				</md-input-container>
+			</md-list-item>
+			
+			<md-list-item layout="row" layout-align="start center">
+				<md-input-container flex>
+					<label>Time</label>
+					<md-select ng-model="team.practiceTime">
+						<md-option ng-value="">Select</md-option>
+						<md-option ng-value="'5:30'">5:30</md-option>
+						<md-option ng-value="'6:30'">6:30</md-option>
+					</md-select>
+				</md-input-container>
+			</md-list-item>
+			
+			<md-list-item layout="row" layout-align="start center">
+				<md-input-container flex>
+					<label>Location</label>
+					<md-select ng-model="team.practiceLocation">
+						<md-option ng-value="">Select</md-option>
+						<md-option ng-value="'Lookout'">Lookout</md-option>
+						<md-option ng-value="'Turner'">Turner</md-option>
+						<md-option ng-value="'Archery'">Archery</md-option>
+						<md-option ng-value="'Elementary'">Elementary</md-option>
+						<md-option ng-value="'Middle'">Middle</md-option>
+						<md-option ng-value="'Middle'">Other</md-option>
+					</md-select>
+				</md-input-container>
+			</md-list-item>
+			
+			<md-list-item layout="row" layout-align="start center">
+				<md-input-container flex>
+					<label>Weekend</label>
+					<md-select ng-model="team.practiceWeekend">
+						<md-option ng-value="">Select</md-option>
+						<md-option ng-value="'8:00'">8:00</md-option>
+						<md-option ng-value="'8:30'">8:30</md-option>
+						<md-option ng-value="'9:00'">9:00</md-option>
+						<md-option ng-value="'9:30'">9:30</md-option>
+						<md-option ng-value="'10:00'">10:00</md-option>
+						<md-option ng-value="'10:30'">10:30</md-option>
+						<md-option ng-value="'11:00'">11:00</md-option>
+						<md-option ng-value="'11:30'">11:30</md-option>
+						<md-option ng-value="'12:00'">12:00</md-option>
+						<md-option ng-value="'12:30'">12:30</md-option>
+						<md-option ng-value="'1:00'">1:00</md-option>
+						<md-option ng-value="'1:30'">1:30</md-option>
+						<md-option ng-value="'2:00'">2:00</md-option>
+						<md-option ng-value="'2:30'">2:30</md-option>
+						<md-option ng-value="'3:00'">3:00</md-option>
+						<md-option ng-value="'3:30'">3:30</md-option>
+						<md-option ng-value="'4:00'">4:00</md-option>
+						<md-option ng-value="'4:30'">4:30</md-option>
+						<md-option ng-value="'5:00'">5:00</md-option>
+						<md-option ng-value="'5:30'">5:30</md-option>
+						<md-option ng-value="'6:00'">6:00</md-option>
+						<md-option ng-value="'6:30'">6:30</md-option>
+						<md-option ng-value="'Other'">Other</md-option>
+					</md-select>
+				</md-input-container>
+			</md-list-item>
+			
+		</md-list>
+		
+	</md-dialog-content>
+</md-dialog>

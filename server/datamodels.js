@@ -30,11 +30,15 @@ module.exports = {
 		division: String,
 		confrence: String,
 		coach: String,
-		isManaged: Boolean
+		isManaged: Boolean,
+		draftRound: Number,
+		practiceDay: String,
+		practiceTime: String,
+		practiceLocation: String,
+		practiceWeekend: String
 	}),
 	
 	player: mongoose.model("player", {
-		draftNumber: Number,
 		playerDivision: {
 			id: String,
 			name: String,
@@ -48,6 +52,10 @@ module.exports = {
 		},
 		draftRound: Number,
 		draftRank: Number,
+		brettRank: Number,
+		draftNumber: Number,
+		draftPick: Number,
+
 		firstName: String,
 		lastName: String,
 		dateOfBirth: Date,
@@ -55,9 +63,11 @@ module.exports = {
 		parentEmail: String,
 		Phone: String,
 		shirtSize: String,
+
 		requests: String,
 		coachRequest: String,
 		coachProtect: String,
+
 		recThrowing: Number,
 		recCatching: Number,
 		throwing: Number,

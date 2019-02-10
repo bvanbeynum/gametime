@@ -1,0 +1,38 @@
+<md-dialog aria-label="Team" flex-xs="75" flex="40" flex-gt-md="20">
+	<md-dialog-content>
+		
+		<md-toolbar>
+			<div class="md-toolbar-tools" layout="row">
+				<h2 flex="grow">Select Pick</h2>
+				
+				<md-button class="md-icon-button" aria-label="Save" ng-click="close()" ng-disabled="isLoading">
+					<md-icon>
+						<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M0 0h24v24H0z" fill="none"/>
+							<path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+						</svg>
+					</md-icon>
+				</md-button>
+				
+			</div>
+		</md-toolbar>
+		
+		<div class="panelError" ng-show="errorMessage && errorMessage.length > 0">
+			{{errorMessage}}
+		</div>
+		
+		<md-list>
+			<div class="md-padding draftPickName" ng-class="{'draftIsSelected': isSelected}">
+				{{ playerName.length > 0 ? playerName : "-" }}
+			</div>
+			
+			<md-list-item layout="row" layout-align="start center">
+				<md-input-container flex>
+					<label>Player</label>
+					<input ng-model="playerNumber" type="number" aria-label="Player Number" ng-change="pickChange()">
+				</md-input-container>
+			</md-list-item>
+		</md-list>
+		
+	</md-dialog-content>
+</md-dialog>

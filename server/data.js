@@ -155,10 +155,14 @@ module.exports = function (app) {
 							season: playerDb.playerDivision.season
 						}: null,
 						division: playerDb.division,
-						draftNumber: playerDb.draftNumber,
 						team: (playerDb.team) ? { id: playerDb.team.id, name: playerDb.team.name } : null,
+						
+						draftNumber: playerDb.draftNumber,
 						draftRound: playerDb.draftRound,
 						draftRank: playerDb.draftRank,
+						brettRank: playerDb.brettRank,
+						draftPick: playerDb.draftPick,
+						
 						firstName: playerDb.firstName,
 						lastName: playerDb.lastName,
 						dateOfBirth: playerDb.dateOfBirth,
@@ -166,9 +170,11 @@ module.exports = function (app) {
 						parentEmail: playerDb.parentEmail,
 						Phone: playerDb.Phone,
 						shirtSize: playerDb.shirtSize,
+						
 						requests: playerDb.requests,
 						coachRequest: playerDb.coachRequest,
 						coachProtect: playerDb.coachProtect,
+						
 						recThrowing: playerDb.recThrowing,
 						recCatching: playerDb.recCatching,
 						throwing: playerDb.throwing,
@@ -210,7 +216,7 @@ module.exports = function (app) {
 				.then((playerDb) => {
 					
 					if (!playerDb) {
-						throw new Error("Player not found");
+						response.status(500).json({ error: "Player not found" });
 					}
 					
 					playerDb.playerDivision = playerSave.playerDivision ? {
@@ -220,10 +226,14 @@ module.exports = function (app) {
 						season: playerSave.playerDivision.season ? playerSave.playerDivision.season : playerDb.playerDivision.season
 					} : playerDb.playerDivision;
 					playerDb.division = playerSave.division ? playerSave.division : playerDb.division;
-					playerDb.draftNumber = playerSave.draftNumber ? playerSave.draftNumber : playerDb.draftNumber;
 					playerDb.team = (playerSave.team) ? { id: playerSave.team.id, name: playerSave.team.name } : playerDb.team;
+					
+					playerDb.draftNumber = playerSave.draftNumber ? playerSave.draftNumber : playerDb.draftNumber;
 					playerDb.draftRound = playerSave.draftRound ? playerSave.draftRound : playerDb.draftRound;
 					playerDb.draftRank = playerSave.draftRank ? playerSave.draftRank : playerDb.draftRank;
+					playerDb.brettRank = playerSave.brettRank ? playerSave.brettRank : playerDb.brettRank;
+					playerDb.draftPick = playerSave.draftPick === undefined ? playerDb.draftPick : playerSave.draftPick;
+				
 					playerDb.firstName = playerSave.firstName ? playerSave.firstName : playerDb.firstName;
 					playerDb.lastName = playerSave.lastName ? playerSave.lastName : playerDb.lastName;
 					playerDb.dateOfBirth = playerSave.dateOfBirth ? playerSave.dateOfBirth : playerDb.dateOfBirth;
@@ -231,9 +241,11 @@ module.exports = function (app) {
 					playerDb.parentEmail = playerSave.parentEmail ? playerSave.parentEmail : playerDb.parentEmail;
 					playerDb.Phone = playerSave.Phone ? playerSave.Phone : playerDb.Phone;
 					playerDb.shirtSize = playerSave.shirtSize ? playerSave.shirtSize : playerDb.shirtSize;
+					
 					playerDb.requests = playerSave.requests ? playerSave.requests : playerDb.requests;
 					playerDb.coachRequest = playerSave.coachRequest ? playerSave.coachRequest : playerDb.coachRequest;
 					playerDb.coachProtect = playerSave.coachProtect ? playerSave.coachProtect : playerDb.coachProtect;
+					
 					playerDb.recThrowing = playerSave.recThrowing ? playerSave.recThrowing : playerDb.recThrowing;
 					playerDb.recCatching = playerSave.recCatching ? playerSave.recCatching : playerDb.recCatching;
 					playerDb.throwing = playerSave.throwing ? playerSave.throwing : playerDb.throwing;
@@ -258,7 +270,6 @@ module.exports = function (app) {
 					response.status(200).json({ playerId: playerDb._id });
 				})
 				.catch((error) => {
-					console.log(error.message);
 					response.status(500).json({ error: error.message });
 				});
 		}
@@ -272,10 +283,14 @@ module.exports = function (app) {
 					season: playerSave.playerDivision.season
 				} : null,
 				division: playerSave.division,
-				draftNumber: playerSave.draftNumber,
 				team: (playerSave.team) ? { id: playerSave.team.id, name: playerSave.team.name } : null,
+				
+				draftNumber: playerSave.draftNumber,
 				draftRound: playerSave.draftRound,
 				draftRank: playerSave.draftRank,
+				brettRank: playerSave.brettRank,
+				draftPick: playerSave.draftPick,
+				
 				firstName: playerSave.firstName,
 				lastName: playerSave.lastName,
 				dateOfBirth: playerSave.dateOfBirth,
@@ -283,9 +298,11 @@ module.exports = function (app) {
 				parentEmail: playerSave.parentEmail,
 				Phone: playerSave.Phone,
 				shirtSize: playerSave.shirtSize,
+				
 				requests: playerSave.requests,
 				coachRequest: playerSave.coachRequest,
 				coachProtect: playerSave.coachProtect,
+				
 				recThrowing: playerSave.recThrowing,
 				recCatching: playerSave.recCatching,
 				throwing: playerSave.throwing,
@@ -412,7 +429,12 @@ module.exports = function (app) {
 						division: teamDb.division,
 						confrence: teamDb.confrence,
 						coach: teamDb.coach,
-						isManaged: teamDb.isManaged
+						isManaged: teamDb.isManaged,
+						draftRound: teamDb.draftRound,
+						practiceDay: teamDb.practiceDay,
+						practiceTime: teamDb.practiceTime,
+						practiceLocation: teamDb.practiceLocation,
+						practiceWeekend: teamDb.practiceWeekend
 					};
 				});
 				
@@ -449,6 +471,11 @@ module.exports = function (app) {
 					teamDb.confrence = teamSave.confrence ? teamSave.confrence : teamDb.confrence;
 					teamDb.coach = teamSave.coach ? teamSave.coach : teamDb.coach;
 					teamDb.isManaged = teamSave.isManaged ? teamSave.isManaged : teamDb.isManaged;
+					teamDb.draftRound = teamSave.draftRound ? teamSave.draftRound : teamDb.draftRound;
+					teamDb.practiceDay = teamSave.practiceDay ? teamSave.practiceDay : teamDb.practiceDay;
+					teamDb.practiceTime = teamSave.practiceTime ? teamSave.practiceTime : teamDb.practiceTime;
+					teamDb.practiceLocation = teamSave.practiceLocation ? teamSave.practiceLocation : teamDb.practiceLocation;
+					teamDb.practiceWeekend = teamSave.practiceWeekend ? teamSave.practiceWeekend : teamDb.practiceWeekend;
 					
 					return teamDb.save();
 				})
@@ -472,7 +499,12 @@ module.exports = function (app) {
 				division: teamSave.division,
 				confrence: teamSave.confrence,
 				coach: teamSave.coach,
-				isManaged: teamSave.isManaged
+				isManaged: teamSave.isManaged,
+				draftRound: teamSave.draftRound,
+				practiceDay: teamSave.practiceDay,
+				practiceTime: teamSave.practiceTime,
+				practiceLocation: teamSave.practiceLocation,
+				practiceWeekend: teamSave.practiceWeekend
 			})
 			.save()
 			.then((teamDb) => {
