@@ -90,6 +90,8 @@ module.exports = {
 		catching: Number,
 		running: Number,
 		runTime: Number,
+		height: Number,
+		
 		spring2018: {
 			division: String,
 			recRank: Number,

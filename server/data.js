@@ -181,6 +181,8 @@ module.exports = function (app) {
 						catching: playerDb.catching,
 						running: playerDb.running,
 						runTime: playerDb.runTime,
+						height: playerDb.height,
+						
 						spring2018: (playerDb.spring2018) ? {
 							division: playerDb.spring2018.division,
 							recRank: playerDb.spring2018.recRank,
@@ -269,6 +271,8 @@ module.exports = function (app) {
 					playerDb.catching = playerSave.catching ? playerSave.catching : playerDb.catching;
 					playerDb.running = playerSave.running ? playerSave.running : playerDb.running;
 					playerDb.runTime = playerSave.runTime ? playerSave.runTime : playerDb.runTime;
+					playerDb.height = playerSave.height ? playerSave.height : playerDb.height;
+					
 					playerDb.spring2018 = (playerSave.spring2018) ? {
 						division: playerSave.spring2018.division ? playerSave.spring2018.division : playerDb.spring2018.division,
 						recRank: playerSave.spring2018.recRank ? playerSave.spring2018.recRank : playerDb.spring2018.recRank,
@@ -343,6 +347,8 @@ module.exports = function (app) {
 				catching: playerSave.catching,
 				running: playerSave.running,
 				runTime: playerSave.runTime,
+				height: playerSave.height,
+				
 				spring2018: (playerSave.spring2018) ? {
 					division: playerSave.spring2018.division,
 					recRank: playerSave.spring2018.recRank,
