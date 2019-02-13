@@ -45,13 +45,13 @@
 	width: 50px;
 }
 
-.draftPagePlayerTable td:nth-child(6) {
+.draftPagePlayerTable td:nth-child(7) {
 	color: rgb(150,150,150);
 	text-align: left;
 	font-size: 0.65em;
 }
 
-.draftPagePlayerTable td:nth-child(5) {
+.draftPagePlayerTable td:nth-child(6) {
 	text-align: left;
 }
 
@@ -66,6 +66,7 @@
 
 .draftAvailable {
 	color: rgb(0, 125, 0);
+	font-weight: bold;
 }
 
 .draftPagePlayerTable .draftSorted {
@@ -86,4 +87,16 @@
 
 .draftAlternate {
 	background-color: rgb(225,225,225);
+}
+
+.draftPageTable.viewPlayerTable {
+	margin: 30px 0px;
+}
+
+.viewPlayerTable td:first-child {
+	text-align: left;
+}
+
+.draftPageLabel {
+	font-weight: bold;
 }

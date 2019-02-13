@@ -78,6 +78,7 @@
 					<th ng-class="{ 'draftSorted': playerSort == 'draftRank' }" ng-click="sortPlayers('draftRank')">DRk</th>
 					<th ng-class="{ 'draftSorted': playerSort == 'brettRank' }" ng-click="sortPlayers('brettRank')">BRk</th>
 					<th>RnD</th>
+					<th ng-class="{ 'draftSorted': playerSort == '-catching' }" ng-click="sortPlayers('-catching')">CH</th>
 					<th ng-class="{ 'draftSorted': playerSort == 'draftNumber' }" ng-click="sortPlayers('draftNumber')">#</th>
 					<th>Player</th>
 					<th>Comments</th>
@@ -86,6 +87,7 @@
 					<td>{{ player.draftRank }}</td>
 					<td>{{ player.brettRank }}</td>
 					<td>{{ player.draftRound }}</td>
+					<td>{{ player.catching }}</td>
 					<td><a href ng-click="viewPlayer(player)">{{ player.draftNumber }}</a></td>
 					<td ng-class="{ 'draftProtected': player.coachProtect.length > 0, 'draftPicked': player.draftPick, 'draftAvailable': !player.draftPick && player.coachProtect.length == 0 }">{{ player.firstName + " " + player.lastName }}</td>
 					<td>

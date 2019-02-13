@@ -707,6 +707,26 @@ teamApp.controller("draftCtl", function($rootScope, $scope, $http, $location, $m
 		});
 	};
 	
+	$scope.viewPlayer = function (player) {
+		$mdDialog.show({
+			templateUrl: "/team/draftplayer.html",
+			controller: viewPlayerCtl,
+			locals: { player: player },
+			clickOutsideToClose: false,
+			escapeToClose: false,
+			openFrom: {
+				top: document.documentElement.clientHeight,
+				left: 0
+			},
+			closeTo: {
+				top: document.documentElement.clientHeight,
+				left: 0
+			}
+		})
+		.then(function () {
+		});
+	};
+	
 	$scope.sortPlayers = function (sortBy) {
 		$scope.playerSort = sortBy;
 	};
@@ -773,6 +793,41 @@ function pickPlayerCtl(pick, players, draft, $scope, $mdDialog) {
 		if (!$scope.isSelected) {
 			$mdDialog.hide($scope.player);
 		}
+	};
+}
+
+function viewPlayerCtl(player, $scope, $mdDialog) {
+	$scope.player = player;
+	
+	$scope.age = new Date(Date.now() - (new Date(log.draft.players[0].dateOfBirth)).getTime()).getFullYear() - 1970;
+	$scope.seasons = player.prev
+		.filter(function (season) { return season.round })
+		.sort(function (season1, season2) {
+			if (season1.year < season2.year) {
+				return -1;
+			}
+			else if (season1.year > season2.year) {
+				return 1;
+			}
+			else {
+				return season1.season < season2.season ? -1 : 1;
+			}
+		});
+	
+	$scope.seasons.unshift({
+		catching: player.catching,
+		rank: player.draftRank,
+		round: player.draftRound,
+		runTime: player.runTime,
+		running: player.running,
+		season: "spring",
+		team: "",
+		throwing: player.throwing,
+		year: 2019
+	});
+	
+	$scope.close = function () {
+		$mdDialog.hide();
 	};
 }
 
