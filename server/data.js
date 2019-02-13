@@ -191,7 +191,24 @@ module.exports = function (app) {
 							catching: playerDb.spring2018.catching,
 							running: playerDb.spring2018.running,
 							runTime: playerDb.spring2018.runTime
-						} : null
+						} : null,
+						prev: playerDb.prev.map((prev) => {
+							return {
+								year: prev.year,
+								season: prev.season,
+								division: prev.division,
+								rank: prev.rank,
+								round: prev.round,
+								coachProtect: prev.coachProtect,
+								coachRequest: prev.coachRequest,
+								team: prev.team,
+								throwing: prev.throwing,
+								catching: prev.catching,
+								running: prev.running,
+								runTime: prev.runTime
+							};
+						})
+						
 					};
 				});
 				
@@ -264,6 +281,23 @@ module.exports = function (app) {
 						runTime: playerSave.spring2018.runTime ? playerSave.spring2018.runTime : playerDb.spring2018.runTime
 					} : playerDb.spring2018;
 					
+					playerDb.prev = playerSave.prev ? playerSave.prev.map((prev) => {
+						return {
+							year: prev.year,
+							season: prev.season,
+							division: prev.division,
+							rank: prev.rank,
+							round: prev.round,
+							coachProtect: prev.coachProtect,
+							coachRequest: prev.coachRequest,
+							team: prev.team,
+							throwing: prev.throwing,
+							catching: prev.catching,
+							running: prev.running,
+							runTime: prev.runTime
+						};
+					}) : playerDb.prev;
+					
 					return playerDb.save();
 				})
 				.then((playerDb) => {
@@ -319,7 +353,23 @@ module.exports = function (app) {
 					catching: playerSave.spring2018.catching,
 					running: playerSave.spring2018.running,
 					runTime: playerSave.spring2018.runTime
-				} : null
+				} : null,
+				prev: playerSave.prev ? playerSave.prev.map((prev) => {
+						return {
+							year: prev.year,
+							season: prev.season,
+							division: prev.division,
+							rank: prev.rank,
+							round: prev.round,
+							coachProtect: prev.coachProtect,
+							coachRequest: prev.coachRequest,
+							team: prev.team,
+							throwing: prev.throwing,
+							catching: prev.catching,
+							running: prev.running,
+							runTime: prev.runTime
+						};
+					}) : null
 			})
 			.save()
 			.then((playerDb) => {

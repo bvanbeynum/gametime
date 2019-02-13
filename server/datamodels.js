@@ -11,6 +11,21 @@ var playerSchema = new mongoose.Schema({
 	route: [{type: locationSchema}]
 });
 
+var prevYearSchema = new mongoose.Schema({
+		year: String,
+		season: String,
+		division: String,
+		rank: Number,
+		round: Number,
+		coachProtect: String,
+		coachRequest: String,
+		team: String,
+		throwing: Number,
+		catching: Number,
+		running: Number,
+		runTime: Number
+});
+
 module.exports = {
 	
 	division: mongoose.model("division", {
@@ -63,6 +78,7 @@ module.exports = {
 		parentEmail: String,
 		Phone: String,
 		shirtSize: String,
+		allergies: String,
 
 		requests: String,
 		coachRequest: String,
@@ -77,6 +93,7 @@ module.exports = {
 		spring2018: {
 			division: String,
 			recRank: Number,
+			round: Number,
 			coachProtect: String,
 			coachRequest: String,
 			team: String,
@@ -84,7 +101,8 @@ module.exports = {
 			catching: Number,
 			running: Number,
 			runTime: Number
-		}
+		},
+		prev: [{type: prevYearSchema}]
 	}),
 	
 	game: mongoose.model("game", {
