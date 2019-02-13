@@ -83,7 +83,7 @@
 					<th>Player</th>
 					<th>Comments</th>
 				</tr>
-				<tr ng-repeat="player in players | orderBy: playerSort">
+				<tr ng-repeat="player in players | orderBy: playerSort" ng-class="{ 'draftHighlight': (($index + 1) / teams.length) % 2 > 1 }">
 					<td>{{ player.draftRank }}</td>
 					<td>{{ player.brettRank }}</td>
 					<td>{{ player.draftRound }}</td>
