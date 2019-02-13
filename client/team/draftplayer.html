@@ -27,9 +27,21 @@
 				<div><span class="draftPageLabel">Age:</span> {{ age }}</div>
 			</div>
 			
+			<div class="draftSpacer"></div>
+			
+			<div>
+				<span class="draftPageLabel">Rank:</span> {{ player.draftRank }}
+			</div>
+			
+			<div>
+				<span class="draftPageLabel">Brett:</span> {{ player.brettRank }}
+			</div>
+			
 			<div>
 				<span class="draftPageLabel">Height:</span> {{ player.height }}
 			</div>
+			
+			<div class="draftSpacer"></div>
 			
 			<div>
 				<span class="draftPageLabel">Protected:</span> {{ player.coachProtect }}
@@ -42,6 +54,8 @@
 			<div>
 				{{ player.requests }}
 			</div>
+			
+			<div class="draftSpacer"></div>
 			
 			<table class="draftPageTable viewPlayerTable">
 			<tr>
@@ -73,6 +87,8 @@
 				<td ng-repeat="season in seasons">{{ season.throwing }}</td>
 			</tr>
 			</table>
+			
+			<div class="draftSpacer"></div>
 			
 			<div ng-repeat="season in seasons | filter: { year: 2018 }">
 				<span class="draftPageLabel">{{ season.year }} {{ season.season.charAt(0).toUpperCase() + season.season.slice(1); }}:</span> {{ season.team }}

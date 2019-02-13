@@ -100,3 +100,8 @@
 .draftPageLabel {
 	font-weight: bold;
 }
+
+.draftSpacer {
+	margin: 10px 0px;
+	border-bottom: 1px solid rgb(220,220,220);
+}
