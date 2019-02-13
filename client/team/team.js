@@ -574,8 +574,10 @@ teamApp.controller("draftCtl", function($rootScope, $scope, $http, $location, $m
 			$scope.rounds = Math.ceil($scope.players.length / $scope.teams.length);
 			
 			$scope.draft = $scope.players.map(function (player, index) {
-				var round = Math.ceil((index + 1) / $scope.rounds),
-					teamPick = ((index + 1) % $scope.rounds == 0) ? 10 : (index + 1) % $scope.rounds,
+				var round = Math.ceil((index + 1) / $scope.teams.length),
+					teamPick = Math.ceil((index + 1) / $scope.teams.length) % 2 == 0 ?
+						($scope.teams.length + 1) - (((index + 1) % $scope.teams.length) != 0 ? (index + 1) % $scope.teams.length : 10) :
+						((index + 1) % $scope.teams.length) != 0 ? (index + 1) % $scope.teams.length : 10,
 					pickTeam = $scope.teams.find(function (team) {
 						return team.draftRound == teamPick;
 					}),
