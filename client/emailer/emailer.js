@@ -19,7 +19,11 @@ emailerApp.controller("emailerController", function ($scope, $http, $mdToast, $m
 	$http({ url: "/emailer/load" })
 	.then(function (response) {
 		$scope.templates = response.data.emails;
-		$scope.emailGroups = response.data.emailGroups;
+		$scope.groups = response.data.emailGroups;
+		
+		$scope.emailGroups = Object.keys($scope.groups).map((group) => {
+				return group.replace(/\b\S/g, (letter) => { return letter.toUpperCase() });
+			});
 		
 		$scope.isLoading = false;
 	}, function (response) {
@@ -42,7 +46,10 @@ emailerApp.controller("emailerController", function ($scope, $http, $mdToast, $m
 	$scope.send = function (event) {
 		var confirm = $mdDialog.confirm()
 			.title("Send Email?")
-			.textContent("Are you sure you wish to send the " + $scope.selectedFile + " tempalte to " + $scope.selectedGroup + "?")
+			.textContent(
+				"Are you sure you wish to send the " + $scope.selectedFile + " tempalte to " + $scope.selectedGroup + "? - " +
+				$scope.groups[$scope.selectedGroup.toLowerCase()].join(", ")
+				)
 			.ariaLabel("Send Email?")
 			.targetEvent(event)
 			.ok("Send Email")

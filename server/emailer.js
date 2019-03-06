@@ -14,19 +14,21 @@ var toGroup = {
 	great: ["\"Great Grandma\" <goldenquill@frontier.com>"],
 	team: [
 		"\"Brett van Beynum\" <bvanbeynum@gmail.com>",
-		"\"Carissa Wiand\" <carissabertalan@hotmail.com>",
-		"\"Craig Wiand\" <craigW@microsoft.com>",
-		"\"Sita van Beynum\" <svanbeynum@gmail.com>",
-		"\"Carrie Dyrness\" <ceh4092@yahoo.com>",
-		"\"Tim Canty\" <irishbluegold@yahoo.com>",
-		"\"Sean Norek\" <seannorek@yahoo.com>",
+		"\"Brzozka, Brian\" <bbrzozka@aol.com>",
+		"\"Canty, Tim\" <Irishbluegold@yahoo.com>",
+		"\"Campbell, Amber\" <charlovescars@yahoo.com>",
+		"\"Campbell, Jared\" <jdcrtr73@gmail.com>",
+		"\"Dellinger, Jennifer\" <jenniferodellinger@gmail.com>",
+		"\"Dyrness, Carrie\" <ceh4092@yahoo.com>",
+		"\"Heredia, Edwin\" <eheredia@live.com>",
+		"\"Norek, Sean\" <seannorek@yahoo.com>",
 		"\"Sarah\" <sarah.norek@atriumhealth.org>",
-		"\"Virginia Parker\" <virgparker@msn.com>",
-		"\"Linlee Markle\" <linleem@gmail.com>",
-		"\"Kevin Markle\" <kevinamarkle@gmail.com>",
-		"\"Anne Hamilton\" <aph10s@hotmail.com>",
-		"\"Donia Hammel\" <dhammel91@yahoo.com>",
-		"\"Rachel Normand\" <rachelnormand@gmail.com>"
+		"\"Parker, Virginia\" <virgparker@msn.com>",
+		"\"Parker, Cary\" <jcaryparker@gmail.com>",
+		"\"Simms, Whitney\" <art3210@yahoo.com>",
+		"\"van Beynum, Sita\" <svanbeynum@gmail.com>",
+		"\"Wiand, Carissa\" <carissabertalan@hotmail.com>",
+		"\"Craig Wiand\" <craigW@microsoft.com>",
 	]
 };
 
@@ -53,9 +55,7 @@ module.exports = (app) => {
 				};
 			});
 			
-			var emailGroups = Object.keys(toGroup).map((group) => {
-				return group.replace(/\b\S/g, (letter) => { return letter.toUpperCase() });
-			});
+			var emailGroups = toGroup;
 			
 			response.status(200).json({emails: emails, emailGroups: emailGroups });
 		});
@@ -131,7 +131,6 @@ module.exports = (app) => {
 					response.status(200).json({status: "ok"});
 				}
 			});
-			
 		});
 		
 	});
