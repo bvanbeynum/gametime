@@ -128,7 +128,8 @@ module.exports = {
 			score: Number,
 			isWinner: Boolean
 		},
-		field: String
+		field: String,
+		snackSignupParentId: String
 	}),
 	
 	play: mongoose.model("play", {
@@ -142,6 +143,24 @@ module.exports = {
 		name: String,
 		scrimageLine: Number,
 		players: [playerSchema]
+	}),
+	
+	parentEmail: mongoose.model("parentEmail", {
+		division: { 
+			id: String
+		},
+		name: String,
+		email: String,
+		playerId: String,
+		emailGroups: [String]
+	}),
+	
+	emailGroup: mongoose.model("emailGroup", {
+		name: String,
+		division: { 
+			id: String
+		},
+		emailList: [String]
 	})
 	
 };

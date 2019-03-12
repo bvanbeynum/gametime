@@ -35,6 +35,10 @@ teamApp.config(function($mdThemingProvider, $routeProvider, $locationProvider) {
 		templateUrl: "/team/draft.html",
 		controller: "draftCtl"
 	})
+	.when("/email", {
+		templateUrl: "/team/email.html",
+		controller: "emailCtl"
+	})
 	.otherwise({
 		templateUrl: "/team/division.html",
 		controller: "divisionCtl"
@@ -367,8 +371,8 @@ teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $md
 		$location.path("/schedule");
 	};
 	
-	$http({url: "/data/player?division=10U&teamname=" + $rootScope.selectedGame.awayTeam.name}).then(httpSuccess, httpError);
-	$http({url: "/data/player?division=10U&teamname=" + $rootScope.selectedGame.homeTeam.name}).then(httpSuccess, httpError);
+	$http({url: "/data/player?divisionid=" + $rootScope.managedTeam.teamDivision.id + "&teamname=" + $rootScope.selectedGame.awayTeam.name}).then(httpSuccess, httpError);
+	$http({url: "/data/player?divisionid=" + $rootScope.managedTeam.teamDivision.id + "&teamname=" + $rootScope.selectedGame.homeTeam.name}).then(httpSuccess, httpError);
 });
 
 teamApp.controller("playbookCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
@@ -735,6 +739,81 @@ teamApp.controller("draftCtl", function($rootScope, $scope, $http, $location, $m
 	
 });
 
+teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog, $document) {
+	if (!$rootScope.managedTeam) {
+		$location.path("/");
+		return;
+	}
+	
+	log.email = $scope;
+	
+	$scope.locations = [
+		{ name: "Turner Field", address: "1114 Watertrace Dr, Fort Mill, SC 29708", mapURL: "https://goo.gl/maps/f6ni2XhJugF2" },
+		{ name: "Lookout Park", address: "1965 Newberry Ln, Tega Cay, SC 29708", mapURL: "https://goo.gl/maps/PuQzsRnjsvL2" },
+		{ name: "Tega Cay Elementary", address: "2185 Gold Hill Rd, Fort Mill, SC 29708", mapURL: "https://goo.gl/maps/tBSofZBq6CC2" },
+		{ name: "Baxter Field", address: "3187 Colonel Springs Way, Fort Mill, SC 29708", mapURL: "https://goo.gl/maps/Ktk7HoBcN5D2" },
+		{ name: "Walter Elisha Park", address: "345 N White St, Fort Mill, SC 29715", mapURL: "https://goo.gl/maps/vu8c17kgtP52" }
+		];
+	
+	$scope.isLoading = false;
+	
+	$scope.templateChanged = function () {
+		$http({url: "/team/emailFiles/" + $scope.selectedTemplate + ".html"}).then(
+			function (response) {
+				$scope.templateHTML = response.data;
+				$scope.emailHTML = $scope.templateHTML;
+			}, function (error) {
+				console.log(error);
+				
+				$mdToast.show(
+					$mdToast.simple()
+						.textContent("There was an error loading the template")
+						.position("bottom left")
+						.hideDelay(2000)
+				);
+			});
+	};
+	
+	$scope.changeTab = function (tab) {
+		if ($scope.tab == "settings") {
+			if ($scope.practiceLocation) {
+				$scope.practiceLocationURL = $scope.practiceLocation.mapURL;
+				$scope.practiceLocationName = $scope.practiceLocation.name;
+				$scope.practiceLocationAddress = $scope.practiceLocation.address;
+			}
+			
+			$scope.practiceDate = ($scope.practiceDateSelect) ? ($scope.practiceDateSelect.getMonth() + 1) + "/" + $scope.practiceDateSelect.getDay() + "/" + $scope.practiceDateSelect.getFullYear() : "";
+			$scope.practiceStart = ($scope.practiceStartHour && $scope.practiceStartMin) ? $scope.practiceStartHour + ":" + $scope.practiceStartMin : "";
+			$scope.practiceEnd = ($scope.practiceEndHour && $scope.practiceEndMin) ? $scope.practiceEndHour + ":" + $scope.practiceEndMin : "";
+			
+			$scope.emailHTML = $scope.templateHTML;
+			
+			var replacements = $scope.emailHTML.match(/{{[^}]+}}/gi);
+			
+			if (replacements && replacements.length > 0) {
+				replacements = replacements.map(function (replaceString) { return replaceString.replace(/[{}]/gi, "") });
+			}
+			
+			for (var replaceIndex = 0; replaceIndex < replacements.length; replaceIndex++) {
+				$scope.emailHTML = $scope.emailHTML.replace(new RegExp("{{" + replacements[replaceIndex] + "}}", "g"), ($scope[replacements[replaceIndex]] || ""));
+			}
+		}
+		
+		if (tab == "preview") {
+			var frame = document.getElementById("templateView").contentWindow.document;
+			frame.open();
+			frame.write($scope.emailHTML);
+			frame.close();
+		}
+		else if (tab == "settings") {
+			$scope.emailHTML = $scope.templateHTML;
+		}
+		
+		$scope.tab = tab;
+	};
+	
+});
+
 function teamManageCtl(team, allTeams, $scope, $mdDialog, $mdToast) {
 	if (team) {
 		$scope.editType = "Manage";
@@ -868,6 +947,10 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 		case "/draft":
 			$location.path("/standings");
 			break;
+			
+		case "/email":
+			$location.path("/standings");
+			break;
 		}
 	};
 	
@@ -881,6 +964,10 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 	
 	$scope.openDraft = function () {
 		$location.path("/draft");
+	};
+	
+	$scope.openEmail = function () {
+		$location.path("/email");
 	};
 	
 });

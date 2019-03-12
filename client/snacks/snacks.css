@@ -1,0 +1,152 @@
+body {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.html {
+	padding: 5px;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.innerhtml {
+	margin: 0;
+	padding: 0;
+	font-family: verdana, sans-serif;
+	font-size: .9em;
+	background-color: rgb(60, 45, 112);
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	overflow: auto;
+}
+
+.clear {
+	clear: both;
+}
+
+.header {
+	margin: 0 auto;
+	height: 168px;
+	text-align: center;
+	background: repeat-x url("/emailer/images/grass.jpg");
+}
+
+.header .logo {
+	margin: 24px auto;
+	height: 120px;
+}
+
+.content {
+	margin: 0 auto;
+	padding: 5px 15px;
+	background-color: rgb(255,255,255);
+	border-left: 5px solid rgb(213,202,148);
+	border-right: 5px solid rgb(213,202,148);
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-height: min-content;
+}
+
+.textHeader {
+	color: rgb(60, 45, 112);
+	/*text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;*/
+}
+
+.textSubHeader {
+	color: rgb(181, 170, 116)
+}
+.highlight {
+	font-weight: bold;
+	background-color: rgb(255, 255, 0);
+}
+
+.contentImage {
+	width: 200px;
+	margin: 5px 10px;
+}
+.gohuskies {
+	margin: 15px 0px;
+	width: 250px;
+}
+
+.gamebox {
+	width: 100%;
+	border: solid 1px #E0E0E0;
+	border-collapse: collapse;
+	box-sizing: border-box;
+	padding: 20px;
+	height: 96px;
+	margin-bottom: 15px;
+}
+
+.teambox {
+	float: left;
+	width: 30%;
+}
+
+.datecontainer {
+	float: left;
+	width: 25%;
+	text-align: center;
+	position: relative;
+	height: 54px;
+	border-left: solid 2px rgba(0,0,0,0.05);
+	box-sizing: border-box;
+}
+
+.datebox {
+	position: absolute;
+	top: 50%;
+	height: 35;
+	margin-top: -17px;
+	width: 100%;
+}
+
+.selectContainer {
+	float: left;
+	width: 45%;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	height: 54px;
+}
+
+.teamimage {
+	width: 24px;
+	margin-right: 10px;
+}
+
+.teamname {
+	display: inline-block;
+	vertical-align: middle;
+	line-height: normal;
+	height: 27px;
+}
+
+.team {
+	height: 27px;
+}
+
+.contentIcon {
+	margin-right: 20px;
+	float: left;
+}
+.firstColumn {
+	width: 100%;
+}
+@media (min-device-width: 650px) {
+	.header {
+		width: 650px;
+	}
+	
+	.content {
+		width: 650px;
+	}
+	
+}

@@ -1,0 +1,244 @@
+
+<div ng-show="isLoading" flex="90" layout="row" layout-align="center center">
+	<div layout="column" layout="center center">
+		<md-progress-circular class="md-primary md-margin" md-diameter="40"></md-progress-circular>
+		<div class="md-margin">Loading</div>
+	</div>
+</div>
+
+
+<div ng-show="!isLoading" flex="100" layout="column">
+	<md-tabs md-center-tabs class="md-primary" flex="100" layout="column">
+		<md-tab label="Settings" md-on-select="changeTab('settings')">
+			<md-content class="md-padding" layout="column">
+				<md-input-container>
+					<label>Email Template</label>
+					<md-select ng-model="selectedTemplate" ng-change="templateChanged()">
+						<md-option ng-value="'practice'">Practice</md-option>
+						<md-option ng-value="'gamereminder'">Game Reminder</md-option>
+						<md-option ng-value="'gamerecap'">Game Recap</md-option>
+						<md-option ng-value="'schedule'">Schedule</md-option>
+						<md-option ng-value="'welcome'">Welcome</md-option>
+						<md-option ng-value="'blank'">Blank</md-option>
+					</md-select>
+				</md-input-container>
+				
+				<div ng-show="selectedTemplate == 'practice'" layout="column">
+					<h2>Practice Settings</h2>
+					
+					<md-input-container>
+						<label>Title</label>
+						<input type="text" ng-model="practiceTitle" />
+					</md-input-container>
+					
+					<md-input-container>
+						<label>Location</label>
+						<md-select ng-model="practiceLocation" ng-model-options="{trackBy: '$value.name'}">
+							<md-option ng-repeat="location in locations" ng-value="{{location}}">{{location.name}}</md-option>
+						</md-select>
+					</md-input-container>
+					
+					<md-input-container flex>
+						<md-datepicker ng-model="practiceDateSelect" md-placeholder="Date"></md-datepicker>
+					</md-input-container>
+					
+					<div layout="row" layout-align="space-around">
+						<md-input-container flex>
+							<label>Start Hour</label>
+							<md-select ng-model="practiceStartHour">
+								<md-option ng-value="1">1</md-option>
+								<md-option ng-value="2">2</md-option>
+								<md-option ng-value="3">3</md-option>
+								<md-option ng-value="4">4</md-option>
+								<md-option ng-value="5">5</md-option>
+								<md-option ng-value="6">6</md-option>
+								<md-option ng-value="7">7</md-option>
+								<md-option ng-value="8">8</md-option>
+								<md-option ng-value="9">9</md-option>
+								<md-option ng-value="10">10</md-option>
+								<md-option ng-value="11">11</md-option>
+								<md-option ng-value="12">12</md-option>
+							</md-select>
+						</md-input-container>
+						
+						<md-input-container flex>
+							<label>Start Min</label>
+							<md-select ng-model="practiceStartMin">
+								<md-option ng-value="'00'">00</md-option>
+								<md-option ng-value="'01'">01</md-option>
+								<md-option ng-value="'02'">02</md-option>
+								<md-option ng-value="'03'">03</md-option>
+								<md-option ng-value="'04'">04</md-option>
+								<md-option ng-value="'05'">05</md-option>
+								<md-option ng-value="'06'">06</md-option>
+								<md-option ng-value="'07'">07</md-option>
+								<md-option ng-value="'08'">08</md-option>
+								<md-option ng-value="'09'">09</md-option>
+								<md-option ng-value="'10'">10</md-option>
+								<md-option ng-value="'11'">11</md-option>
+								<md-option ng-value="'12'">12</md-option>
+								<md-option ng-value="'13'">13</md-option>
+								<md-option ng-value="'14'">14</md-option>
+								<md-option ng-value="'15'">15</md-option>
+								<md-option ng-value="'16'">16</md-option>
+								<md-option ng-value="'17'">17</md-option>
+								<md-option ng-value="'18'">18</md-option>
+								<md-option ng-value="'19'">19</md-option>
+								<md-option ng-value="'20'">20</md-option>
+								<md-option ng-value="'21'">21</md-option>
+								<md-option ng-value="'22'">22</md-option>
+								<md-option ng-value="'23'">23</md-option>
+								<md-option ng-value="'24'">24</md-option>
+								<md-option ng-value="'25'">25</md-option>
+								<md-option ng-value="'26'">26</md-option>
+								<md-option ng-value="'27'">27</md-option>
+								<md-option ng-value="'28'">28</md-option>
+								<md-option ng-value="'29'">29</md-option>
+								<md-option ng-value="'30'">30</md-option>
+								<md-option ng-value="'31'">31</md-option>
+								<md-option ng-value="'32'">32</md-option>
+								<md-option ng-value="'33'">33</md-option>
+								<md-option ng-value="'34'">34</md-option>
+								<md-option ng-value="'35'">35</md-option>
+								<md-option ng-value="'36'">36</md-option>
+								<md-option ng-value="'37'">37</md-option>
+								<md-option ng-value="'38'">38</md-option>
+								<md-option ng-value="'39'">39</md-option>
+								<md-option ng-value="'40'">40</md-option>
+								<md-option ng-value="'41'">41</md-option>
+								<md-option ng-value="'42'">42</md-option>
+								<md-option ng-value="'43'">43</md-option>
+								<md-option ng-value="'44'">44</md-option>
+								<md-option ng-value="'45'">45</md-option>
+								<md-option ng-value="'46'">46</md-option>
+								<md-option ng-value="'47'">47</md-option>
+								<md-option ng-value="'48'">48</md-option>
+								<md-option ng-value="'49'">49</md-option>
+								<md-option ng-value="'50'">50</md-option>
+								<md-option ng-value="'51'">51</md-option>
+								<md-option ng-value="'52'">52</md-option>
+								<md-option ng-value="'53'">53</md-option>
+								<md-option ng-value="'54'">54</md-option>
+								<md-option ng-value="'55'">55</md-option>
+								<md-option ng-value="'56'">56</md-option>
+								<md-option ng-value="'57'">57</md-option>
+								<md-option ng-value="'58'">58</md-option>
+								<md-option ng-value="'59'">59</md-option>
+							</md-select>
+						</md-input-container>
+						
+						<md-input-container flex>
+							<label>End Hour</label>
+							<md-select ng-model="practiceEndHour">
+								<md-option ng-value="1">1</md-option>
+								<md-option ng-value="2">2</md-option>
+								<md-option ng-value="3">3</md-option>
+								<md-option ng-value="4">4</md-option>
+								<md-option ng-value="5">5</md-option>
+								<md-option ng-value="6">6</md-option>
+								<md-option ng-value="7">7</md-option>
+								<md-option ng-value="8">8</md-option>
+								<md-option ng-value="9">9</md-option>
+								<md-option ng-value="10">10</md-option>
+								<md-option ng-value="11">11</md-option>
+								<md-option ng-value="12">12</md-option>
+							</md-select>
+						</md-input-container>
+						
+						<md-input-container flex>
+							<label>End Min</label>
+							<md-select ng-model="practiceEndMin">
+								<md-option ng-value="'00'">00</md-option>
+								<md-option ng-value="'01'">01</md-option>
+								<md-option ng-value="'02'">02</md-option>
+								<md-option ng-value="'03'">03</md-option>
+								<md-option ng-value="'04'">04</md-option>
+								<md-option ng-value="'05'">05</md-option>
+								<md-option ng-value="'06'">06</md-option>
+								<md-option ng-value="'07'">07</md-option>
+								<md-option ng-value="'08'">08</md-option>
+								<md-option ng-value="'09'">09</md-option>
+								<md-option ng-value="'10'">10</md-option>
+								<md-option ng-value="'11'">11</md-option>
+								<md-option ng-value="'12'">12</md-option>
+								<md-option ng-value="'13'">13</md-option>
+								<md-option ng-value="'14'">14</md-option>
+								<md-option ng-value="'15'">15</md-option>
+								<md-option ng-value="'16'">16</md-option>
+								<md-option ng-value="'17'">17</md-option>
+								<md-option ng-value="'18'">18</md-option>
+								<md-option ng-value="'19'">19</md-option>
+								<md-option ng-value="'20'">20</md-option>
+								<md-option ng-value="'21'">21</md-option>
+								<md-option ng-value="'22'">22</md-option>
+								<md-option ng-value="'23'">23</md-option>
+								<md-option ng-value="'24'">24</md-option>
+								<md-option ng-value="'25'">25</md-option>
+								<md-option ng-value="'26'">26</md-option>
+								<md-option ng-value="'27'">27</md-option>
+								<md-option ng-value="'28'">28</md-option>
+								<md-option ng-value="'29'">29</md-option>
+								<md-option ng-value="'30'">30</md-option>
+								<md-option ng-value="'31'">31</md-option>
+								<md-option ng-value="'32'">32</md-option>
+								<md-option ng-value="'33'">33</md-option>
+								<md-option ng-value="'34'">34</md-option>
+								<md-option ng-value="'35'">35</md-option>
+								<md-option ng-value="'36'">36</md-option>
+								<md-option ng-value="'37'">37</md-option>
+								<md-option ng-value="'38'">38</md-option>
+								<md-option ng-value="'39'">39</md-option>
+								<md-option ng-value="'40'">40</md-option>
+								<md-option ng-value="'41'">41</md-option>
+								<md-option ng-value="'42'">42</md-option>
+								<md-option ng-value="'43'">43</md-option>
+								<md-option ng-value="'44'">44</md-option>
+								<md-option ng-value="'45'">45</md-option>
+								<md-option ng-value="'46'">46</md-option>
+								<md-option ng-value="'47'">47</md-option>
+								<md-option ng-value="'48'">48</md-option>
+								<md-option ng-value="'49'">49</md-option>
+								<md-option ng-value="'50'">50</md-option>
+								<md-option ng-value="'51'">51</md-option>
+								<md-option ng-value="'52'">52</md-option>
+								<md-option ng-value="'53'">53</md-option>
+								<md-option ng-value="'54'">54</md-option>
+								<md-option ng-value="'55'">55</md-option>
+								<md-option ng-value="'56'">56</md-option>
+								<md-option ng-value="'57'">57</md-option>
+								<md-option ng-value="'58'">58</md-option>
+								<md-option ng-value="'59'">59</md-option>
+							</md-select>
+						</md-input-container>
+						
+					</div>
+				</div>
+			</md-content>
+		</md-tab>
+		
+		<md-tab flex="100" layout="column" label="Edit" md-on-select="changeTab('edit')">
+			<md-content flex="100" layout="column" class="md-padding">
+				<h2>Template</h2>
+				
+				<textarea flex="85" class="emailTemplateURL" id="templateText" ng-model="emailHTML"></textarea>
+				
+			</md-content>
+		</md-tab>
+		
+		<md-tab label="Preview" flex="100" layout="column" md-on-select="changeTab('preview')">
+			<md-content flex="100" layout="column">
+				<md-input-container flex>
+					<label>To</label>
+					<md-select ng-model="sendTo">
+					</md-select>
+				</md-input-container>
+				
+				<div>
+					<md-button class="md-primary md-raised" ng-click="send()">Send</md-button>
+				</div>
+				
+				<iframe id="templateView" flex="65" ng-show="emailHTML && emailHTML.length > 0"></iframe>
+			</md-content>
+		</md-tab>
+	</md-tabs>
+</div>

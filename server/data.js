@@ -46,6 +46,7 @@ module.exports = function (app) {
 		}
 		
 		var divisionSave = request.body.division;
+		divisionSave.id = divisionSave._id || divisionSave.id;
 		
 		if (divisionSave.id) {
 			data.team.findById(divisionSave.id)
@@ -228,6 +229,7 @@ module.exports = function (app) {
 		}
 		
 		var playerSave = request.body.player;
+		playerSave.id = playerSave._id || playerSave.id;
 		
 		if (playerSave.id) {
 			data.player.findById(playerSave.id)
@@ -507,6 +509,7 @@ module.exports = function (app) {
 		}
 		
 		var teamSave = request.body.team;
+		teamSave.id = teamSave._id || teamSave.id;
 		
 		if (teamSave.id) {
 			data.team.findById(teamSave.id)
@@ -682,7 +685,8 @@ module.exports = function (app) {
 							name: gameDb.awayTeam.name,
 							score: gameDb.awayTeam.score,
 							isWinner: gameDb.awayTeam.isWinner
-						} :null
+						} :null,
+						snackSignupParentId: gameDb.snackSignupParentId
 					};
 				});
 				
@@ -699,6 +703,7 @@ module.exports = function (app) {
 		}
 		
 		var gameSave = request.body.game;
+		gameSave.id = gameSave._id || gameSave.id;
 		
 		if (gameSave.id) {
 			data.game.findById(gameSave.id)
@@ -729,6 +734,7 @@ module.exports = function (app) {
 						score: gameSave.awayTeam.score ? gameSave.awayTeam.score : gameDb.awayTeam ? gameDb.awayTeam.score : null,
 						isWinner: gameSave.awayTeam.isWinner ? gameSave.awayTeam.isWinner : gameDb.awayTeam ? gameDb.awayTeam.isWinner : null
 					} : gameDb.awayTeam;
+					gameDb.snackSignupParentId = typeof gameSave.snackSignupParentId !== "undefined" ? gameSave.snackSignupParentId : gameDb.snackSignupParentId;
 					
 					return gameDb.save();
 				})
@@ -762,7 +768,8 @@ module.exports = function (app) {
 					name: gameSave.awayTeam.name,
 					score: gameSave.awayTeam.score,
 					isWinner: gameSave.awayTeam.isWinner
-				} : null
+				} : null,
+				snackSignupParentId: gameSave.snackSignupParentId
 			})
 			.save()
 			.then((gameDb) => {
@@ -776,7 +783,7 @@ module.exports = function (app) {
 	});
 	
 	app.delete("/data/game", (request, response) => {
-		var validQueries = "|date|division|divisionid|teamid|teamname|";
+		var validQueries = "|id|date|division|divisionid|teamid|teamname|";
 		if (Object.keys(request.query).length > 0) {
 			var invalidQuery = Object.keys(request.query).filter((query) => {
 				return validQueries.indexOf("|" + query + "|") < 0;
@@ -790,6 +797,9 @@ module.exports = function (app) {
 		
 		var filter = {};
 		
+		if (request.query.id) {
+			filter["_id"] = request.query.id;
+		}
 		if (request.query.date) {
 			var day = new Date(Date.parse(request.query.date)),
 				endDate = new Date(day);
@@ -970,6 +980,51 @@ module.exports = function (app) {
 		data.play.deleteOne(filter)
 			.then(() => {
 				response.status(200).json({status: "ok"});
+			})
+			.catch((error) => {
+				response.status(500).json({error: error.message});
+			});
+	});
+	
+	app.get("/data/emaillist", (request, response) => {
+		var validQueries = "|divisionid|id|name|";
+		if (Object.keys(request.query).length > 0) {
+			var invalidQuery = Object.keys(request.query).filter((query) => {
+				return validQueries.indexOf("|" + query + "|") < 0;
+			});
+			
+			if (invalidQuery.length > 0) {
+				response.status(500).json({error: "Invalid query terms: " + invalidQuery.join(", ")});
+				return;
+			}
+		}
+		
+		var filter = {};
+		
+		if (request.query.divisionid) {
+			filter["division.id"] = request.query.divisionid;
+		}
+		if (request.query.id) {
+			filter["_id"] = request.query.id;
+		}
+		if (request.query.name) {
+			filter["name"] = { $regex: new RegExp(request.query.name, "i") };
+		}
+		
+		data.emailGroup.find(filter)
+			.exec()
+			.then((emailGroupsDb) => {
+				var emailGroups = emailGroupsDb.map((emailGroupDb) => {
+					return {
+						name: emailGroupDb.name,
+						division: {
+							id: emailGroupDb.division.id
+						},
+						emailList: emailGroupDb.emailList
+					};
+				});
+				
+				response.status(200).json({emailGroups: emailGroups});
 			})
 			.catch((error) => {
 				response.status(500).json({error: error.message});

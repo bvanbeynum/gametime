@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Practice Wednesday - 3/13</title>
+<title>{{practiceTitle}}</title>
 
 <style>
 .html {
@@ -23,7 +23,7 @@
 	margin: 0 auto;
 	height: 168px;
 	text-align: center;
-	background: repeat-x url("/emailer/images/grass.jpg");
+	background: repeat-x url("/team/emailFiles/grass.jpg");
 }
 
 .header .logo {
@@ -115,23 +115,23 @@
 	<div class="innerhtml">
 		
 		<div class="header">
-			<img class="logo" src="/emailer/images/UW-logo.png" />
+			<img class="logo" src="/team/emailFiles/UW-logo.png" />
 		</div>
 		
 		<div class="content">
-			<h1 class="textHeader">Practice Wednesday</h1>
+			<h1 class="textHeader">{{practiceTitle}}</h1>
 			
 			<div class="practiceInfo">
 				<div class="practiceTime">
-					<img class="contentIcon" src="/emailer/images/event.png" />
-					Wednesday, <span class="highlight">6:30pm to 7:30pm</span>
+					<img class="contentIcon" src="/team/emailFiles/event.png" />
+					{{practiceDate}} <span class="highlight">{{practiceStart}} to {{practiceEnd}}</span>
 				</div>
 				
 				<div class="practiceLocation">
-					<img class="contentIcon" src="/emailer/images/location.png" />
+					<img class="contentIcon" src="/team/emailFiles/location.png" />
 					<div class="practiceAddress">
-						<a href="https://goo.gl/maps/PuQzsRnjsvL2" target="_new">Lookout Park</a><br>
-						1965 Newberry Ln, Tega Cay, SC 29708
+						<a href="{{practiceLocationURL}}" target="_new">{{practiceLocationName}}<br>
+						{{practiceLocationAddress}}</a>
 					</div>
 				</div>
 			</div>
@@ -139,14 +139,10 @@
 			<br class="clear" />
 			
 			<p class="practiceComments">
-				Since it looks like it will rain on Friday again on us, I've been able to get
-				a practice time on Wednesday. This could be our last practice before the game,
-				so it would be nice if we can get as much of the team together to make sure
-				everyone is going in the right direction. Thanks.
 			</p>
 			
 			<p>
-				<img class="gohuskies" src="/emailer/images/gohuskies.jpg" /><br>
+				<img class="gohuskies" src="/team/emailFiles/gohuskies.jpg" /><br>
 				<strong>Go Huskies!!!</strong><br>
 				-Brett van Beynum
 			</p>

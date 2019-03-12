@@ -1,0 +1,89 @@
+<html ng-app="snacksApp" >
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.css">
+	<link rel="stylesheet" type="text/css" href="/snacks/snacks.css">
+</head>
+<title>Snack Signup</title>
+<body ng-controller="snacksCtl" ng-cloak>
+
+<div class="html">
+	<div class="innerhtml">
+		
+		<div class="header">
+			<img class="logo" src="/emailer/images/UW-logo.png" />
+		</div>
+		
+		<div class="content">
+			<h1 class="textHeader">2019 Huskies Snack Signup</h1>
+			
+			<div ng-show="isLoading" class="loadingContainer">
+				<div class="loading">
+					<md-progress-circular class="md-primary" md-diameter="40"></md-progress-circular>
+					<div>Loading</div>
+				</div>
+			</div>
+			
+			<div ng-show="!isLoading && !isLoggedIn">
+				<div>Please select who this snack signup is for</div>
+				
+				<md-input-container>
+					<label>Parent</label>
+					<md-select ng-model="selectedParent" ng-change="parentSelect()">
+						<md-option ng-repeat="parent in parentEmails | orderBy: 'name'" ng-value="parent">{{parent.name}}</md-option>
+					</md-select>
+				</md-input-container>
+			</div>
+			
+			<div ng-show="!isLoading && isLoggedIn">
+				
+				<h1 class="textHeader">Select Game</h1>
+				
+				<div class="gamebox" ng-repeat="game in games">
+					<div class="teambox">
+						<div class="team">
+							<img ng-src="/snacks/images/{{ game.awayTeam.name.toLowerCase() }}.png" class="teamimage" />
+							<span class="teamname">{{ game.awayTeam.name }}</span>
+						</div>
+						<div class="team">
+							<img src="/emailer/images/{{ game.homeTeam.name.toLowerCase() }}.png" class="teamimage" />
+							<span class="teamname">{{ game.homeTeam.name }}</span>
+						</div>
+					</div>
+					
+					<div class="datecontainer">
+						<div class="datebox">
+							{{ game.dateTime | date : "M/d" }}<br />
+							{{ game.dateTime | date : "h:mm a" }}
+						</div>
+					</div>
+					
+					<div class="selectContainer">
+						<div ng-show="!game.snackSignupParentId">
+							<a href="#" ng-click="selectGame(game)">Select Game</a>
+						</div>
+						
+						<div ng-show="game.snackSignupParentId">
+							<div>{{ game.snack.name }}</div>
+							<div ng-show="game.snackSignupParentId == emailId"><a href="#" ng-click="removeGame(game)">Unselect</a></div>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+			
+		</div>
+	</div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-aria.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-messages.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.8/angular-material.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.js"></script>
+
+<script src="/snacks/snacks.js"></script>
+
+</body>
+</html>
