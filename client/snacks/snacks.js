@@ -54,7 +54,7 @@ snacksApp.controller("snacksCtl", function ($scope, $http, $mdToast, $mdDialog) 
 	else {
 		$scope.isLoggedIn = false;
 		
-		$http({url: "/snacks/parentemails?divisionid=5c5dc308696458eb6972bacb"}).then(
+		$http({url: "/snacks/parentemails?divisionid=5c6083c68a61e3857ad66bb1"}).then(
 			function (response) {
 				$scope.parentEmails = response.data.parentEmails.filter(function (email) {
 					return email.emailGroups.indexOf("team") >= 0;
