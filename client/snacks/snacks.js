@@ -56,7 +56,9 @@ snacksApp.controller("snacksCtl", function ($scope, $http, $mdToast, $mdDialog) 
 		
 		$http({url: "/snacks/parentemails?divisionid=5c5dc308696458eb6972bacb"}).then(
 			function (response) {
-				$scope.parentEmails = response.data.parentEmails;
+				$scope.parentEmails = response.data.parentEmails.filter(function (email) {
+					return email.emailGroups.indexOf("team") >= 0;
+				});
 				
 				$scope.isLoading = false;
 			}, function (error) {

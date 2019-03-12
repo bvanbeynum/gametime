@@ -13,8 +13,7 @@ module.exports = (app) => {
 		}
 		
 		data.parentEmail.find({
-			"division.id": request.query.divisionid,
-			"emailGroups": "team"
+			"division.id": request.query.divisionid
 		})
 		.exec()
 		.then(parentEmailsDb => {
