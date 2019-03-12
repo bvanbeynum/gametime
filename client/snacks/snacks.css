@@ -28,7 +28,7 @@ body {
 }
 
 .header {
-	margin: 0 auto;
+	margin: 0;
 	height: 168px;
 	text-align: center;
 	background: repeat-x url("/emailer/images/grass.jpg");
@@ -40,7 +40,7 @@ body {
 }
 
 .content {
-	margin: 0 auto;
+	margin: 0;
 	padding: 5px 15px;
 	background-color: rgb(255,255,255);
 	border-left: 5px solid rgb(213,202,148);
@@ -143,10 +143,12 @@ body {
 @media (min-device-width: 650px) {
 	.header {
 		width: 650px;
+		margin: 0 auto;
 	}
 	
 	.content {
 		width: 650px;
+		margin: 0 auto;
 	}
 	
 }
