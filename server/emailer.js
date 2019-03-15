@@ -1,4 +1,5 @@
 var nodemailer = require("nodemailer"),
+	models = require("./datamodels"),
 	fs = require("fs"),
 	path = require("path"),
 	gmailAuth = {
@@ -182,7 +183,21 @@ module.exports = (app) => {
 				response.status(500).json({error: error.message});
 			}
 			else {
-				response.status(200).json({status: "ok"});
+				console.log(emailList.map(toAddress => toAddress.replace(/\"/g, "")));
+				
+				new models.emailLog({
+					sent: new Date(),
+					to: emailList,
+					emailType: regSubject,
+					emailText: email
+				})
+				.save()
+				.then((emailLogDb) => {
+					response.status(200).json({status: "ok"});
+				})
+				.catch((error) => {
+					response.status(200).json({status: "ok"});
+				});
 			}
 		});
 		

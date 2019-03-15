@@ -161,6 +161,13 @@ module.exports = {
 			id: String
 		},
 		emailList: [String]
+	}),
+	
+	emailLog: mongoose.model("emailLog", {
+		sent: Date,
+		to: [String],
+		emailType: String,
+		emailText: String
 	})
 	
 };
