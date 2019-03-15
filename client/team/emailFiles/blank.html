@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Practice Wednesday Reminder - 3/13</title>
+<title>{{title}}</title>
 
 <style>
 .html {
@@ -23,7 +23,7 @@
 	margin: 0 auto;
 	height: 168px;
 	text-align: center;
-	background: repeat-x url("/emailer/images/grass.jpg");
+	background: repeat-x url("/team/emailFiles/grass.jpg");
 }
 
 .header .logo {
@@ -115,41 +115,18 @@
 	<div class="innerhtml">
 		
 		<div class="header">
-			<img class="logo" src="/emailer/images/UW-logo.png" />
+			<img class="logo" src="/team/emailFiles/UW-logo.png" />
 		</div>
 		
 		<div class="content">
-			<h1 class="textHeader">Practice Wednesday</h1>
-			
-			<div class="practiceInfo">
-				<div class="practiceTime">
-					<img class="contentIcon" src="/emailer/images/event.png" />
-					Wednesday, <span class="highlight">6:30pm to 7:30pm</span>
-				</div>
-				
-				<div class="practiceLocation">
-					<img class="contentIcon" src="/emailer/images/location.png" />
-					<div class="practiceAddress">
-						<a href="https://goo.gl/maps/vu8c17kgtP52" target="_new">Walter Elisha Park</a><br>
-						345 N White St, Fort Mill, SC 29715
-					</div>
-				</div>
-			</div>
-			
-			<br class="clear" />
+			<h1 class="textHeader">{{title}}</h1>
 			
 			<p class="practiceComments">
-				We will have what looks like it could be our last practice before our first game
-				tomorrow. We will be moving the practice to Walter Elisha Park due to awful field
-				conditions at Lookout park.<br>
-				<br>
-				Since this will probably be our last practice, we will be going over positions for
-				the game this weekend, and practicing our plays to make sure we know what to do
-				for the game.
+				{{comments}}
 			</p>
 			
 			<p>
-				<img class="gohuskies" src="/emailer/images/gohuskies.jpg" /><br>
+				<img class="gohuskies" src="/team/emailFiles/gohuskies.jpg" /><br>
 				<strong>Go Huskies!!!</strong><br>
 				-Brett van Beynum
 			</p>

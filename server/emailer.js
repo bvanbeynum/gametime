@@ -118,4 +118,74 @@ module.exports = (app) => {
 		
 	});
 	
+	app.post("/emailer/sendlist", (request, response) => {
+		if (!request.body.email || !request.body.emailList || !Array.isArray(request.body.emailList) || request.body.emailList.length == 0) {
+			response.status(500).json({error: "Invalid email request. file and emailGroup are required" });
+		}
+		
+		var service = nodemailer.createTransport({
+			service: "gmail",
+			auth: gmailAuth
+		});
+		
+		var email = request.body.email,
+			emailList = request.body.emailList;
+		
+		var regSubject = (RegExp("<title>([^<]+)</title>", "gi")).exec(email),
+			attachments = [],
+			matches;
+		
+		if (regSubject < 2) {
+			console.log("Could not find the title in the email");
+			return;
+		}
+		
+		var regImages = RegExp("<img [\\w =\"]*src=[\"]?([^\" ]+)", "gim");
+		while ((matches = regImages.exec(email)) != null) {
+			attachments.push({
+				filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
+				path: path.join(app.get("root"), "client/" + matches[1]),
+				cid: matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf("."))
+			});
+			email = email.replace(matches[1], "cid:" + matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf(".")));
+		}
+		
+		var regCSS = /background:[\w -]*url\(["]?([^"]+)["]?\)/gim;
+		while ((matches = regCSS.exec(email)) != null) {
+			attachments.push({
+				filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
+				path: path.join(app.get("root"), "client/" + matches[1]),
+				cid: matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf("."))
+			});
+			email = email.replace(matches[1], "cid:" + matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf(".")));
+		}
+		
+		var regAttach = RegExp("<attach [\\w =\"]*src=[\"]?([^\" ]+)[\"]?[\w =\"]*/>", "gim");
+		while ((matches = regAttach.exec(email)) != null) {
+			attachments.push({
+				filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
+				path: path.join(app.get("root"), "client/" + matches[1])
+			});
+			email = email.replace(matches[0], "");
+		}
+		
+		var options = {
+			from: "\"Brett van Beynum\" <bvanbeynum@gmail.com>",
+			to: emailList,
+			subject: regSubject[1] + " \uD83C\uDFC8",
+			html: email,
+			attachments: attachments
+		};
+		
+		service.sendMail(options, (error, data) => {
+			if (error) {
+				response.status(500).json({error: error.message});
+			}
+			else {
+				response.status(200).json({status: "ok"});
+			}
+		});
+		
+	});
+	
 };

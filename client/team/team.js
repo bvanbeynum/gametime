@@ -1,7 +1,7 @@
 /* global angular */
 /* global d3 */
 
-var teamApp = angular.module("teamApp", ["ngMaterial", "ngRoute", "ngMessages"]);
+var teamApp = angular.module("teamApp", ["ngMaterial", "ngRoute", "ngMessages", "ngSanitize"]);
 
 var log = {};
 
@@ -755,36 +755,64 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 		{ name: "Walter Elisha Park", address: "345 N White St, Fort Mill, SC 29715", mapURL: "https://goo.gl/maps/vu8c17kgtP52" }
 		];
 	
+	$scope.emailGroups = [
+		{ name: "self", emails: ["\"Brett\" <maildrop444@gmail.com>"] },
+		{ name: "family", emails: ["\"Brett\" <maildrop444@gmail.com>", "\"Sita van Beynum\" <svanbeynum@gmail.com>"] },
+		{ name: "mom", emails: ["\"Grandma\" <msanborng@gmail.com>", "\"Grandpa\" <fabman54@gmail.com>"] },
+		{ name: "dad", emails: ["\"Opa\" <rvanbeynum@gmail.com>", "\"Oma\" <sarvanbeynum@gmail.com>"] },
+		{ name: "great", emails: ["\"Great Grandma\" <goldenquill@frontier.com>"] },
+		{ name: "team", emails: ["\"Brett van Beynum\" <bvanbeynum@gmail.com>","\"Brzozka, Brian\" <bbrzozka@aol.com>","\"Canty, Tim\" <Irishbluegold@yahoo.com>","\"Campbell, Amber\" <charlovescars@yahoo.com>","\"Campbell, Jared\" <jdcrtr73@gmail.com>","\"Dellinger, Jennifer\" <jenniferodellinger@gmail.com>","\"Dyrness, Carrie\" <ceh4092@yahoo.com>","\"Heredia, Edwin\" <eheredia@live.com>","\"Norek, Sean\" <seannorek@yahoo.com>","\"Sarah\" <sarah.norek@atriumhealth.org>","\"Parker, Virginia\" <virgparker@msn.com>","\"Parker, Cary\" <jcaryparker@gmail.com>","\"Simms, Whitney\" <art3210@yahoo.com>","\"van Beynum, Sita\" <svanbeynum@gmail.com>","\"Wiand, Carissa\" <carissabertalan@hotmail.com>","\"Craig Wiand\" <craigW@microsoft.com>"] }
+	];
+	
 	$scope.isLoading = false;
 	
 	$scope.templateChanged = function () {
-		$http({url: "/team/emailFiles/" + $scope.selectedTemplate + ".html"}).then(
+		$http({url: "/snacks/parentemails?divisionid=" + $rootScope.managedTeam.teamDivision.id }).then(
 			function (response) {
-				$scope.templateHTML = response.data;
-				$scope.emailHTML = $scope.templateHTML;
+				$scope.parents = response.data.parentEmails;
+				
+				$http({url: "/team/emailFiles/" + $scope.selectedTemplate + ".html"}).then(
+					function (response) {
+						$scope.templateHTML = response.data;
+						$scope.emailHTML = $scope.templateHTML;
+					}, function (error) {
+						console.log(error);
+						
+						$mdToast.show(
+							$mdToast.simple()
+								.textContent("There was an error loading the template")
+								.position("bottom left")
+								.hideDelay(2000)
+						);
+					});
+					
 			}, function (error) {
 				console.log(error);
 				
 				$mdToast.show(
 					$mdToast.simple()
-						.textContent("There was an error loading the template")
+						.textContent("There was an error loading the emails")
 						.position("bottom left")
 						.hideDelay(2000)
 				);
 			});
+		
 	};
 	
 	$scope.changeTab = function (tab) {
 		if ($scope.tab == "settings") {
-			if ($scope.practiceLocation) {
-				$scope.practiceLocationURL = $scope.practiceLocation.mapURL;
-				$scope.practiceLocationName = $scope.practiceLocation.name;
-				$scope.practiceLocationAddress = $scope.practiceLocation.address;
-			}
 			
-			$scope.practiceDate = ($scope.practiceDateSelect) ? ($scope.practiceDateSelect.getMonth() + 1) + "/" + $scope.practiceDateSelect.getDay() + "/" + $scope.practiceDateSelect.getFullYear() : "";
-			$scope.practiceStart = ($scope.practiceStartHour && $scope.practiceStartMin) ? $scope.practiceStartHour + ":" + $scope.practiceStartMin : "";
-			$scope.practiceEnd = ($scope.practiceEndHour && $scope.practiceEndMin) ? $scope.practiceEndHour + ":" + $scope.practiceEndMin : "";
+			if ($scope.selectedTemplate == "practice") {
+				if ($scope.practiceLocation) {
+					$scope.practiceLocationURL = $scope.practiceLocation.mapURL;
+					$scope.practiceLocationName = $scope.practiceLocation.name;
+					$scope.practiceLocationAddress = $scope.practiceLocation.address;
+				}
+				
+				$scope.practiceDate = ($scope.practiceDateSelect) ? ($scope.practiceDateSelect.getMonth() + 1) + "/" + $scope.practiceDateSelect.getDay() + "/" + $scope.practiceDateSelect.getFullYear() : "";
+				$scope.practiceStart = ($scope.practiceStartHour && $scope.practiceStartMin) ? $scope.practiceStartHour + ":" + $scope.practiceStartMin : "";
+				$scope.practiceEnd = ($scope.practiceEndHour && $scope.practiceEndMin) ? $scope.practiceEndHour + ":" + $scope.practiceEndMin : "";
+			}
 			
 			$scope.emailHTML = $scope.templateHTML;
 			
@@ -810,6 +838,56 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 		}
 		
 		$scope.tab = tab;
+	};
+	
+	$scope.send = function () {
+		var emailList = [];
+		
+		if ($scope.selectedTemplate == "snacks") {
+			emailList = $scope.parents
+				.filter(function (parent) { return parent.emailGroups.indexOf("team") >= 0; })
+				.map(function (parent) {
+					return "\"" + parent.name + "\" <" + parent.email + ">";
+				});
+		}
+		else {
+			emailList = $scope.selectedGroup.emails;
+		}
+		
+		var confirm = $mdDialog.confirm()
+			.title("Send Email?")
+			.htmlContent("Are you sure you wish to send the " + $scope.selectedTemplate + " tempalte to<br>" + emailList.join("<br>"))
+			.ariaLabel("Send Email?")
+			.targetEvent(event)
+			.ok("Send Email")
+			.cancel("Cancel");
+		
+		$mdDialog.show(confirm).then(function() {
+			$scope.isLoading = true;
+			
+			$http({url: "/emailer/sendlist", method: "POST", data: { email: $scope.emailHTML, emailList: emailList }}).then(
+				function (response) {
+					$scope.isLoading = false;
+					
+					$mdToast.show(
+						$mdToast.simple()
+							.textContent("Emails sent successfully")
+							.position("bottom left")
+							.hideDelay(2000)
+					);
+				}, function (error) {
+					$scope.isLoading = false;
+					console.log(error);
+					
+					$mdToast.show(
+						$mdToast.simple()
+							.textContent("There was an error loading the emails")
+							.position("bottom left")
+							.hideDelay(2000)
+					);
+				});
+		});
+			
 	};
 	
 });

@@ -14,14 +14,25 @@
 				<md-input-container>
 					<label>Email Template</label>
 					<md-select ng-model="selectedTemplate" ng-change="templateChanged()">
-						<md-option ng-value="'practice'">Practice</md-option>
-						<md-option ng-value="'gamereminder'">Game Reminder</md-option>
-						<md-option ng-value="'gamerecap'">Game Recap</md-option>
-						<md-option ng-value="'schedule'">Schedule</md-option>
-						<md-option ng-value="'welcome'">Welcome</md-option>
 						<md-option ng-value="'blank'">Blank</md-option>
+						<md-option ng-value="'practice'">Practice</md-option>
+						<md-option ng-value="'snacks'">Snacks</md-option>
 					</md-select>
 				</md-input-container>
+				
+				<div ng-show="selectedTemplate == 'blank'" layout="column">
+					<h2>Blank Template Settings</h2>
+					
+					<md-input-container>
+						<label>Title</label>
+						<input type="text" ng-model="title" />
+					</md-input-container>
+					
+					<md-input-container>
+						<label>Comments</label>
+						<input type="text" ng-model="comments" />
+					</md-input-container>
+				</div>
 				
 				<div ng-show="selectedTemplate == 'practice'" layout="column">
 					<h2>Practice Settings</h2>
@@ -213,6 +224,10 @@
 						
 					</div>
 				</div>
+				
+				<div ng-show="selectedTemplate == 'snacks'" layout="column">
+					<h2>Snacks Settings</h2>
+				</div>
 			</md-content>
 		</md-tab>
 		
@@ -227,9 +242,10 @@
 		
 		<md-tab label="Preview" flex="100" layout="column" md-on-select="changeTab('preview')">
 			<md-content flex="100" layout="column">
-				<md-input-container flex>
+				<md-input-container ng-show="selectedTemplate != 'snacks'">
 					<label>To</label>
-					<md-select ng-model="sendTo">
+					<md-select ng-model="selectedGroup">
+						<md-option ng-repeat="group in emailGroups" ng-value="{{group}}">{{ group.name }}</md-option>
 					</md-select>
 				</md-input-container>
 				
@@ -237,7 +253,7 @@
 					<md-button class="md-primary md-raised" ng-click="send()">Send</md-button>
 				</div>
 				
-				<iframe id="templateView" flex="65" ng-show="emailHTML && emailHTML.length > 0"></iframe>
+				<iframe id="templateView" flex="70" ng-show="emailHTML && emailHTML.length > 0"></iframe>
 			</md-content>
 		</md-tab>
 	</md-tabs>
