@@ -873,7 +873,7 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 		
 		var confirm = $mdDialog.confirm()
 			.title("Send Email?")
-			.htmlContent("Are you sure you wish to send the " + $scope.selectedTemplate + " tempalte to<br>" + emailList.join("<br>"))
+			.htmlContent("Are you sure you wish to send the " + $scope.selectedTemplate + " template to<br>" + emailList.join("<br>"))
 			.ariaLabel("Send Email?")
 			.targetEvent(event)
 			.ok("Send Email")
@@ -888,7 +888,7 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 					.forEach(function (parent) {
 						var snackEmail = $scope.emailHTML.replace(/{{snacksLink}}/g, "https://gametime.beynum.com/snacks?emailid=" + parent._id);
 						
-						$http({ url: "/emailer/sendlist", method: "POST", data: { email: snackEmail, emailList: ["\"" + parent.name + "\" <maildrop444@gmail.com>"] }})
+						$http({ url: "/emailer/sendlist", method: "POST", data: { email: snackEmail, emailList: ["\"" + parent.name + "\" <" + parent.email + ">"] }})
 							.then(function (response) {
 								$scope.isLoading = false;
 								
