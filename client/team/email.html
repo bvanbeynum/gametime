@@ -17,6 +17,7 @@
 						<md-option ng-value="'blank'">Blank</md-option>
 						<md-option ng-value="'practice'">Practice</md-option>
 						<md-option ng-value="'snacks'">Snacks</md-option>
+						<md-option ng-value="'recap'">Game Recap</md-option>
 					</md-select>
 				</md-input-container>
 				
@@ -228,6 +229,51 @@
 				<div ng-show="selectedTemplate == 'snacks'" layout="column">
 					<h2>Snacks Settings</h2>
 				</div>
+				
+				<div ng-show="selectedTemplate == 'recap'" layout="column" layout-align="start start">
+					<h2>Game Recap Template Settings</h2>
+					
+					<md-input-container flex>
+						<md-datepicker ng-model="recap.gameDate" md-placeholder="Date" ng-change="recapDateChanged()"></md-datepicker>
+					</md-input-container>
+					
+					<md-input-container>
+						<label>Huskies Score</label>
+						<input type="number" ng-model="recap.huskiesScore" />
+					</md-input-container>
+					
+					<md-input-container>
+						<label>Opponent Name</label>
+						<input type="text" ng-model="recap.opponentName" />
+					</md-input-container>
+					
+					<md-input-container>
+						<label>Opponent Score</label>
+						<input type="number" ng-model="recap.opponentScore" />
+					</md-input-container>
+					
+					<md-input-container>
+						<label>Comments</label>
+						<input type="text" ng-model="recap.recapText" />
+					</md-input-container>
+					
+					<div layout="row" layout-align="space-around" ng-repeat="score in recap.scoreboard">
+						<md-input-container>
+							<label>Huskies</label>
+							<input type="text" ng-model="score.huskies" />
+						</md-input-container>
+						
+						<md-input-container>
+							<label>Opponent</label>
+							<input type="text" ng-model="score.opponent" />
+						</md-input-container>
+					</div>
+					
+					<div>
+						<a href="" ng-click="addScore()">add score</a>
+					</div>
+				</div>
+				
 			</md-content>
 		</md-tab>
 		

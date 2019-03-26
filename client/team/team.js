@@ -761,7 +761,7 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 		{ name: "mom", emails: ["\"Grandma\" <msanborng@gmail.com>", "\"Grandpa\" <fabman54@gmail.com>"] },
 		{ name: "dad", emails: ["\"Opa\" <rvanbeynum@gmail.com>", "\"Oma\" <sarvanbeynum@gmail.com>"] },
 		{ name: "great", emails: ["\"Great Grandma\" <goldenquill@frontier.com>"] },
-		{ name: "team", emails: ["\"Brett van Beynum\" <bvanbeynum@gmail.com>","\"Brzozka, Brian\" <bbrzozka@aol.com>","\"Canty, Tim\" <Irishbluegold@yahoo.com>","\"Campbell, Amber\" <charlovescars@yahoo.com>","\"Campbell, Jared\" <jdcrtr73@gmail.com>","\"Dellinger, Jennifer\" <jenniferodellinger@gmail.com>","\"Dyrness, Carrie\" <ceh4092@yahoo.com>","\"Heredia, Edwin\" <eheredia@live.com>","\"Norek, Sean\" <seannorek@yahoo.com>","\"Sarah\" <sarah.norek@atriumhealth.org>","\"Parker, Virginia\" <virgparker@msn.com>","\"Parker, Cary\" <jcaryparker@gmail.com>","\"Simms, Whitney\" <art3210@yahoo.com>","\"van Beynum, Sita\" <svanbeynum@gmail.com>","\"Wiand, Carissa\" <carissabertalan@hotmail.com>","\"Craig Wiand\" <craigW@microsoft.com>"] }
+		{ name: "team", emails: ["\"Brett van Beynum\" <bvanbeynum@gmail.com>","\"Brzozka, Brian\" <bbrzozka@aol.com>","\"Canty, Tim\" <Irishbluegold@yahoo.com>","\"Campbell, Amber\" <charlovescars@yahoo.com>","\"Campbell, Jared\" <jdcrtr73@gmail.com>","\"Dellinger, Daniel\" <dellinger.daniel@outlook.com>","\"Dellinger, Jennifer\" <jenniferodellinger@gmail.com>","\"Dyrness, Carrie\" <ceh4092@yahoo.com>","\"Heredia, Edwin\" <eheredia@live.com>","\"Norek, Sean\" <seannorek@yahoo.com>","\"Sarah\" <sarah.norek@atriumhealth.org>","\"Parker, Virginia\" <virgparker@msn.com>","\"Parker, Cary\" <jcaryparker@gmail.com>","\"Simms, Whitney\" <art3210@yahoo.com>","\"van Beynum, Sita\" <svanbeynum@gmail.com>","\"Wiand, Carissa\" <carissabertalan@hotmail.com>","\"Craig Wiand\" <craigW@microsoft.com>"] }
 	];
 	
 	$scope.isLoading = false;
@@ -801,6 +801,7 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 	
 	$scope.changeTab = function (tab) {
 		if ($scope.tab == "settings") {
+			var replaceObject = $scope;
 			
 			if ($scope.selectedTemplate == "practice") {
 				if ($scope.practiceLocation) {
@@ -809,21 +810,37 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 					$scope.practiceLocationAddress = $scope.practiceLocation.address;
 				}
 				
-				$scope.practiceDate = ($scope.practiceDateSelect) ? ($scope.practiceDateSelect.getMonth() + 1) + "/" + $scope.practiceDateSelect.getDay() + "/" + $scope.practiceDateSelect.getFullYear() : "";
+				$scope.practiceDate = ($scope.practiceDateSelect) ? ($scope.practiceDateSelect.getMonth() + 1) + "/" + $scope.practiceDateSelect.getDate() + "/" + $scope.practiceDateSelect.getFullYear() : "";
 				$scope.practiceStart = ($scope.practiceStartHour && $scope.practiceStartMin) ? $scope.practiceStartHour + ":" + $scope.practiceStartMin : "";
 				$scope.practiceEnd = ($scope.practiceEndHour && $scope.practiceEndMin) ? $scope.practiceEndHour + ":" + $scope.practiceEndMin : "";
 			}
-			
-			$scope.emailHTML = $scope.templateHTML;
-			
-			var replacements = $scope.emailHTML.match(/{{[^}]+}}/gi);
-			
-			if (replacements && replacements.length > 0) {
-				replacements = replacements.map(function (replaceString) { return replaceString.replace(/[{}]/gi, "") });
+			else if ($scope.selectedTemplate == "recap") {
+				if ($scope.recap.scoreboard) {
+					$scope.recap.opponentImage = $scope.recap.opponentName.toLowerCase();
+					$scope.recap.huskiesScoreboard = $scope.recap.scoreboard.map(function (score) {
+						return "<td>" + score.huskies + "</td>";
+					}).join("");
+					
+					$scope.recap.opponentScoreboard = $scope.recap.scoreboard.map(function (score) {
+						return "<td>" + score.opponent + "</td>";
+					}).join("");
+				}
+				
+				replaceObject = $scope.recap;
 			}
 			
-			for (var replaceIndex = 0; replaceIndex < replacements.length; replaceIndex++) {
-				$scope.emailHTML = $scope.emailHTML.replace(new RegExp("{{" + replacements[replaceIndex] + "}}", "g"), ($scope[replacements[replaceIndex]] || ""));
+			if ($scope.selectedTemplate != "snacks") {
+				$scope.emailHTML = $scope.templateHTML;
+				
+				var replacements = $scope.emailHTML.match(/{{[^}]+}}/gi);
+				
+				if (replacements && replacements.length > 0) {
+					replacements = replacements.map(function (replaceString) { return replaceString.replace(/[{}]/gi, "") });
+				}
+				
+				for (var replaceIndex = 0; replaceIndex < replacements.length; replaceIndex++) {
+					$scope.emailHTML = $scope.emailHTML.replace(new RegExp("{{" + replacements[replaceIndex] + "}}", "g"), (replaceObject[replacements[replaceIndex]] || ""));
+				}
 			}
 		}
 		
@@ -845,7 +862,7 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 		
 		if ($scope.selectedTemplate == "snacks") {
 			emailList = $scope.parents
-				.filter(function (parent) { return parent.emailGroups.indexOf("team") >= 0; })
+				.filter(function (parent) { return parent.emailGroups.indexOf("team") >= 0 && parent.playerId })
 				.map(function (parent) {
 					return "\"" + parent.name + "\" <" + parent.email + ">";
 				});
@@ -865,29 +882,79 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 		$mdDialog.show(confirm).then(function() {
 			$scope.isLoading = true;
 			
-			$http({url: "/emailer/sendlist", method: "POST", data: { email: $scope.emailHTML, emailList: emailList }}).then(
-				function (response) {
-					$scope.isLoading = false;
-					
-					$mdToast.show(
-						$mdToast.simple()
-							.textContent("Emails sent successfully")
-							.position("bottom left")
-							.hideDelay(2000)
-					);
-				}, function (error) {
-					$scope.isLoading = false;
-					console.log(error);
-					
-					$mdToast.show(
-						$mdToast.simple()
-							.textContent("There was an error loading the emails")
-							.position("bottom left")
-							.hideDelay(2000)
-					);
-				});
+			if ($scope.selectedTemplate == "snacks") {
+				$scope.parents
+					.filter(function (parent) { return parent.emailGroups.indexOf("team") >= 0 && parent.playerId })
+					.forEach(function (parent) {
+						var snackEmail = $scope.emailHTML.replace(/{{snacksLink}}/g, "https://gametime.beynum.com/snacks?emailid=" + parent._id);
+						
+						$http({ url: "/emailer/sendlist", method: "POST", data: { email: snackEmail, emailList: ["\"" + parent.name + "\" <maildrop444@gmail.com>"] }})
+							.then(function (response) {
+								$scope.isLoading = false;
+								
+								console.log("sent: " + parent.name);
+								
+								$mdToast.show(
+									$mdToast.simple()
+										.textContent("Sent to " + parent.name)
+										.position("bottom left")
+										.hideDelay(2000)
+								);
+							}, function (error) {
+								$scope.isLoading = false;
+								console.log(error);
+								
+								$mdToast.show(
+									$mdToast.simple()
+										.textContent("There was an error loading the emails")
+										.position("bottom left")
+										.hideDelay(2000)
+								);
+							});
+					});
+			}
+			else {
+				$http({url: "/emailer/sendlist", method: "POST", data: { email: $scope.emailHTML, emailList: emailList }}).then(
+					function (response) {
+						$scope.isLoading = false;
+						
+						$mdToast.show(
+							$mdToast.simple()
+								.textContent("Emails sent successfully")
+								.position("bottom left")
+								.hideDelay(2000)
+						);
+					}, function (error) {
+						$scope.isLoading = false;
+						console.log(error);
+						
+						$mdToast.show(
+							$mdToast.simple()
+								.textContent("There was an error loading the emails")
+								.position("bottom left")
+								.hideDelay(2000)
+						);
+					});
+			}
 		});
 			
+	};
+	
+	$scope.addScore = function () {
+		if (!$scope.recap) {
+			$scope.recap = { scoreboard: [] };
+		}
+		else if (!$scope.recap.scoreboard) {
+			$scope.recap.scoreboard = [];
+		}
+		
+		$scope.recap.scoreboard.push({});
+	};
+	
+	$scope.recapDateChanged = function () {
+		$scope.recap.day = $scope.recap.gameDate.toLocaleDateString("us-EN", { weekday: "short" });
+		$scope.recap.date = $scope.recap.gameDate.getDate();
+		$scope.recap.month = $scope.recap.gameDate.getMonth() + 1;
 	};
 	
 });

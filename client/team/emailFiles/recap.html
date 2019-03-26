@@ -1,0 +1,245 @@
+<html>
+<head>
+<title>Huskies vs {{opponentName}} Game Recap</title>
+
+<style>
+.html {
+	padding: 5px;
+}
+
+.innerhtml {
+	margin: 0;
+	padding: 0;
+	font-family: verdana, sans-serif;
+	font-size: .9em;
+	background-color: rgb(60, 45, 112);
+}
+
+.clear {
+	clear: both;
+}
+
+.header {
+	margin: 0 auto;
+	height: 168px;
+	text-align: center;
+	background: repeat-x url("/emailer/images/grass.jpg");
+}
+
+.header .logo {
+	margin: 24px auto;
+	height: 120px;
+}
+
+.content {
+	margin: 0 auto;
+	padding: 5px 0px;
+	background-color: rgb(255,255,255);
+	border-left: 5px solid rgb(213,202,148);
+	border-right: 5px solid rgb(213,202,148);
+	box-sizing: border-box;
+}
+
+.textHeader {
+	color: rgb(60, 45, 112);
+	/*text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;*/
+}
+
+.textSubHeader {
+	color: rgb(100,100,100);
+	font-weight: normal;
+	font-size: 15px;
+	margin: 10px 0px 0px 10px;
+}
+.highlight {
+	font-weight: bold;
+	background-color: rgb(255, 255, 0);
+}
+
+.contentImage {
+	width: 200px;
+	margin: 5px 10px;
+}
+.gohuskies {
+	margin: 15px 0px;
+	width: 250px;
+}
+
+.gametime {
+	color: rgb(100,100,100);
+	margin: 10px 0px;
+	font-size: 12px;
+	padding-left: 5px;
+}
+
+.teamlogo {
+	float: left;
+	margin: 0px 10%;
+}
+
+.score {
+	float: left;
+	margin: 0px 3%;
+	font-size: 23pt;
+	height: 48px;
+	vertical-align: bottom;
+}
+
+.scorebreak {
+	float: left;
+	font-weight: bold;
+	font-size: 18pt;
+}
+
+.gamescore {
+	width: 400px;
+	height: 50px;
+	margin: 0px auto;
+}
+
+.teamcontainer {
+	width: 400px;
+	margin: auto;
+	height: 40px;
+	border-bottom: solid 1px rgb(200,200,200);
+}
+
+.awayname {
+	float: left;
+}
+
+.homename {
+	float: right;
+}
+
+.teamname {
+	margin: 0px 10%;
+}
+
+.textContent {
+	margin: 0px 10px 20px 10px;
+	color: rgb(100,100,100);
+	font-size: 11px;
+}
+
+table.scoreboard {
+	border-collapse: collapse;
+	width: 100%;
+	margin: 0px auto 25px auto;
+	font-size: 11px;
+	color: rgb(100,100,100);
+}
+
+.scoreboard td:nth-child(n+2) {
+	width: 30px;
+	text-align: center;
+}
+
+.scoreboard td:nth-last-child(1) {
+	font-weight: bold;
+}
+
+img.huskiesteam {
+	float: right;
+	margin: 0px 5px;
+}
+
+.highlightImage {
+	float: right;
+	font-size: .6em;
+	color: rgb(100,100,100);
+	text-align: center;
+	clear: right;
+}
+
+.highlightImage img {
+	display: block;
+	margin: 7px;
+	width: 240px;
+}
+
+@media (min-device-width: 650px) {
+	.header {
+		width: 650px;
+	}
+	
+	.content {
+		width: 650px;
+	}
+	
+}
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<div class="html">
+	<div class="innerhtml">
+		
+		<div class="header">
+			<img class="logo" src="/emailer/images/UW-logo.png" />
+		</div>
+		
+		<div class="content">
+			
+			<div class="gametime">
+				{{day}}, {{month}}/{{date}}
+			</div>
+			
+			<div class="gamescore">
+				<div class="teamlogo">
+					<img src="/emailer/images/huskies.png" />
+				</div>
+				
+				<div class="score">{{huskiesScore}}</div>
+				<div class="scorebreak">-</div>
+				<div class="score">{{opponentScore}}</div>
+				
+				<div class="teamlogo">
+					<img src="/emailer/images/{{opponentImage}}.png" />
+				</div>
+			</div>
+			
+			<div class="teamcontainer">
+				<div class="teamname awayname">Huskies</div>
+				<div class="teamname homename">{{opponentName}}</div>
+			</div>
+			
+			<br class="clear">
+			
+			<table class="scoreboard">
+			<tr>
+				<td>Huskies</td>
+				{{huskiesScoreboard}}
+			</tr>
+			<tr>
+				<td>{{opponentName}}</td>
+				{{opponentScoreboard}}
+			</tr>
+			</table>
+			
+			<h3 class="textSubHeader">Team Video</h3>
+			
+			<p class="textContent">
+				<a href="https://photos.app.goo.gl/grV7mrb4tCw5NjQ69" target="_new">Team Video Album</a><br>
+				The team video album has been updated with the footage from the game.
+			</p>
+			
+			<h3 class="textSubHeader">Game Recap</h3>
+			
+			<p class="textContent">
+				{{recapText}}
+			</p>
+			
+			<p class="textContent">
+				<img class="gohuskies" src="/emailer/images/go-dogs2.jpg" /><br>
+				<strong>Go Huskies!!!</strong><br>
+				-Brett van Beynum
+			</p>
+			
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
