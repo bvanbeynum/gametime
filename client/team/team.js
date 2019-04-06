@@ -764,6 +764,35 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 		{ name: "team", emails: ["\"Brett van Beynum\" <bvanbeynum@gmail.com>","\"Brzozka, Brian\" <bbrzozka@aol.com>","\"Canty, Tim\" <Irishbluegold@yahoo.com>","\"Campbell, Amber\" <charlovescars@yahoo.com>","\"Campbell, Jared\" <jdcrtr73@gmail.com>","\"Dellinger, Daniel\" <dellinger.daniel@outlook.com>","\"Dellinger, Jennifer\" <jenniferodellinger@gmail.com>","\"Dyrness, Carrie\" <ceh4092@yahoo.com>","\"Heredia, Edwin\" <eheredia@live.com>","\"Norek, Sean\" <seannorek@yahoo.com>","\"Sarah\" <sarah.norek@atriumhealth.org>","\"Parker, Virginia\" <virgparker@msn.com>","\"Parker, Cary\" <jcaryparker@gmail.com>","\"Simms, Whitney\" <art3210@yahoo.com>", "\"Simms, Jared\" <jsimms@gwblawfirm.com>","\"van Beynum, Sita\" <svanbeynum@gmail.com>","\"Wiand, Carissa\" <carissabertalan@hotmail.com>","\"Craig Wiand\" <craigW@microsoft.com>"] }
 	];
 	
+	$http({url: "/data/game?teamid=" + $rootScope.managedTeam.id }).then(
+		function (response) {
+			$scope.games = response.data.games;
+		}, function (error) {
+			console.log(error);
+			
+			$mdToast.show(
+				$mdToast.simple()
+					.textContent("There was an error loading the games")
+					.position("bottom left")
+					.hideDelay(2000)
+			);
+		});
+	
+	$http({url: "/data/player?teamid=" + $rootScope.managedTeam.id}).then(
+		function (response) {
+			$scope.huskyPlayers = response.data.players;
+		}, function (error) {
+			console.log(error);
+			
+			$mdToast.show(
+				$mdToast.simple()
+					.textContent("There was an error loading the players")
+					.position("bottom left")
+					.hideDelay(2000)
+			);
+		});
+	
+	$scope.gameEmail = {};
 	$scope.isLoading = false;
 	
 	$scope.templateChanged = function () {
@@ -827,6 +856,21 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 				}
 				
 				replaceObject = $scope.recap;
+			}
+			else if ($scope.selectedTemplate == "game") {
+				$scope.gameEmail.teamLineup = $scope.huskyPlayers
+					.filter(function (player) { return player.offense && player.defense && player.group})
+					.map(function (player) {
+						return "<tr>" + 
+								"	<td>" + player.playerNumber + "</td>" + 
+								"	<td>" + player.firstName + " " + player.lastName + "</td>" + 
+								"	<td>" + player.offense + "</td>" + 
+								"	<td>" + player.defense + "</td>" + 
+								"	<td>" + player.group + "</td>" + 
+								"</tr>";
+					}).join("");
+					
+				replaceObject = $scope.gameEmail;
 			}
 			
 			if ($scope.selectedTemplate != "snacks") {
@@ -957,6 +1001,25 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 		$scope.recap.month = $scope.recap.gameDate.getMonth() + 1;
 	};
 	
+	$scope.gameEmailChange = function () {
+		var gameTime = new Date($scope.gameEmail.selectedGame.dateTime);
+		
+		$scope.gameEmail.month = gameTime.getMonth() + 1;
+		$scope.gameEmail.day = gameTime.toLocaleDateString("us-EN", { weekday: "short"});
+		$scope.gameEmail.date = gameTime.getDate();
+		$scope.gameEmail.gameTime = gameTime.toLocaleTimeString("us-EN", { hour: "2-digit", minute: "2-digit" });
+		
+		var arriveTime = new Date(gameTime - (30 * 60000));
+		$scope.gameEmail.arriveTime = arriveTime.toLocaleTimeString("us-EN", { hour: "2-digit", minute: "2-digit" });
+		
+		var opponent = ($scope.gameEmail.selectedGame.homeTeam.id == $rootScope.managedTeam.id) ? $scope.gameEmail.selectedGame.awayTeam : $scope.gameEmail.selectedGame.homeTeam;
+		$scope.gameEmail.opponentImage = opponent.name.toLowerCase();
+		$scope.gameEmail.opponent = opponent.name;
+		
+		var parent = $scope.parents.find(function (parent) { return parent._id == $scope.gameEmail.selectedGame.snackSignupParentId; });
+		$scope.gameEmail.snackParent = (parent) ? parent.name : "";
+		
+	};
 });
 
 function teamManageCtl(team, allTeams, $scope, $mdDialog, $mdToast) {

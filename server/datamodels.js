@@ -73,6 +73,7 @@ module.exports = {
 
 		firstName: String,
 		lastName: String,
+		playerNumber: Number,
 		dateOfBirth: Date,
 		parentName: String,
 		parentEmail: String,

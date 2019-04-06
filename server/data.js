@@ -166,6 +166,7 @@ module.exports = function (app) {
 						
 						firstName: playerDb.firstName,
 						lastName: playerDb.lastName,
+						playerNumber: playerDb.playerNumber,
 						dateOfBirth: playerDb.dateOfBirth,
 						parentName: playerDb.parentName,
 						parentEmail: playerDb.parentEmail,
@@ -257,6 +258,7 @@ module.exports = function (app) {
 				
 					playerDb.firstName = playerSave.firstName ? playerSave.firstName : playerDb.firstName;
 					playerDb.lastName = playerSave.lastName ? playerSave.lastName : playerDb.lastName;
+					playerDb.playerNumber = playerSave.playerNumber ? playerSave.playerNumber : playerDb.playerNumber;
 					playerDb.dateOfBirth = playerSave.dateOfBirth ? playerSave.dateOfBirth : playerDb.dateOfBirth;
 					playerDb.parentName = playerSave.parentName ? playerSave.parentName : playerDb.parentName;
 					playerDb.parentEmail = playerSave.parentEmail ? playerSave.parentEmail : playerDb.parentEmail;
@@ -333,6 +335,7 @@ module.exports = function (app) {
 				
 				firstName: playerSave.firstName,
 				lastName: playerSave.lastName,
+				playerNumber: playerSave.playerNumber,
 				dateOfBirth: playerSave.dateOfBirth,
 				parentName: playerSave.parentName,
 				parentEmail: playerSave.parentEmail,
@@ -648,8 +651,8 @@ module.exports = function (app) {
 		}
 		if (request.query.teamid) {
 			filter.$or = [
-				{ "homeTeam.id": request.query.id },
-				{ "awayTeam.id": request.query.id }
+				{ "homeTeam.id": request.query.teamid },
+				{ "awayTeam.id": request.query.teamid }
 				];
 		}
 		if (request.query.teamname) {

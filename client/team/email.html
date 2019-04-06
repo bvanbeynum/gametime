@@ -17,6 +17,7 @@
 						<md-option ng-value="'blank'">Blank</md-option>
 						<md-option ng-value="'practice'">Practice</md-option>
 						<md-option ng-value="'snacks'">Snacks</md-option>
+						<md-option ng-value="'game'">Game</md-option>
 						<md-option ng-value="'recap'">Game Recap</md-option>
 					</md-select>
 				</md-input-container>
@@ -228,6 +229,44 @@
 				
 				<div ng-show="selectedTemplate == 'snacks'" layout="column">
 					<h2>Snacks Settings</h2>
+				</div>
+				
+				<div ng-show="selectedTemplate == 'game'" layout="column">
+					<h2>Game Settings</h2>
+					
+					<div layout="row">
+						<md-input-container flex>
+							<label>Game</label>
+							<md-select ng-model="gameEmail.selectedGame" ng-change="gameEmailChange()">
+								<md-option ng-repeat="game in games | orderBy:'dateTime'" ng-value="{{game}}">{{ game.dateTime | date:'MM/dd' }} - {{game.homeTeam.name}} vs {{game.awayTeam.name}}</md-option>
+							</md-select>
+						</md-input-container>
+					</div>
+					
+					<div ng-repeat="player in huskyPlayers | orderBy:'playerNumber'" layout="column">
+						<div class="gameselectPlayer">{{player.playerNumber + ": " + player.firstName + " " + player.lastName}}</div>
+						
+						<div layout="row" layout-align="space-between">
+							<md-input-container>
+								<label>Offense</label>
+								<input type="text" ng-model="player.offense" />
+							</md-input-container>
+							
+							<md-input-container>
+								<label>Defense</label>
+								<input type="text" ng-model="player.defense" />
+							</md-input-container>
+							
+							<md-input-container flex>
+								<label>Group</label>
+								<md-select ng-model="player.group">
+									<md-option ng-value="'-'">-</md-option>
+									<md-option ng-value="'1'">1</md-option>
+									<md-option ng-value="'2'">2</md-option>
+								</md-select>
+							</md-input-container>
+						</div>
+					</div>
 				</div>
 				
 				<div ng-show="selectedTemplate == 'recap'" layout="column" layout-align="start start">

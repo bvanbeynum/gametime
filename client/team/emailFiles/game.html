@@ -167,7 +167,7 @@
 		<div class="content">
 			
 			<div class="gametime">
-				Sat, 11/3, 9:30 AM (please arrive by <span class="highlight">8:00 AM</span> for practice) - <a href="https://goo.gl/maps/M7uxFBecti32" target="_new">Turner Field</a>
+				{{day}}, {{month}}/{{date}}, {{gameTime}} (please arrive by <span class="highlight">{{arriveTime}}</span> for practice) - <a href="https://goo.gl/maps/M7uxFBecti32" target="_new">Turner Field</a>
 			</div>
 			
 			<div class="gameContainer">
@@ -180,14 +180,14 @@
 				
 				<div class="teambreak">
 					<div class="breaktext">
-						At
+						VS
 					</div>
 				</div>
 				
 				<div class="teamContainer">
 					<div class="team">
-						<img src="/emailer/images/tigers.png" />
-						<div class="teamname">Tigers</div>
+						<img src="{{opponentImage}}" />
+						<div class="teamname">{{opponent}}</div>
 					</div>
 				</div>
 			</div>
@@ -197,73 +197,15 @@
 				<th>#</th>
 				<th>Name</th>
 				<th>Offense</th>
+				<th>Defense</th>
 				<th>Group</th>
 			</tr>
-			<tr>
-				<td>1</td>
-				<td>Owen Markle</td>
-				<td>C</td>
-				<td>1</td>
-			</tr>
-			<tr>
-				<td>2</td>
-				<td>Reeves Parker</td>
-				<td>RB</td>
-				<td>1</td>
-			</tr>
-			<tr>
-				<td>3</td>
-				<td>Luke van Beynum</td>
-				<td>QB</td>
-				<td> - </td>
-			</tr>
-			<tr>
-				<td>4</td>
-				<td>Cooper Dyrness</td>
-				<td>Right G</td>
-				<td> - </td>
-			</tr>
-			<tr>
-				<td>5</td>
-				<td>Wyatt Hamilton</td>
-				<td>RB</td>
-				<td>2</td>
-			</tr>
-			<tr>
-				<td>6</td>
-				<td>Cameron Norek</td>
-				<td>Left G</td>
-				<td> - </td>
-			</tr>
-			<tr>
-				<td>7</td>
-				<td>Daniel Normand</td>
-				<td>Right WR</td>
-				<td>2</td>
-			</tr>
-			<tr>
-				<td>8</td>
-				<td>Turner Wiand</td>
-				<td>Left WR</td>
-				<td> - </td>
-			</tr>
-			<tr>
-				<td>9</td>
-				<td>Brody Hammel</td>
-				<td>Center</td>
-				<td>2</td>
-			</tr>
-			<tr>
-				<td>10</td>
-				<td>Jerry Canty</td>
-				<td>Right WR</td>
-				<td>1</td>
-			</tr>
+			{{teamLineup}}
 			</table>
 			
 			<h3 class="textSubHeader">Snack & Drink Reminder</h3>
 			
-			<p class="textContent"><span class="highlight">Carissa Wiand</span></p>
+			<p class="textContent"><span class="highlight">{{snackParent}}</span></p>
 			
 			<h3 class="textSubHeader">Mouthpieces</h3>
 			
