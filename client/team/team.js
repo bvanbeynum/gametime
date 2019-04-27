@@ -1013,7 +1013,7 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 		$scope.gameEmail.arriveTime = arriveTime.toLocaleTimeString("us-EN", { hour: "2-digit", minute: "2-digit" });
 		
 		var opponent = ($scope.gameEmail.selectedGame.homeTeam.id == $rootScope.managedTeam.id) ? $scope.gameEmail.selectedGame.awayTeam : $scope.gameEmail.selectedGame.homeTeam;
-		$scope.gameEmail.opponentImage = opponent.name.toLowerCase();
+		$scope.gameEmail.opponentImage = "/emailer/images/" + opponent.name.toLowerCase() + ".png";
 		$scope.gameEmail.opponent = opponent.name;
 		
 		var parent = $scope.parents.find(function (parent) { return parent._id == $scope.gameEmail.selectedGame.snackSignupParentId; });
