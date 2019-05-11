@@ -6,9 +6,9 @@
 	<base href="/">
 </head>
 <title>Game Time</title>
-<body ng-controller="teamController" ng-cloak>
+<body ng-controller="teamController" ng-cloak layout="column">
 
-<div layout="column" class="pageContainer">
+<div layout="column" class="pageContainer" flex="100">
 	<md-toolbar class="toolbar md-menu-toolbar" layout="row" layout-align="start center">
 		<md-button class="md-icon-button" aria-label="Back" ng-click="back()" >
 			<md-icon>
@@ -47,7 +47,7 @@
 		</md-menu>
 	</md-toolbar>
 	
-	<div ng-view layout="column"></div>
+	<div ng-view layout="column" flex="grow"></div>
 	
 </div>
 
