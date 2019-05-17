@@ -1,3 +1,4 @@
+<link rel="stylesheet" type="text/css" href="/team/email.css">
 
 <div ng-show="isLoading" flex="90" layout="row" layout-align="center center">
 	<div layout="column" layout="center center">
@@ -10,7 +11,7 @@
 <div ng-show="!isLoading" flex="100" layout="column">
 	<md-tabs md-center-tabs class="md-primary" flex="100" layout="column">
 		<md-tab label="Settings" md-on-select="changeTab('settings')">
-			<md-content class="md-padding" layout="column">
+			<md-content class="md-padding" layout="column" flex="100">
 				<md-input-container>
 					<label>Email Template</label>
 					<md-select ng-model="selectedTemplate" ng-change="templateChanged()">
@@ -316,8 +317,8 @@
 			</md-content>
 		</md-tab>
 		
-		<md-tab flex="100" layout="column" label="Edit" md-on-select="changeTab('edit')">
-			<md-content flex="100" layout="column" class="md-padding">
+		<md-tab label="Edit" md-on-select="changeTab('edit')" flex="100">
+			<md-content layout="column" class="md-padding">
 				<h2>Template</h2>
 				
 				<textarea flex="85" class="emailTemplateURL" id="templateText" ng-model="emailHTML"></textarea>
@@ -325,8 +326,8 @@
 			</md-content>
 		</md-tab>
 		
-		<md-tab label="Preview" flex="100" layout="column" md-on-select="changeTab('preview')">
-			<md-content flex="100" layout="column">
+		<md-tab label="Preview" md-on-select="changeTab('preview')" flex="100">
+			<md-content layout="column">
 				<md-input-container ng-show="selectedTemplate != 'snacks'">
 					<label>To</label>
 					<md-select ng-model="selectedGroup">

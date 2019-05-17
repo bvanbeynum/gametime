@@ -1,0 +1,4 @@
+md-tab-content>div {
+	display: flex;
+	flex-direction: column;
+}

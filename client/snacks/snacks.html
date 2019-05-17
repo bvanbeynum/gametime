@@ -39,7 +39,7 @@
 				
 				<h1 class="textHeader">Select Game</h1>
 				
-				<div class="gamebox" ng-repeat="game in games">
+				<div class="gamebox" ng-repeat="game in games | orderBy: 'dateTime'">
 					<div class="teambox">
 						<div class="team">
 							<img ng-src="/snacks/images/{{ game.awayTeam.name.toLowerCase() }}.png" class="teamimage" />
