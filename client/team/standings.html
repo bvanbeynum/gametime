@@ -19,7 +19,7 @@
 				<th>L</th>
 				<th>Pct</th>
 			</tr>
-			<tr ng-repeat="team in confrence.teams" ng-click="selectTeam(team)">
+			<tr ng-repeat="team in confrence.teams | orderBy: '-ratio'" ng-click="selectTeam(team)">
 				<td><img ng-src="{{team.img}}" /></td>
 				<td>{{team.name}}</td>
 				<td>{{team.wins}}</td>

@@ -318,7 +318,7 @@
 		</md-tab>
 		
 		<md-tab label="Edit" md-on-select="changeTab('edit')" flex="100">
-			<md-content layout="column" class="md-padding">
+			<md-content layout="column" class="md-padding" flex="100">
 				<h2>Template</h2>
 				
 				<textarea flex="85" class="emailTemplateURL" id="templateText" ng-model="emailHTML"></textarea>
@@ -327,7 +327,7 @@
 		</md-tab>
 		
 		<md-tab label="Preview" md-on-select="changeTab('preview')" flex="100">
-			<md-content layout="column">
+			<md-content layout="column" flex="100">
 				<md-input-container ng-show="selectedTemplate != 'snacks'">
 					<label>To</label>
 					<md-select ng-model="selectedGroup">
