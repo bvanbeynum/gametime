@@ -168,6 +168,7 @@ module.exports = {
 		sent: Date,
 		to: [String],
 		emailType: String,
+		divisionId: String,
 		emailText: String
 	})
 	

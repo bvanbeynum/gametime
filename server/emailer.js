@@ -1,7 +1,8 @@
 var nodemailer = require("nodemailer"),
-	models = require("./datamodels"),
+	data = require("./datamodels"),
 	fs = require("fs"),
 	path = require("path"),
+	webRequest = require("request"),
 	gmailAuth = {
 		user: "bvanbeynum@gmail.com",
 		pass: "dfnpqfmuxwctqsfx"
@@ -61,6 +62,61 @@ module.exports = (app) => {
 			var emailGroups = toGroup;
 			
 			response.status(200).json({emails: emails, emailGroups: emailGroups });
+		});
+	});
+	
+	app.get("/emailer/emailload", (request, response) => {
+		if (!request.query.divisionid || !request.query.teamid) {
+			response.status(551).json({error: "Invalid request. Team and division required"});
+		}
+		
+		var output = {};
+		
+		webRequest("http://" + request.headers.host + "/data/player?teamid=" + request.query.teamid, {json: true}, (error, webResponse, body) => {
+			if (error) {
+				response.status(552).json({error: "Could not download players. " + error.message});
+			}
+			
+			output.players = body.players || [];
+			
+			webRequest("http://" + request.headers.host + "/data/game?teamid=" + request.query.teamid, {json: true}, (error, webResponse, body) => {
+				if (error) {
+					response.status(553).json({error: "Could not download games. " + error.message});
+				}
+				
+				output.games = body.games || [];
+				
+				
+				webRequest("http://" + request.headers.host + "/data/parentemails?divisionid=" + request.query.divisionid, {json: true}, (error, webResponse, body) => {
+					if (error) {
+						response.status(553).json({error: "Could not download parents. " + error.message});
+					}
+					
+					output.parents = body.parentEmails || [];
+					
+					data.emailLog.find({divisionId: request.query.divisionid})
+						.exec()
+						.then((dbEmails) => {
+							output.emails = dbEmails.map((dbEmail) => {
+								return {
+									sent: dbEmail.sent,
+									to: dbEmail.to,
+									emailType: dbEmail.emailType,
+									divisionId: dbEmail.divisionId,
+									emailText: dbEmail.emailText
+								};
+							});
+							
+							response.status(200).json(output);
+						})
+						.catch(error => {
+							response.status(554).json({error: error.message});
+						});
+					
+				});
+				
+			});
+			
 		});
 	});
 	
@@ -149,7 +205,8 @@ module.exports = (app) => {
 		});
 		
 		var email = request.body.email,
-			emailList = request.body.emailList;
+			emailList = request.body.emailList,
+			divisionId = (request.body.divisionid) ? request.body.divisionid : null;
 		
 		var regSubject = (RegExp("<title>([^<]+)</title>", "gi")).exec(email),
 			attachments = [],
@@ -202,10 +259,11 @@ module.exports = (app) => {
 				response.status(500).json({error: error.message});
 			}
 			else {
-				new models.emailLog({
+				new data.emailLog({
 					sent: new Date(),
 					to: emailList,
-					emailType: regSubject,
+					divisionId: divisionId,
+					emailType: regSubject[1],
 					emailText: email
 				})
 				.save()

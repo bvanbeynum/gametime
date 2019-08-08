@@ -764,68 +764,51 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 		{ name: "team", emails: ["\"Brett van Beynum\" <bvanbeynum@gmail.com>","\"Brzozka, Brian\" <bbrzozka@aol.com>","\"Canty, Tim\" <Irishbluegold@yahoo.com>","\"Campbell, Amber\" <charlovescars@yahoo.com>","\"Campbell, Jared\" <jdcrtr73@gmail.com>","\"Dellinger, Daniel\" <dellinger.daniel@outlook.com>","\"Dellinger, Jennifer\" <jenniferodellinger@gmail.com>","\"Dyrness, Carrie\" <ceh4092@yahoo.com>","\"Heredia, Edwin\" <eheredia@live.com>","\"Norek, Sean\" <seannorek@yahoo.com>","\"Sarah\" <sarah.norek@atriumhealth.org>","\"Parker, Virginia\" <virgparker@msn.com>","\"Parker, Cary\" <jcaryparker@gmail.com>","\"Simms, Whitney\" <art3210@yahoo.com>", "\"Simms, Jared\" <jsimms@gwblawfirm.com>","\"van Beynum, Sita\" <svanbeynum@gmail.com>","\"Wiand, Carissa\" <carissabertalan@hotmail.com>","\"Craig Wiand\" <craigW@microsoft.com>"] }
 	];
 	
-	$http({url: "/data/game?teamid=" + $rootScope.managedTeam.id }).then(
+	$http({url: "/emailer/emailload?divisionid=" + $rootScope.managedTeam.teamDivision.id + "&teamid=" + $rootScope.managedTeam.id}).then(
 		function (response) {
+			$scope.teamPlayers = response.data.players;
 			$scope.games = response.data.games;
+			$scope.parents = response.data.parents;
+			
+			$scope.emails = response.data.emails.map(function (email) {
+				return {
+					sent: new Date(email.sent),
+					to: email.to,
+					toCount: email.to.length,
+					subject: email.emailType.replace(/<[^>]+>/gi, ""),
+					body: email.emailText
+				};
+			});
+			
+			$scope.isLoading = false;
 		}, function (error) {
 			console.log(error);
 			
 			$mdToast.show(
 				$mdToast.simple()
-					.textContent("There was an error loading the games")
-					.position("bottom left")
-					.hideDelay(2000)
-			);
-		});
-	
-	$http({url: "/data/player?teamid=" + $rootScope.managedTeam.id}).then(
-		function (response) {
-			$scope.huskyPlayers = response.data.players;
-		}, function (error) {
-			console.log(error);
-			
-			$mdToast.show(
-				$mdToast.simple()
-					.textContent("There was an error loading the players")
+					.textContent("There was an error loading data")
 					.position("bottom left")
 					.hideDelay(2000)
 			);
 		});
 	
 	$scope.gameEmail = {};
-	$scope.isLoading = false;
 	
 	$scope.templateChanged = function () {
-		$http({url: "/snacks/parentemails?divisionid=" + $rootScope.managedTeam.teamDivision.id }).then(
+		$http({url: "/team/emailFiles/" + $scope.selectedTemplate + ".html"}).then(
 			function (response) {
-				$scope.parents = response.data.parentEmails;
-				
-				$http({url: "/team/emailFiles/" + $scope.selectedTemplate + ".html"}).then(
-					function (response) {
-						$scope.templateHTML = response.data;
-						$scope.emailHTML = $scope.templateHTML;
-					}, function (error) {
-						console.log(error);
-						
-						$mdToast.show(
-							$mdToast.simple()
-								.textContent("There was an error loading the template")
-								.position("bottom left")
-								.hideDelay(2000)
-						);
-					});
-					
+				$scope.templateHTML = response.data;
+				$scope.emailHTML = $scope.templateHTML;
 			}, function (error) {
 				console.log(error);
 				
 				$mdToast.show(
 					$mdToast.simple()
-						.textContent("There was an error loading the emails")
+						.textContent("There was an error loading the template")
 						.position("bottom left")
 						.hideDelay(2000)
 				);
 			});
-		
 	};
 	
 	$scope.changeTab = function (tab) {
@@ -858,7 +841,7 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 				replaceObject = $scope.recap;
 			}
 			else if ($scope.selectedTemplate == "game") {
-				$scope.gameEmail.teamLineup = $scope.huskyPlayers
+				$scope.gameEmail.teamLineup = $scope.teamPlayers
 					.filter(function (player) { return player.offense && player.defense && player.group})
 					.map(function (player) {
 						return "<tr>" + 
@@ -873,7 +856,7 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 				replaceObject = $scope.gameEmail;
 			}
 			
-			if ($scope.selectedTemplate != "snacks") {
+			if ($scope.selectedTemplate != "snacks" && $scope.templateHTML) {
 				$scope.emailHTML = $scope.templateHTML;
 				
 				var replacements = $scope.emailHTML.match(/{{[^}]+}}/gi);
@@ -899,6 +882,13 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 		}
 		
 		$scope.tab = tab;
+	};
+	
+	$scope.selectEmail = function (email) {
+		email.body = email.body.replace(/cid:([^"']+)/gi, "/team/emailFiles/$1.png");
+		
+		$scope.emailHTML = email.body;
+		$scope.selectedTabIndex = $scope.selectedTabIndex + 1;
 	};
 	
 	$scope.send = function () {
@@ -932,7 +922,7 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 					.forEach(function (parent) {
 						var snackEmail = $scope.emailHTML.replace(/{{snacksLink}}/g, "https://gametime.beynum.com/snacks?emailid=" + parent._id);
 						
-						$http({ url: "/emailer/sendlist", method: "POST", data: { email: snackEmail, emailList: ["\"" + parent.name + "\" <" + parent.email + ">"] }})
+						$http({ url: "/emailer/sendlist", method: "POST", data: { divisionid: $rootScope.managedTeam.teamDivision.id, email: snackEmail, emailList: ["\"" + parent.name + "\" <" + parent.email + ">"] }})
 							.then(function (response) {
 								$scope.isLoading = false;
 								
@@ -958,7 +948,7 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 					});
 			}
 			else {
-				$http({url: "/emailer/sendlist", method: "POST", data: { email: $scope.emailHTML, emailList: emailList }}).then(
+				$http({url: "/emailer/sendlist", method: "POST", data: { divisionid: $rootScope.managedTeam.teamDivision.id, email: $scope.emailHTML, emailList: emailList }}).then(
 					function (response) {
 						$scope.isLoading = false;
 						
