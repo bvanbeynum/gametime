@@ -256,7 +256,7 @@ module.exports = (app) => {
 		
 		service.sendMail(options, (error, data) => {
 			if (error) {
-				response.status(500).json({error: error.message});
+				response.status(551).json({error: error.message});
 			}
 			else {
 				new data.emailLog({

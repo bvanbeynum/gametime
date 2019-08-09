@@ -43,6 +43,7 @@ module.exports = function (app) {
 	app.post("/data/division", (request, response) => {
 		if (!request.body.division) {
 			response.status(500).json({error: "Invalid division save request" });
+			return;
 		}
 		
 		var divisionSave = request.body.division;
@@ -91,6 +92,7 @@ module.exports = function (app) {
 	app.delete("/data/division", (request, response) => {
 		if (!request.query.divisionid) {
 			response.status(500).json({error: "Invalid delete request"});
+			return;
 		}
 		
 		var filter = { _id: request.query.divisionid };
@@ -227,6 +229,7 @@ module.exports = function (app) {
 	app.post("/data/player", (request, response) => {
 		if (!request.body.player) {
 			response.status(500).json({error: "Invalid player save request" });
+			return;
 		}
 		
 		var playerSave = request.body.player;
@@ -509,6 +512,7 @@ module.exports = function (app) {
 	app.post("/data/team", (request, response) => {
 		if (!request.body.team || !request.body.team.name) {
 			response.status(500).json({error: "Invalid team save request" });
+			return;
 		}
 		
 		var teamSave = request.body.team;
@@ -703,6 +707,7 @@ module.exports = function (app) {
 	app.post("/data/game", (request, response) => {
 		if (!request.body.game || !request.body.game.dateTime || !request.body.game.homeTeam || !request.body.game.awayTeam) {
 			response.status(500).json({ error: "Invalid game save request"});
+			return;
 		}
 		
 		var gameSave = request.body.game;
@@ -904,6 +909,7 @@ module.exports = function (app) {
 	app.post("/data/play", (request, response) => {
 		if (!request.body.play || !request.body.play.division || !request.body.play.players || !request.body.play.name) {
 			response.status(500).json({ error: "Invalid save request"});
+			return;
 		}
 		
 		var playSave = request.body.play;
@@ -976,6 +982,7 @@ module.exports = function (app) {
 	app.delete("/data/play", (request, response) => {
 		if (!request.query.id) {
 			response.status(500).json({error: "Invalid delete request"});
+			return;
 		}
 		
 		var filter = { _id: request.query.id };
