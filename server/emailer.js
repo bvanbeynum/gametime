@@ -2,11 +2,17 @@ var nodemailer = require("nodemailer"),
 	data = require("./datamodels"),
 	fs = require("fs"),
 	path = require("path"),
-	webRequest = require("request"),
-	gmailAuth = {
-		user: "bvanbeynum@gmail.com",
-		pass: "dfnpqfmuxwctqsfx"
-	};
+	webRequest = require("request");
+
+var gmailAuth = {
+	type: "OAuth2",
+	user: "bvanbeynum@gmail.com",
+	clientId: "743032936512-vpikma7crc8dssoah9bv1la06s2sl4a2.apps.googleusercontent.com",
+	clientSecret: "EGD193Mwf6kO798wdP9Bq7lf",
+	refreshToken: "1/8YSyvVSE4TVmSOY_DILTAm8q9jVLCRVleZ20M9LDC2g",
+	accessToken: "ya29.GltfB9f1XWJ0OHHvLI3mFnf0eQ4axz-jK9RHhy4GoQmJ3MbvTCng0UBoFjaVDdC1leNiHh0832our-SrR6CVkVS-ZjitTeYZ26B5S9_-5sNfbBfrdiDifj2zoamH",
+	expires: 1484314697598
+};
 
 var toGroup = {
 	self: ["\"Brett\" <maildrop444@gmail.com>"],
@@ -126,7 +132,9 @@ module.exports = (app) => {
 		}
 		
 		var service = nodemailer.createTransport({
-			service: "gmail",
+			host: "smtp.gmail.com",
+			port: 465,
+			secure: true,
 			auth: gmailAuth
 		});
 		
@@ -200,7 +208,9 @@ module.exports = (app) => {
 		}
 		
 		var service = nodemailer.createTransport({
-			service: "gmail",
+			host: "smtp.gmail.com",
+			port: 465,
+			secure: true,
 			auth: gmailAuth
 		});
 		
