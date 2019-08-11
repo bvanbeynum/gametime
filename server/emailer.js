@@ -2,17 +2,8 @@ var nodemailer = require("nodemailer"),
 	data = require("./datamodels"),
 	fs = require("fs"),
 	path = require("path"),
+	xoauth2 = require("xoauth2"),
 	webRequest = require("request");
-
-var gmailAuth = {
-	type: "OAuth2",
-	user: "bvanbeynum@gmail.com",
-	clientId: "743032936512-vpikma7crc8dssoah9bv1la06s2sl4a2.apps.googleusercontent.com",
-	clientSecret: "EGD193Mwf6kO798wdP9Bq7lf",
-	refreshToken: "1/8YSyvVSE4TVmSOY_DILTAm8q9jVLCRVleZ20M9LDC2g",
-	accessToken: "ya29.GltfB9f1XWJ0OHHvLI3mFnf0eQ4axz-jK9RHhy4GoQmJ3MbvTCng0UBoFjaVDdC1leNiHh0832our-SrR6CVkVS-ZjitTeYZ26B5S9_-5sNfbBfrdiDifj2zoamH",
-	expires: 1484314697598
-};
 
 var toGroup = {
 	self: ["\"Brett\" <maildrop444@gmail.com>"],
@@ -135,7 +126,7 @@ module.exports = (app) => {
 			host: "smtp.gmail.com",
 			port: 465,
 			secure: true,
-			auth: gmailAuth
+//			auth: gmailAuth
 		});
 		
 		fs.readFile(path.join(app.get("root"), "/client/emailer/emails/" + request.query.file), "utf-8", function (error, data) {
@@ -207,85 +198,103 @@ module.exports = (app) => {
 			response.status(500).json({error: "Invalid email request. file and emailGroup are required" });
 		}
 		
-		var service = nodemailer.createTransport({
-			host: "smtp.gmail.com",
-			port: 465,
-			secure: true,
-			auth: gmailAuth
-		});
-		
-		var email = request.body.email,
-			emailList = request.body.emailList,
-			divisionId = (request.body.divisionid) ? request.body.divisionid : null;
-		
-		var regSubject = (RegExp("<title>([^<]+)</title>", "gi")).exec(email),
-			attachments = [],
-			matches;
-		
-		if (regSubject < 2) {
-			console.log("Could not find the title in the email");
+		try {
+			var email = request.body.email,
+				emailList = request.body.emailList,
+				divisionId = (request.body.divisionid) ? request.body.divisionid : null;
+			
+			var regSubject = (RegExp("<title>([^<]+)</title>", "gi")).exec(email),
+				attachments = [],
+				matches;
+			
+			if (regSubject < 2) {
+				console.log("Could not find the title in the email");
+				return;
+			}
+			
+			var regImages = RegExp("<img [\\w =\"]*src=[\"]?([^\" ]+)", "gim");
+			while ((matches = regImages.exec(email)) != null) {
+				attachments.push({
+					filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
+					path: path.join(app.get("root"), "client/" + matches[1]),
+					cid: matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf("."))
+				});
+				email = email.replace(matches[1], "cid:" + matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf(".")));
+			}
+			
+			var regCSS = /background:[\w -]*url\(["]?([^"]+)["]?\)/gim;
+			while ((matches = regCSS.exec(email)) != null) {
+				attachments.push({
+					filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
+					path: path.join(app.get("root"), "client/" + matches[1]),
+					cid: matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf("."))
+				});
+				email = email.replace(matches[1], "cid:" + matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf(".")));
+			}
+			
+			var regAttach = RegExp("<attach [\\w =\"]*src=[\"]?([^\" ]+)[\"]?[\w =\"]*/>", "gim");
+			while ((matches = regAttach.exec(email)) != null) {
+				attachments.push({
+					filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
+					path: path.join(app.get("root"), "client/" + matches[1])
+				});
+				email = email.replace(matches[0], "");
+			}
+			
+			var service = nodemailer.createTransport({
+				host: "smtp.gmail.com",
+				port: 465,
+				secure: true,
+				auth: {
+					type: "OAuth2",
+					clientId: "743032936512-vpikma7crc8dssoah9bv1la06s2sl4a2.apps.googleusercontent.com",
+					clientSecret: "EGD193Mwf6kO798wdP9Bq7lf"
+				}
+			});
+			
+			var options = {
+				from: "\"Brett van Beynum\" <bvanbeynum@gmail.com>",
+				to: emailList,
+				subject: regSubject[1] + " \uD83C\uDFC8",
+				html: email,
+				attachments: attachments,
+				auth: {
+					user: "bvanbeynum@gmail.com",
+					refreshToken: "1/0heIHQ-1GUjRCQiN20Y9fitJ3qDeJNHnPBdASNkG7xQ",
+					accessToken: "ya29.GltiBzQ5iDUeg-srmAk1lHT_ID4eTQp-bWUF9UdCC3pQ-f0JJXRgKQ422JPQxtu7ftIekQNKN339kQ1PbHMCNwuDOdb-a03CBSlF5dNsAXi1yL7QKEEUOnJRsjyD",
+					expires: 3460
+				}
+			};
+			
+			service.sendMail(options, (error, data) => {
+				if (error) {
+					response.status(551).json({error: error.message});
+					return;
+				}
+				else {
+					new data.emailLog({
+						sent: new Date(),
+						to: emailList,
+						divisionId: divisionId,
+						emailType: regSubject[1],
+						emailText: email
+					})
+					.save()
+					.then((emailLogDb) => {
+						response.status(200).json({status: "ok"});
+						return;
+					})
+					.catch((error) => {
+						response.status(200).json({status: "ok"});
+						return;
+					});
+				}
+			});
+		}
+		catch (ex) {
+			response.status(552).json({error: ex.message});
 			return;
 		}
-		
-		var regImages = RegExp("<img [\\w =\"]*src=[\"]?([^\" ]+)", "gim");
-		while ((matches = regImages.exec(email)) != null) {
-			attachments.push({
-				filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
-				path: path.join(app.get("root"), "client/" + matches[1]),
-				cid: matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf("."))
-			});
-			email = email.replace(matches[1], "cid:" + matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf(".")));
-		}
-		
-		var regCSS = /background:[\w -]*url\(["]?([^"]+)["]?\)/gim;
-		while ((matches = regCSS.exec(email)) != null) {
-			attachments.push({
-				filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
-				path: path.join(app.get("root"), "client/" + matches[1]),
-				cid: matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf("."))
-			});
-			email = email.replace(matches[1], "cid:" + matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf(".")));
-		}
-		
-		var regAttach = RegExp("<attach [\\w =\"]*src=[\"]?([^\" ]+)[\"]?[\w =\"]*/>", "gim");
-		while ((matches = regAttach.exec(email)) != null) {
-			attachments.push({
-				filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
-				path: path.join(app.get("root"), "client/" + matches[1])
-			});
-			email = email.replace(matches[0], "");
-		}
-		
-		var options = {
-			from: "\"Brett van Beynum\" <bvanbeynum@gmail.com>",
-			to: emailList,
-			subject: regSubject[1] + " \uD83C\uDFC8",
-			html: email,
-			attachments: attachments
-		};
-		
-		service.sendMail(options, (error, data) => {
-			if (error) {
-				response.status(551).json({error: error.message});
-			}
-			else {
-				new data.emailLog({
-					sent: new Date(),
-					to: emailList,
-					divisionId: divisionId,
-					emailType: regSubject[1],
-					emailText: email
-				})
-				.save()
-				.then((emailLogDb) => {
-					response.status(200).json({status: "ok"});
-				})
-				.catch((error) => {
-					response.status(200).json({status: "ok"});
-				});
-			}
-		});
-		
 	});
 	
 };
