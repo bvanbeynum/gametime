@@ -13,3 +13,8 @@ md-tab-content>div {
 	overflow: hidden;
 	padding: 10px;
 }
+
+.emailHistorySubject {
+	white-space: normal;
+	font-weight: bold;
+}

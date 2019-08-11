@@ -197,103 +197,97 @@ module.exports = (app) => {
 			response.status(500).json({error: "Invalid email request. file and emailGroup are required" });
 		}
 		
-		try {
-			var email = request.body.email,
-				emailList = request.body.emailList,
-				divisionId = (request.body.divisionid) ? request.body.divisionid : null;
-			
-			var regSubject = (RegExp("<title>([^<]+)</title>", "gi")).exec(email),
-				attachments = [],
-				matches;
-			
-			if (regSubject < 2) {
-				console.log("Could not find the title in the email");
-				return;
-			}
-			
-			var regImages = RegExp("<img [\\w =\"]*src=[\"]?([^\" ]+)", "gim");
-			while ((matches = regImages.exec(email)) != null) {
-				attachments.push({
-					filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
-					path: path.join(app.get("root"), "client/" + matches[1]),
-					cid: matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf("."))
-				});
-				email = email.replace(matches[1], "cid:" + matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf(".")));
-			}
-			
-			var regCSS = /background:[\w -]*url\(["]?([^"]+)["]?\)/gim;
-			while ((matches = regCSS.exec(email)) != null) {
-				attachments.push({
-					filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
-					path: path.join(app.get("root"), "client/" + matches[1]),
-					cid: matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf("."))
-				});
-				email = email.replace(matches[1], "cid:" + matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf(".")));
-			}
-			
-			var regAttach = RegExp("<attach [\\w =\"]*src=[\"]?([^\" ]+)[\"]?[\w =\"]*/>", "gim");
-			while ((matches = regAttach.exec(email)) != null) {
-				attachments.push({
-					filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
-					path: path.join(app.get("root"), "client/" + matches[1])
-				});
-				email = email.replace(matches[0], "");
-			}
-			
-			var service = nodemailer.createTransport({
-				host: "smtp.gmail.com",
-				port: 465,
-				secure: true,
-				auth: {
-					type: "OAuth2",
-					clientId: "743032936512-vpikma7crc8dssoah9bv1la06s2sl4a2.apps.googleusercontent.com",
-					clientSecret: "EGD193Mwf6kO798wdP9Bq7lf"
-				}
-			});
-			
-			var options = {
-				from: "\"Brett van Beynum\" <bvanbeynum@gmail.com>",
-				to: emailList,
-				subject: regSubject[1] + " \uD83C\uDFC8",
-				html: email,
-				attachments: attachments,
-				auth: {
-					user: "bvanbeynum@gmail.com",
-					refreshToken: "1/0heIHQ-1GUjRCQiN20Y9fitJ3qDeJNHnPBdASNkG7xQ",
-					accessToken: "ya29.GltiBzQ5iDUeg-srmAk1lHT_ID4eTQp-bWUF9UdCC3pQ-f0JJXRgKQ422JPQxtu7ftIekQNKN339kQ1PbHMCNwuDOdb-a03CBSlF5dNsAXi1yL7QKEEUOnJRsjyD",
-					expires: 3460
-				}
-			};
-			
-			service.sendMail(options, (error, data) => {
-				if (error) {
-					response.status(551).json({error: error.message});
-					return;
-				}
-				else {
-					new data.emailLog({
-						sent: new Date(),
-						to: emailList,
-						divisionId: divisionId,
-						emailType: regSubject[1],
-						emailText: email
-					})
-					.save()
-					.then((emailLogDb) => {
-						response.status(200).json({status: "ok"});
-						return;
-					})
-					.catch((error) => {
-						response.status(200).json({status: "ok"});
-						return;
-					});
-				}
-			});
-		}
-		catch (ex) {
-			response.status(552).json({error: ex.message});
+		var email = request.body.email,
+			emailList = request.body.emailList,
+			divisionId = (request.body.divisionid) ? request.body.divisionid : null;
+		
+		var regSubject = (RegExp("<title>([^<]+)</title>", "gi")).exec(email),
+			attachments = [],
+			matches;
+		
+		if (regSubject < 2) {
+			console.log("Could not find the title in the email");
 			return;
 		}
+		
+		var regImages = RegExp("<img [\\w =\"]*src=[\"]?([^\" ]+)", "gim");
+		while ((matches = regImages.exec(email)) != null) {
+			attachments.push({
+				filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
+				path: path.join(app.get("root"), "client/" + matches[1]),
+				cid: matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf("."))
+			});
+			email = email.replace(matches[1], "cid:" + matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf(".")));
+		}
+		
+		var regCSS = /background:[\w -]*url\(["]?([^"]+)["]?\)/gim;
+		while ((matches = regCSS.exec(email)) != null) {
+			attachments.push({
+				filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
+				path: path.join(app.get("root"), "client/" + matches[1]),
+				cid: matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf("."))
+			});
+			email = email.replace(matches[1], "cid:" + matches[1].substring(matches[1].lastIndexOf("/") + 1, matches[1].lastIndexOf(".")));
+		}
+		
+		var regAttach = RegExp("<attach [\\w =\"]*src=[\"]?([^\" ]+)[\"]?[\w =\"]*/>", "gim");
+		while ((matches = regAttach.exec(email)) != null) {
+			attachments.push({
+				filename: matches[1].substring(matches[1].lastIndexOf("/") + 1),
+				path: path.join(app.get("root"), "client/" + matches[1])
+			});
+			email = email.replace(matches[0], "");
+		}
+		
+		var service = nodemailer.createTransport({
+			host: "smtp.gmail.com",
+			port: 465,
+			secure: true,
+			auth: {
+				type: "OAuth2",
+				clientId: "743032936512-vpikma7crc8dssoah9bv1la06s2sl4a2.apps.googleusercontent.com",
+				clientSecret: "EGD193Mwf6kO798wdP9Bq7lf"
+			}
+		});
+		
+		var options = {
+			from: "\"Brett van Beynum\" <bvanbeynum@gmail.com>",
+			to: emailList,
+			subject: regSubject[1] + " \uD83C\uDFC8",
+			html: email,
+			attachments: attachments,
+			auth: {
+				user: "bvanbeynum@gmail.com",
+				refreshToken: "1/0heIHQ-1GUjRCQiN20Y9fitJ3qDeJNHnPBdASNkG7xQ",
+				accessToken: "ya29.GltiBzQ5iDUeg-srmAk1lHT_ID4eTQp-bWUF9UdCC3pQ-f0JJXRgKQ422JPQxtu7ftIekQNKN339kQ1PbHMCNwuDOdb-a03CBSlF5dNsAXi1yL7QKEEUOnJRsjyD",
+				expires: 3460
+			}
+		};
+		
+		service.sendMail(options, (error, mailResponse) => {
+			if (error) {
+				response.status(551).json({error: error.message});
+				return;
+			}
+			else {
+				new data.emailLog({
+					sent: new Date(),
+					to: emailList,
+					divisionId: divisionId,
+					emailType: regSubject[1],
+					emailText: email
+				})
+				.save()
+				.then((emailLogDb) => {
+					response.status(200).json({status: "ok"});
+					return;
+				})
+				.catch((error) => {
+					response.status(200).json({status: "ok"});
+					return;
+				});
+			}
+		});
 	});
 	
 };
