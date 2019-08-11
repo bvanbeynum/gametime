@@ -2,7 +2,6 @@ var nodemailer = require("nodemailer"),
 	data = require("./datamodels"),
 	fs = require("fs"),
 	path = require("path"),
-	xoauth2 = require("xoauth2"),
 	webRequest = require("request");
 
 var toGroup = {

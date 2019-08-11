@@ -12,6 +12,5 @@
     "mongoose": "^4.10.3",
     "nodemailer": "^4.6.8",
     "request": "^2.88.0",
-    "xoauth2": "^1.2.0"
   }
 }
