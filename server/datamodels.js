@@ -158,9 +158,7 @@ module.exports = {
 	
 	emailGroup: mongoose.model("emailGroup", {
 		name: String,
-		division: { 
-			id: String
-		},
+		divisionId: String,
 		emailList: [String]
 	}),
 	

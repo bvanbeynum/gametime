@@ -1012,7 +1012,7 @@ module.exports = function (app) {
 		var filter = {};
 		
 		if (request.query.divisionid) {
-			filter["division.id"] = request.query.divisionid;
+			filter["divisionId"] = request.query.divisionid;
 		}
 		if (request.query.id) {
 			filter["_id"] = request.query.id;
@@ -1026,15 +1026,78 @@ module.exports = function (app) {
 			.then((emailGroupsDb) => {
 				var emailGroups = emailGroupsDb.map((emailGroupDb) => {
 					return {
+						id: emailGroupDb._id,
 						name: emailGroupDb.name,
-						division: {
-							id: emailGroupDb.division.id
-						},
+						divisionId: emailGroupDb.divisionId,
 						emailList: emailGroupDb.emailList
 					};
 				});
 				
-				response.status(200).json({emailGroups: emailGroups});
+				response.status(200).json({emailLists: emailGroups});
+			})
+			.catch((error) => {
+				response.status(500).json({error: error.message});
+			});
+	});
+	
+	app.post("/data/emaillist", (request, response) => {
+		if (!request.body.emaillist || !request.body.emaillist.divisionId || !request.body.emaillist.name || !request.body.emaillist.emailList) {
+			response.status(500).json({ error: "Invalid save request"});
+			return;
+		}
+		
+		var emailListSave= request.body.emaillist;
+		
+		if (emailListSave.id) {
+			data.emailGroup.findById(emailListSave.id)
+				.exec()
+				.then((emailGroupDb) => {
+					if (!emailGroupDb) {
+						throw new Error("Email group can't be found");
+					}
+					
+					emailGroupDb.divisionId = emailListSave.divisionId;
+					emailGroupDb.name = emailListSave.name;
+					emailGroupDb.emailList = emailListSave.emailList;
+					
+					return emailGroupDb.save();
+				})
+				.then((emailGroupDb) => {
+					response.status(200).json({ emailListId: emailGroupDb._id });
+				})
+				.catch((error) => {
+					response.status(500).json({ error: error.message });
+				});
+		}
+		else {
+			
+			new data.emailGroup({
+				divisionId: emailListSave.divisionId,
+				name: emailListSave.name,
+				emailList: emailListSave.emailList
+			})
+			.save()
+			.then((emailGroupDb) => {
+				response.status(200).json({ playId: emailGroupDb._id });
+			})
+			.catch((error) => {
+				response.status(500).json({ error: error.message });
+			});
+			
+		}
+	});
+	
+	app.delete("/data/emaillist", (request, response) => {
+		if (!request.query.id) {
+			response.status(500).json({error: "Invalid delete request"});
+			return;
+		}
+		
+		var filter = { _id: request.query.id };
+		
+		data.emailGroup.deleteOne(filter)
+			.then(() => {
+				response.status(200).json({status: "ok"});
 			})
 			.catch((error) => {
 				response.status(500).json({error: error.message});

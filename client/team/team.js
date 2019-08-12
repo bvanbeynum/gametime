@@ -755,20 +755,21 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 		{ name: "Walter Elisha Park", address: "345 N White St, Fort Mill, SC 29715", mapURL: "https://goo.gl/maps/vu8c17kgtP52" }
 		];
 	
-	$scope.emailGroups = [
-		{ name: "self", emails: ["\"Brett\" <maildrop444@gmail.com>"] },
-		{ name: "family", emails: ["\"Brett\" <maildrop444@gmail.com>", "\"Sita van Beynum\" <svanbeynum@gmail.com>"] },
-		{ name: "mom", emails: ["\"Grandma\" <msanborng@gmail.com>", "\"Grandpa\" <mobilefab@frontier.com>"] },
-		{ name: "dad", emails: ["\"Opa\" <rvanbeynum@gmail.com>", "\"Oma\" <sarvanbeynum@gmail.com>"] },
-		{ name: "great", emails: ["\"Great Grandma\" <goldenquill@frontier.com>"] },
-		{ name: "team", emails: ["\"Brett van Beynum\" <bvanbeynum@gmail.com>","\"Brzozka, Brian\" <bbrzozka@aol.com>","\"Canty, Tim\" <Irishbluegold@yahoo.com>","\"Campbell, Amber\" <charlovescars@yahoo.com>","\"Campbell, Jared\" <jdcrtr73@gmail.com>","\"Dellinger, Daniel\" <dellinger.daniel@outlook.com>","\"Dellinger, Jennifer\" <jenniferodellinger@gmail.com>","\"Dyrness, Carrie\" <ceh4092@yahoo.com>","\"Heredia, Edwin\" <eheredia@live.com>","\"Norek, Sean\" <seannorek@yahoo.com>","\"Sarah\" <sarah.norek@atriumhealth.org>","\"Parker, Virginia\" <virgparker@msn.com>","\"Parker, Cary\" <jcaryparker@gmail.com>","\"Simms, Whitney\" <art3210@yahoo.com>", "\"Simms, Jared\" <jsimms@gwblawfirm.com>","\"van Beynum, Sita\" <svanbeynum@gmail.com>","\"Wiand, Carissa\" <carissabertalan@hotmail.com>","\"Craig Wiand\" <craigW@microsoft.com>"] }
-	];
+	// $scope.emailGroups = [
+	// 	{ name: "self", emails: ["\"Brett\" <maildrop444@gmail.com>"] },
+	// 	{ name: "family", emails: ["\"Brett\" <maildrop444@gmail.com>", "\"Sita van Beynum\" <svanbeynum@gmail.com>"] },
+	// 	{ name: "mom", emails: ["\"Grandma\" <msanborng@gmail.com>", "\"Grandpa\" <mobilefab@frontier.com>"] },
+	// 	{ name: "dad", emails: ["\"Opa\" <rvanbeynum@gmail.com>", "\"Oma\" <sarvanbeynum@gmail.com>"] },
+	// 	{ name: "great", emails: ["\"Great Grandma\" <goldenquill@frontier.com>"] },
+	// 	{ name: "team", emails: ["\"Brett van Beynum\" <bvanbeynum@gmail.com>","\"Brzozka, Brian\" <bbrzozka@aol.com>","\"Canty, Tim\" <Irishbluegold@yahoo.com>","\"Campbell, Amber\" <charlovescars@yahoo.com>","\"Campbell, Jared\" <jdcrtr73@gmail.com>","\"Dellinger, Daniel\" <dellinger.daniel@outlook.com>","\"Dellinger, Jennifer\" <jenniferodellinger@gmail.com>","\"Dyrness, Carrie\" <ceh4092@yahoo.com>","\"Heredia, Edwin\" <eheredia@live.com>","\"Norek, Sean\" <seannorek@yahoo.com>","\"Sarah\" <sarah.norek@atriumhealth.org>","\"Parker, Virginia\" <virgparker@msn.com>","\"Parker, Cary\" <jcaryparker@gmail.com>","\"Simms, Whitney\" <art3210@yahoo.com>", "\"Simms, Jared\" <jsimms@gwblawfirm.com>","\"van Beynum, Sita\" <svanbeynum@gmail.com>","\"Wiand, Carissa\" <carissabertalan@hotmail.com>","\"Craig Wiand\" <craigW@microsoft.com>"] }
+	// ];
 	
 	$http({url: "/emailer/emailload?divisionid=" + $rootScope.managedTeam.teamDivision.id + "&teamid=" + $rootScope.managedTeam.id}).then(
 		function (response) {
 			$scope.teamPlayers = response.data.players;
 			$scope.games = response.data.games;
 			$scope.parents = response.data.parents;
+			$scope.emailGroups = response.data.emailLists;
 			
 			$scope.emails = response.data.emails.map(function (email) {
 				return {
@@ -902,7 +903,7 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 				});
 		}
 		else {
-			emailList = $scope.selectedGroup.emails;
+			emailList = $scope.selectedGroup.emailList;
 		}
 		
 		var confirm = $mdDialog.confirm()

@@ -323,7 +323,7 @@
 				
 				<div class="emailHistoryContainer" layout="row" layout-align="space-between" layout-wrap="true">
 					
-					<div class="emailHistoryItem" layout="column" ng-click="selectEmail(email)" ng-repeat="email in emails | orderBy:'sent'">
+					<div class="emailHistoryItem" layout="column" ng-click="selectEmail(email)" ng-repeat="email in emails | orderBy:'-sent'">
 						<div layout="row" layout-align="space-between">
 							<div class="emailHistoryDate">{{ email.sent | date: "M/d" }}</div>
 							<div class="emailHistoryTo">{{ email.toCount}}</div>

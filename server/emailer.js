@@ -64,6 +64,7 @@ module.exports = (app) => {
 	app.get("/emailer/emailload", (request, response) => {
 		if (!request.query.divisionid || !request.query.teamid) {
 			response.status(551).json({error: "Invalid request. Team and division required"});
+			return;
 		}
 		
 		var output = {};
@@ -71,6 +72,7 @@ module.exports = (app) => {
 		webRequest("http://" + request.headers.host + "/data/player?teamid=" + request.query.teamid, {json: true}, (error, webResponse, body) => {
 			if (error) {
 				response.status(552).json({error: "Could not download players. " + error.message});
+				return;
 			}
 			
 			output.players = body.players || [];
@@ -78,6 +80,7 @@ module.exports = (app) => {
 			webRequest("http://" + request.headers.host + "/data/game?teamid=" + request.query.teamid, {json: true}, (error, webResponse, body) => {
 				if (error) {
 					response.status(553).json({error: "Could not download games. " + error.message});
+					return;
 				}
 				
 				output.games = body.games || [];
@@ -86,28 +89,39 @@ module.exports = (app) => {
 				webRequest("http://" + request.headers.host + "/data/parentemails?divisionid=" + request.query.divisionid, {json: true}, (error, webResponse, body) => {
 					if (error) {
 						response.status(553).json({error: "Could not download parents. " + error.message});
+						return;
 					}
 					
 					output.parents = body.parentEmails || [];
 					
-					data.emailLog.find({divisionId: request.query.divisionid})
-						.exec()
-						.then((dbEmails) => {
-							output.emails = dbEmails.map((dbEmail) => {
-								return {
-									sent: dbEmail.sent,
-									to: dbEmail.to,
-									emailType: dbEmail.emailType,
-									divisionId: dbEmail.divisionId,
-									emailText: dbEmail.emailText
-								};
+					webRequest("http://" + request.headers.host + "/data/emaillist?divisionid=" + request.query.divisionid, {json: true}, (error, webResponse, body) => {
+						if (error) {
+							response.status(554).json({error: "Could not download email lists. " + error.message });
+							return;
+						}
+						
+						output.emailLists = body.emailLists || [];
+						
+						data.emailLog.find({divisionId: request.query.divisionid})
+							.exec()
+							.then((dbEmails) => {
+								output.emails = dbEmails.map((dbEmail) => {
+									return {
+										sent: dbEmail.sent,
+										to: dbEmail.to,
+										emailType: dbEmail.emailType,
+										divisionId: dbEmail.divisionId,
+										emailText: dbEmail.emailText
+									};
+								});
+								
+								response.status(200).json(output);
+							})
+							.catch(error => {
+								response.status(554).json({error: error.message});
 							});
-							
-							response.status(200).json(output);
-						})
-						.catch(error => {
-							response.status(554).json({error: error.message});
-						});
+						
+					});
 					
 				});
 				
