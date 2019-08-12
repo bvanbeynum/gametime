@@ -1078,7 +1078,7 @@ module.exports = function (app) {
 			})
 			.save()
 			.then((emailGroupDb) => {
-				response.status(200).json({ playId: emailGroupDb._id });
+				response.status(200).json({ emailListId: emailGroupDb._id });
 			})
 			.catch((error) => {
 				response.status(500).json({ error: error.message });
