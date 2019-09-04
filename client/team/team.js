@@ -912,7 +912,7 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 				$scope.parents
 					.filter(function (parent) { return parent.emailGroups.indexOf("team") >= 0 && parent.playerId })
 					.forEach(function (parent) {
-						var snackEmail = $scope.emailHTML.replace(/{{snacksLink}}/g, "https://gametime.beynum.com/snacks?emailid=" + parent._id);
+						var snackEmail = $scope.emailHTML.replace(/{{snacksLink}}/g, "http://gametime.beynum.com/snacks?emailid=" + parent._id);
 						
 						$http({ url: "/emailer/sendlist", method: "POST", data: { divisionid: $rootScope.managedTeam.teamDivision.id, email: snackEmail, emailList: ["\"" + parent.name + "\" <" + parent.email + ">"] }})
 							.then(function (response) {
@@ -937,6 +937,7 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 										.hideDelay(2000)
 								);
 							});
+						
 					});
 			}
 			else {

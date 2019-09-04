@@ -86,7 +86,7 @@ module.exports = (app) => {
 				output.games = body.games || [];
 				
 				
-				webRequest("http://" + request.headers.host + "/data/parentemails?divisionid=" + request.query.divisionid, {json: true}, (error, webResponse, body) => {
+				webRequest("http://" + request.headers.host + "/snacks/parentemails?divisionid=" + request.query.divisionid, {json: true}, (error, webResponse, body) => {
 					if (error) {
 						response.status(553).json({error: "Could not download parents. " + error.message});
 						return;
