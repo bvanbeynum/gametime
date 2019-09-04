@@ -585,7 +585,7 @@ module.exports = function (app) {
 	});
 	
 	app.delete("/data/team", (request, response) => {
-		var validQueries = "|id|name|division|";
+		var validQueries = "|id|name|division|divisionid|";
 		if (Object.keys(request.query).length > 0) {
 			var invalidQuery = Object.keys(request.query).filter((query) => {
 				return validQueries.indexOf("|" + query + "|") < 0;

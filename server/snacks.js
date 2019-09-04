@@ -54,7 +54,7 @@ module.exports = (app) => {
 							})
 							.exec()
 							.then((parentEmailsDb) => {
-								response.status(200).json({ games: games, parentEmails: parentEmailsDb });
+								response.status(200).json({ teamName: playerDb.team.name, games: games, parentEmails: parentEmailsDb });
 							})
 							.catch(error => {
 								response.status(553).json({ error: error.message });

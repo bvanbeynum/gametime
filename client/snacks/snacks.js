@@ -16,63 +16,41 @@ snacksApp.controller("snacksCtl", function ($scope, $http, $mdToast, $mdDialog) 
 	$scope.emailId = null;
 	
 	log.scope = $scope;
+
+	$scope.emailId = params.get("emailid");
+	$scope.isLoading = true;
 	
-	if (params.get("emailid")) {
-		$scope.emailId = params.get("emailid");
-		$scope.isLoading = true;
-		
-		$http({ url: "/snacks/load?emailid=" + $scope.emailId }).then(
-			function (response) {
-				$scope.games = response.data.games;
-				$scope.parentEmails = response.data.parentEmails;
-				
-				$scope.selectedParent = $scope.parentEmails.find(function (parent) { return parent._id == $scope.emailId });
-				
-				$scope.games.forEach(function (game) {
-					game.snack = $scope.parentEmails.find(function (parent) { return parent._id == game.snackSignupParentId });
-				});
-				
-				if (!$scope.selectedParent) {
-					window.location.replace("/snacks");
-					return;
-				}
-				
-				$scope.isLoggedIn = true;
-				$scope.isLoading = false;
-			}, function (error) {
-				$mdToast.show(
-					$mdToast.simple()
-						.textContent("There was an error loading")
-						.position("bottom left")
-						.hideDelay(3000)
-				);
-				
+	$http({ url: "/snacks/load?emailid=" + $scope.emailId }).then(
+		function (response) {
+			$scope.games = response.data.games;
+			$scope.teamName = response.data.teamName;
+			$scope.parentEmails = response.data.parentEmails;
+			
+			$scope.selectedParent = $scope.parentEmails.find(function (parent) { return parent._id == $scope.emailId });
+			
+			$scope.games.forEach(function (game) {
+				game.snack = $scope.parentEmails.find(function (parent) { return parent._id == game.snackSignupParentId });
+			});
+			
+			if (!$scope.selectedParent) {
 				window.location.replace("/snacks");
-				console.log(error);
-			});
-	}
-	else {
-		$scope.isLoggedIn = false;
-		
-		$http({url: "/snacks/parentemails?divisionid=5c6083c68a61e3857ad66bb1"}).then(
-			function (response) {
-				$scope.parentEmails = response.data.parentEmails.filter(function (email) {
-					return email.emailGroups.indexOf("team") >= 0;
-				});
-				
-				$scope.isLoading = false;
-			}, function (error) {
-				$mdToast.show(
-					$mdToast.simple()
-						.textContent("There was an error loading")
-						.position("bottom left")
-						.hideDelay(3000)
-				);
-				
-				console.log(error);
-			});
-	}
-	
+				return;
+			}
+			
+			$scope.isLoggedIn = true;
+			$scope.isLoading = false;
+		}, function (error) {
+			$mdToast.show(
+				$mdToast.simple()
+					.textContent("There was an error loading")
+					.position("bottom left")
+					.hideDelay(3000)
+			);
+			
+			window.location.replace("/snacks");
+			console.log(error);
+		});
+
 	$scope.parentSelect = function () {
 		$scope.emailId = $scope.selectedParent._id;
 		

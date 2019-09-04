@@ -6,9 +6,6 @@ body {
 
 .html {
 	padding: 5px;
-	display: flex;
-	flex-direction: column;
-	flex: 1;
 }
 
 .innerhtml {
@@ -16,45 +13,33 @@ body {
 	padding: 0;
 	font-family: verdana, sans-serif;
 	font-size: .9em;
-	background-color: rgb(60, 45, 112);
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-	overflow: auto;
 }
 
 .clear {
 	clear: both;
 }
 
-.header {
-	margin: 0;
-	height: 168px;
-	text-align: center;
-	background: repeat-x url("/emailer/images/grass.jpg");
+.header .logo {
+	height: 120px;
+	float: left;
+	margin-right: 30px;
 }
 
-.header .logo {
-	margin: 24px auto;
-	height: 120px;
+.header .text {
+	float: left;
+	line-height: 120px;
+	font-size: 40px;
+	color: rgb(165, 30, 54);
+	font-weight: bold;
 }
 
 .content {
-	margin: 0;
-	padding: 5px 15px;
-	background-color: rgb(255,255,255);
-	border-left: 5px solid rgb(213,202,148);
-	border-right: 5px solid rgb(213,202,148);
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-	min-height: min-content;
+	border-top: 3px solid rgb(165, 30, 54);
 }
 
 .textHeader {
-	color: rgb(60, 45, 112);
-	/*text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;*/
+	color: rgb(165, 30, 54);
+	text-align: center;
 }
 
 .textSubHeader {

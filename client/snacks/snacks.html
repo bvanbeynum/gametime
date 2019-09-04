@@ -11,31 +11,16 @@
 	<div class="innerhtml">
 		
 		<div class="header">
-			<img class="logo" src="/emailer/images/UW-logo.png" />
+			<img class="logo" src="/team/emailFiles/cougarslogo.png" />
+			<div class="text">Cougars</div>
 		</div>
 		
+		<br class="clear" />
+
 		<div class="content">
-			<h1 class="textHeader">2019 Huskies Snack Signup</h1>
+			<h1 class="textHeader">{{ teamName}} Snack Signup</h1>
 			
-			<div ng-show="isLoading" class="loadingContainer">
-				<div class="loading">
-					<md-progress-circular class="md-primary" md-diameter="40"></md-progress-circular>
-					<div>Loading</div>
-				</div>
-			</div>
-			
-			<div ng-show="!isLoading && !isLoggedIn">
-				<div>Please select who this snack signup is for</div>
-				
-				<md-input-container>
-					<label>Parent</label>
-					<md-select ng-model="selectedParent" ng-change="parentSelect()">
-						<md-option ng-repeat="parent in parentEmails | orderBy: 'name'" ng-value="parent">{{parent.name}}</md-option>
-					</md-select>
-				</md-input-container>
-			</div>
-			
-			<div ng-show="!isLoading && isLoggedIn">
+			<div>
 				
 				<h1 class="textHeader">Select Game</h1>
 				
@@ -46,7 +31,7 @@
 							<span class="teamname">{{ game.awayTeam.name }}</span>
 						</div>
 						<div class="team">
-							<img src="/emailer/images/{{ game.homeTeam.name.toLowerCase() }}.png" class="teamimage" />
+							<img src="/snacks/images/{{ game.homeTeam.name.toLowerCase() }}.png" class="teamimage" />
 							<span class="teamname">{{ game.homeTeam.name }}</span>
 						</div>
 					</div>
@@ -73,7 +58,6 @@
 			</div>
 			
 		</div>
-	</div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
