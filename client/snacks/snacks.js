@@ -47,7 +47,6 @@ snacksApp.controller("snacksCtl", function ($scope, $http, $mdToast, $mdDialog) 
 					.hideDelay(3000)
 			);
 			
-			window.location.replace("/snacks");
 			console.log(error);
 		});
 

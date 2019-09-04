@@ -8,21 +8,21 @@
 <body ng-controller="snacksCtl" ng-cloak>
 
 <div class="html">
-	<div class="innerhtml">
+	<div class="innerhtml" ng-class="teamName">
 		
 		<div class="header">
-			<img class="logo" src="/team/emailFiles/cougarslogo.png" />
-			<div class="text">Cougars</div>
+			<img class="logo" ng-class="teamName" ng-src="/team/emailFiles/{{ teamName.toLowerCase() }}logo.png" />
+			<div class="text" ng-class="teamName">{{ teamName }}</div>
 		</div>
 		
 		<br class="clear" />
 
-		<div class="content">
-			<h1 class="textHeader">{{ teamName}} Snack Signup</h1>
+		<div class="content" ng-class="teamName">
+			<h1 class="textHeader" ng-class="teamName">{{ teamName}} Snack Signup</h1>
 			
 			<div>
 				
-				<h1 class="textHeader">Select Game</h1>
+				<h1 class="textHeader" ng-class="teamName">Select Game</h1>
 				
 				<div class="gamebox" ng-repeat="game in games | orderBy: 'dateTime'">
 					<div class="teambox">

@@ -15,12 +15,26 @@ body {
 	font-size: .9em;
 }
 
+.innerhtml.Seahawks {
+	margin: 0;
+	padding: 0;
+	font-family: verdana, sans-serif;
+	font-size: .9em;
+}
+
 .clear {
 	clear: both;
 }
 
 .header .logo {
 	height: 120px;
+	float: left;
+	margin-right: 30px;
+}
+
+
+.header .logo.Seahawks {
+	height: 50px;
 	float: left;
 	margin-right: 30px;
 }
@@ -33,12 +47,30 @@ body {
 	font-weight: bold;
 }
 
+
+.header .text.Seahawks {
+	float: left;
+	line-height: 50px;
+	font-size: 40px;
+	color: rgb(5, 23, 45);
+	font-weight: bold;
+}
+
 .content {
 	border-top: 3px solid rgb(165, 30, 54);
 }
 
+.content.Seahawks {
+	border-top: 3px solid rgb(5, 23, 45);
+}
+
 .textHeader {
 	color: rgb(165, 30, 54);
+	text-align: center;
+}
+
+.textHeader.Seahawks {
+	color: rgb(5, 23, 45);
 	text-align: center;
 }
 
