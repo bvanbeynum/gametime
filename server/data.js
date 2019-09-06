@@ -198,7 +198,7 @@ module.exports = function (app) {
 							running: playerDb.spring2018.running,
 							runTime: playerDb.spring2018.runTime
 						} : null,
-						prev: playerDb.prev.map((prev) => {
+						prev: playerDb.prev ? playerDb.prev.map((prev) => {
 							return {
 								year: prev.year,
 								season: prev.season,
@@ -213,7 +213,7 @@ module.exports = function (app) {
 								running: prev.running,
 								runTime: prev.runTime
 							};
-						})
+						}) : []
 						
 					};
 				});
