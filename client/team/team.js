@@ -326,8 +326,6 @@ teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $md
 			);
 			
 			console.log(response);
-			$scope.selectedGame = null;
-			$location.path("/schedule");
 			return;
 		}
 		
@@ -371,8 +369,8 @@ teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $md
 		$location.path("/schedule");
 	};
 	
-	$http({url: "/data/player?divisionid=" + $rootScope.managedTeam.teamDivision.id + "&teamname=" + $rootScope.selectedGame.awayTeam.name}).then(httpSuccess, httpError);
-	$http({url: "/data/player?divisionid=" + $rootScope.managedTeam.teamDivision.id + "&teamname=" + $rootScope.selectedGame.homeTeam.name}).then(httpSuccess, httpError);
+	$http({url: "/data/player?divisionid=" + $rootScope.managedTeam.teamDivision.id + "&teamid=" + $rootScope.selectedGame.awayTeam.id}).then(httpSuccess, httpError);
+	$http({url: "/data/player?divisionid=" + $rootScope.managedTeam.teamDivision.id + "&teamid=" + $rootScope.selectedGame.homeTeam.id}).then(httpSuccess, httpError);
 });
 
 teamApp.controller("playbookCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
