@@ -307,7 +307,7 @@ module.exports = function (app) {
 							running: prev.running,
 							runTime: prev.runTime
 						};
-					}) : playerDb.prev;
+					}) : playerDb.prev || [];
 					
 					return playerDb.save();
 				})
