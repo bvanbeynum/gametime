@@ -670,7 +670,7 @@ teamApp.controller("draftCtl", function($rootScope, $scope, $http, $location, $m
 			templateUrl: "/team/draftteam.html",
 			controller: teamManageCtl,
 			locals: { team: team, allTeams: $scope.teams },
-			clickOutsideToClose: false,
+			clickOutsideToClose: true,
 			escapeToClose: false,
 			openFrom: {
 				top: document.documentElement.clientHeight,
