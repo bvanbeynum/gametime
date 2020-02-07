@@ -186,6 +186,7 @@ module.exports = function (app) {
 						running: playerDb.running,
 						runTime: playerDb.runTime,
 						height: playerDb.height,
+						notes: playerDb.notes,
 						
 						spring2018: (playerDb.spring2018) ? {
 							division: playerDb.spring2018.division,
@@ -279,6 +280,7 @@ module.exports = function (app) {
 					playerDb.running = playerSave.running ? playerSave.running : playerDb.running;
 					playerDb.runTime = playerSave.runTime ? playerSave.runTime : playerDb.runTime;
 					playerDb.height = playerSave.height ? playerSave.height : playerDb.height;
+					playerDb.notes = playerSave.notes ? playerSave.notes : playerDb.notes;
 					
 					playerDb.spring2018 = (playerSave.spring2018) ? {
 						division: playerSave.spring2018.division ? playerSave.spring2018.division : playerDb.spring2018.division,
@@ -356,6 +358,7 @@ module.exports = function (app) {
 				running: playerSave.running,
 				runTime: playerSave.runTime,
 				height: playerSave.height,
+				notes: playerSave.notes,
 				
 				spring2018: (playerSave.spring2018) ? {
 					division: playerSave.spring2018.division,

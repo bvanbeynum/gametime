@@ -105,7 +105,8 @@ module.exports = {
 			running: Number,
 			runTime: Number
 		},
-		prev: [{type: prevYearSchema}]
+		prev: [{type: prevYearSchema}],
+		notes: String
 	}),
 	
 	game: mongoose.model("game", {
