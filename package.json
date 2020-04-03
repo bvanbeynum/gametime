@@ -11,6 +11,6 @@
     "express": "^4.15.3",
     "mongoose": "^4.10.3",
     "nodemailer": "^4.6.8",
-    "request": "^2.88.0",
+    "request": "^2.88.0"
   }
 }
