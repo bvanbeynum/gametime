@@ -1,7 +1,7 @@
 /* global angular */
 /* global d3 */
 
-var teamApp = angular.module("teamApp", ["ngMaterial", "ngRoute", "ngMessages", "ngSanitize", "ngCookies"]);
+var teamApp = angular.module("teamApp", ["ngMaterial", "ngRoute", "ngMessages", "ngSanitize");
 
 var log = {};
 
@@ -47,7 +47,7 @@ teamApp.config(function($mdThemingProvider, $routeProvider, $locationProvider) {
 	$locationProvider.html5Mode(true);
 });
 
-teamApp.controller("divisionCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog, $cookies) {
+teamApp.controller("divisionCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
 	log.division = $scope;
 	$rootScope.managedTeam = null;
 	$rootScope.isLoading = true;
