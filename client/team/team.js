@@ -1,7 +1,7 @@
 /* global angular */
 /* global d3 */
 
-var teamApp = angular.module("teamApp", ["ngMaterial", "ngRoute", "ngMessages", "ngSanitize");
+var teamApp = angular.module("teamApp", ["ngMaterial", "ngRoute", "ngMessages", "ngSanitize"]);
 
 var log = {};
 
