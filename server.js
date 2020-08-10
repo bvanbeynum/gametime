@@ -14,10 +14,10 @@ var config = require("./server/config");
 mongoose.Promise = require("bluebird");
 
 if (config.mongo.user) {
-	mongoose.connect("mongodb://" + config.mongo.user + ":" + config.mongo.pass + "@" + config.mongo.servers.join(",") + "/" + config.mongo.database + "?authSource=gameTime", { useMongoClient: true });
+	mongoose.connect("mongodb://" + config.mongo.user + ":" + config.mongo.pass + "@" + config.mongo.servers.join(",") + "/" + config.mongo.database + "?authSource=gameTime", {useNewUrlParser: true});
 }
 else {
-	mongoose.connect("mongodb://" + config.mongo.servers.join(",") + "/" + config.mongo.database, { useMongoClient: true });
+	mongoose.connect("mongodb://" + config.mongo.servers.join(",") + "/" + config.mongo.database, {useNewUrlParser: true});
 }
 
 app.set("x-powered-by", false);
@@ -40,4 +40,4 @@ require("./server/static")(app);
 // listen (start app with node server.js) ======================================
 
 app.listen(port);
-console.log("App listening on port " + port);
+console.log((new Date()) + ": App listening on port " + port);

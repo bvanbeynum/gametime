@@ -1,7 +1,7 @@
 /* global angular */
 /* global d3 */
 
-var teamApp = angular.module("teamApp", ["ngMaterial", "ngRoute", "ngMessages", "ngSanitize"]);
+var teamApp = angular.module("teamApp", ["ngMaterial", "ngRoute", "ngMessages", "ngSanitize", "ngCookies"]);
 
 var log = {};
 
@@ -47,62 +47,60 @@ teamApp.config(function($mdThemingProvider, $routeProvider, $locationProvider) {
 	$locationProvider.html5Mode(true);
 });
 
-teamApp.controller("divisionCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
+teamApp.controller("divisionCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog, $cookies) {
 	log.division = $scope;
 	$rootScope.managedTeam = null;
 	$rootScope.isLoading = true;
 	
-	$http({url: "/data/division"}).then(function (response) {
+	$http({url: "/api/division/load"}).then(function (response) {
 		$scope.divisions = response.data.divisions.sort(function (prev, curr) {
 			return prev.name < curr.name ? -1 : 1;
 		});
 		
-		$http({url: "/data/team?managed=true"}).then(function (response) {
-			var teams = response.data.teams;
-			
-			$scope.divisions.forEach(function (division) {
-				division.teams = teams.filter(function (team) { return team.teamDivision.id == division.id });
-			});
-			
-			$scope.divisions = d3.nest()
-				.key(function (division) { return division.name })
-				.entries($scope.divisions)
-				.map(function (group) {
-					return {
-						name: group.key, 
-						teams: teams.filter(function (team) { return team.teamDivision.name == group.key })
-							.map(function (team) {
-								return {
-									id: team.id,
-									name: team.name,
-									teamDivision: {
-										id: team.teamDivision.id,
-										name: team.teamDivision.name,
-										year: team.teamDivision.year,
-										season: team.teamDivision.season.replace(/\w\S*/g, function (text) { return text.charAt(0).toUpperCase() + text.substr(1).toLowerCase() })
-									},
-									img: "/team/media/" + team.name.toLowerCase().replace(/ /, "") + ".png"
-								};
-							})
-							.sort(function (prev, next) { 
-								if (prev.teamDivision.year < next.teamDivision.year) {
-									return -1;
-								}
-								else if (prev.teamDivision.year > next.teamDivision.year) {
-									return 1;
-								}
-								else {
-									return prev.teamDivision.season > next.teamDivision.season ? -1 : 1;
-								}
-							})
-					};
-				})
-				.sort(function (prev, next) { 
-					return prev.name < next.name ? -1 : 1;
-				});
-			
-			$scope.isLoading = false;
+		var teams = response.data.teams;
+		
+		$scope.divisions.forEach(function (division) {
+			division.teams = teams.filter(function (team) { return team.teamDivision.id == division.id });
 		});
+		
+		$scope.divisions = d3.nest()
+			.key(function (division) { return division.name })
+			.entries($scope.divisions)
+			.map(function (group) {
+				return {
+					name: group.key, 
+					teams: teams.filter(function (team) { return team.teamDivision.name == group.key })
+						.map(function (team) {
+							return {
+								id: team.id,
+								name: team.name,
+								teamDivision: {
+									id: team.teamDivision.id,
+									name: team.teamDivision.name,
+									year: team.teamDivision.year,
+									season: team.teamDivision.season.replace(/\w\S*/g, function (text) { return text.charAt(0).toUpperCase() + text.substr(1).toLowerCase() })
+								},
+								img: "/team/media/" + team.name.toLowerCase().replace(/ /, "") + ".png"
+							};
+						})
+						.sort(function (prev, next) { 
+							if (prev.teamDivision.year < next.teamDivision.year) {
+								return -1;
+							}
+							else if (prev.teamDivision.year > next.teamDivision.year) {
+								return 1;
+							}
+							else {
+								return prev.teamDivision.season > next.teamDivision.season ? -1 : 1;
+							}
+						})
+				};
+			})
+			.sort(function (prev, next) { 
+				return prev.name < next.name ? -1 : 1;
+			});
+		
+		$scope.isLoading = false;
 	}, function (error) {
 		$mdToast.show(
 			$mdToast.simple()

@@ -31,7 +31,8 @@ module.exports = {
 	division: mongoose.model("division", {
 		name: String,
 		year: Number,
-		season: String
+		season: String,
+		restricted: Boolean
 	}),
 	
 	team: mongoose.model("team", {

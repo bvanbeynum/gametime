@@ -1,4 +1,5 @@
 var data = require("./datamodels");
+var webRequest = require("request");
 
 module.exports = function (app) {
 	
@@ -29,7 +30,8 @@ module.exports = function (app) {
 						id: divisionDb._id,
 						name: divisionDb.name,
 						year: divisionDb.year,
-						season: divisionDb.season
+						season: divisionDb.season,
+						restricted: divisionDb.restricted
 					};
 				});
 				
@@ -60,6 +62,7 @@ module.exports = function (app) {
 					divisionDb.name = divisionSave.name ? divisionSave.name : divisionDb.name;
 					divisionDb.year = divisionSave.year ? divisionSave.year : divisionDb.year;
 					divisionDb.season = divisionSave.season ? divisionSave.season : divisionDb.season;
+					divisionDb.restricted = divisionSave.restricted ? divisionSave.restricted : divisionDb.restricted;
 					
 					return divisionDb.save();
 				})
@@ -75,7 +78,8 @@ module.exports = function (app) {
 			new data.division({
 				name: divisionSave.name,
 				year: divisionSave.year,
-				season: divisionSave.season
+				season: divisionSave.season,
+				restricted: divisionSave.restricted
 			})
 			.save()
 			.then((divisionDb) => {
@@ -1107,4 +1111,43 @@ module.exports = function (app) {
 			});
 	});
 	
+	app.get("/data/user", (request, response) => {
+		var validQueries = "|id|authToken|";
+		if (Object.keys(request.query).length > 0) {
+			var invalidQuery = Object.keys(request.query).filter((query) => {
+				return validQueries.indexOf("|" + query + "|") < 0;
+			});
+			
+			if (invalidQuery.length > 0) {
+				response.status(500).json({error: "Invalid query terms: " + invalidQuery.join(", ")});
+				return;
+			}
+		}
+		
+		var filter = {};
+		
+		if (request.query.id) {
+			filter._id = request.query.id;
+		}
+		if (request.query.authToken) {
+			filter.authToken = request.query.authToken;
+		}
+		
+		data.user.find(filter)
+			.exec()
+			.then(usersDB => {
+				var users = usersDB.map(userDB => ({
+					id: userDB._id,
+					name: userDB.name,
+					authToken: userDB.authToken,
+					divisionIds: userDB.divisionIds ? userDB.divisionIds : []
+				}));
+				
+				response.status(200).json({users: users});
+			})
+			.catch((error) => {
+				response.status(500).json({error: error.message});
+			});
+	});
+		
 };
