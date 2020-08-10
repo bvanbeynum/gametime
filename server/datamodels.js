@@ -169,6 +169,12 @@ module.exports = {
 		emailType: String,
 		divisionId: String,
 		emailText: String
+	}),
+	
+	user: mongoose.model("user", {
+		name: String,
+		authToken: String,
+		divisionIds: [String]
 	})
 	
 };
