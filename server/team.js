@@ -50,6 +50,44 @@ module.exports = (app) => {
 			});
 		});
 	});
+	
+	app.get("/api/eval/load", (request, response) => {
+		if (!request.query.divisionid) {
+			response.status(501).json({error: "Invalid request"});
+			response.end();
+			return;
+		}
+		
+		webRequest({ url: "http://" + request.headers.host + "/data/player?divisionid=" + request.query.divisionid, json: true}, (error, webResponse, webBody) => {
+			if (error) {
+				response.status(500).json({error: error.message});
+				response.end();
+				return;
+			}
+			
+			var players = webBody.players;
+			response.status(200).json({ players: players });
+		});
+	});
+	
+	app.post("/api/eval/savePlayer", (request, response) => {
+		if (!request.body.player) {
+			response.status(500).json({error: "Invalid player" });
+			return;
+		}
+		
+		webRequest.post({url: "http://" + request.headers.host + "/data/player", form: { player: request.body.player } }, (error, webResponse, webBody) => {
+			if (error) {
+				response.status(500).json({error: error.message});
+				response.end();
+				return;
+			}
+			
+			var playerId = webBody.playerId;
+			
+			response.status(200).json({playerId: playerId});
+		});
+	});
 
 	app.get("/login", (request, response) => {
 		webRequest({url: "http://" + request.headers.host + "/data/user?authToken=" + request.query.t, json: true }, (error, webResponse, webBody) => {

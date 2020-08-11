@@ -31,6 +31,10 @@ teamApp.config(function($mdThemingProvider, $routeProvider, $locationProvider) {
 		templateUrl: "/team/playmaker.html",
 		controller: "playCtl"
 	})
+	.when("/eval", {
+		templateUrl: "/team/eval.html",
+		controller: "evalCtl"
+	})
 	.when("/draft", {
 		templateUrl: "/team/draft.html",
 		controller: "draftCtl"
@@ -533,6 +537,75 @@ teamApp.controller("playCtl", function($rootScope, $scope, $http, $location, $md
 			// Cancel
 		});
 		
+	};
+	
+});
+
+teamApp.controller("evalCtl", function($rootScope, $scope, $http, $location) {
+	if (!$rootScope.managedTeam) {
+		$location.path("/");
+		return;
+	}
+	
+	log.eval = $scope;
+	$scope.isLoading = true;
+	$scope.message = { text: "", active: false };
+	$scope.popup = { active: false, player: null };
+	
+	$http({url: "/api/eval/load?divisionid=" + $rootScope.managedTeam.teamDivision.id})
+		.then(response => {
+			$scope.players = response.data.players;
+			$scope.isLoading = false;
+		}, error => {
+			$scope.showMessage("error", "There was an error loading data");
+			console.warn("Warning", error);
+		});
+	
+	$scope.showMessage = (type, message) => {
+		$scope.message.text = message;
+		$scope.message.active = true;
+		$scope.message.type = type;
+		
+		setTimeout(() => {
+			$scope.message.active = false;
+			$scope.message.text = "";
+			$scope.message.type = "";
+			$scope.$apply();
+		}, 4000);
+	};
+	
+	$scope.selectPlayer = player => {
+		$scope.popup.player = player;
+		$scope.popup.active = true;
+	};
+	
+	$scope.closePlayer = () => {
+		if ($scope.popup.active) {
+			$http({ url: "/api/eval/savePlayer", method: "post", data: { player: $scope.popup.player } })
+				.then(response => {
+					$scope.showMessage("info", "Player saved");
+					$scope.popup.player = null;
+					$scope.popup.active = false;
+				}, error => {
+					$scope.showMessage("error", "There was an error saving player");
+					console.warn("Warning", error);
+					
+					$scope.popup.player = null;
+					$scope.popup.active = false;
+				});
+		}
+	};
+	
+	$scope.clearPlayer = () => {
+		if ($scope.popup.player) {
+			$scope.popup.player.height = null;
+			$scope.popup.player.route = null;
+			$scope.popup.player.speed = null;
+			$scope.popup.player.hands = null;
+			$scope.popup.player.evalCatch = null;
+		}
+		
+		$scope.closePlayer();
 	};
 	
 });
@@ -1110,6 +1183,7 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 		case "/standings":
 			$location.path("/");
 			break;
+			
 		case "/schedule":
 			$location.path("/standings");
 			break;
@@ -1131,6 +1205,10 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 			$location.path("/playbook");
 			break;
 		
+		case "/eval":
+			$location.path("/eval");
+			break;
+			
 		case "/draft":
 			$location.path("/standings");
 			break;
@@ -1147,6 +1225,10 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 	
 	$scope.openPlaybook = function () {
 		$location.path("/playbook");
+	};
+	
+	$scope.openEval = function () {
+		$location.path("/eval");
 	};
 	
 	$scope.openDraft = function () {

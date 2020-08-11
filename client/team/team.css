@@ -179,3 +179,32 @@ table {
 	font-size: .8em;
 	color: rgb(150,150,150);
 }
+
+.loadingContainer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 100;
+}
+
+.popupMessage {
+	position: absolute;
+	font-weight: bold;
+	bottom: 3%;
+	left: 3%;
+	padding: 8px 15px;
+	display: none;
+}
+.popupMessage.isActive {
+	display: flex;
+}
+.popupMessage.info {
+	border: solid 2px rgb(79, 116, 128);
+	background-color: rgb(152, 188, 255);
+	color: rgb(79, 116, 128);
+}
+.popupMessage.error {
+	border: solid 2px rgb(220, 80, 80);
+	background-color: rgb(244, 174, 174);
+	color: rgb(222, 23, 23);
+}

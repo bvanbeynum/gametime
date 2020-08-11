@@ -93,6 +93,10 @@ module.exports = {
 		running: Number,
 		runTime: Number,
 		height: Number,
+		route: Number,
+		speed: Number,
+		hands: Number,
+		evalCatch: Number,
 		
 		spring2018: {
 			division: String,
