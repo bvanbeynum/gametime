@@ -193,7 +193,8 @@ module.exports = function (app) {
 						route: playerDb.route,
 						speed: playerDb.speed,
 						hands: playerDb.hands,
-						evalCatch: playerDb.evalCatch,
+						draftBlock: playerDb.draftBlock,
+						draftWatch: playerDb.draftWatch,
 						notes: playerDb.notes,
 						
 						spring2018: (playerDb.spring2018) ? {
@@ -291,7 +292,8 @@ module.exports = function (app) {
 					playerDb.route = playerSave.route || playerSave.route === "" ? playerSave.route || null : playerDb.route;
 					playerDb.speed = playerSave.speed || playerSave.speed === "" ? playerSave.speed || null : playerDb.speed;
 					playerDb.hands = playerSave.hands || playerSave.hands === "" ? playerSave.hands || null : playerDb.hands;
-					playerDb.evalCatch = playerSave.evalCatch || playerSave.evalCatch === "" ? playerSave.evalCatch : playerDb.evalCatch;
+					playerDb.draftBlock = playerSave.draftBlock || playerSave.draftBlock === "" ? playerSave.draftBlock || null : playerDb.draftBlock;
+					playerDb.draftWatch = playerSave.draftWatch || playerSave.draftWatch === "" ? playerSave.draftWatch || null : playerDb.draftWatch;
 					playerDb.notes = playerSave.notes ? playerSave.notes : playerDb.notes;
 					
 					playerDb.spring2018 = (playerSave.spring2018) ? {
@@ -373,7 +375,8 @@ module.exports = function (app) {
 				route: playerSave.route,
 				speed: playerSave.speed,
 				hands: playerSave.hands,
-				evalCatch: playerSave.evalCatch,
+				draftBlock: playerSave.draftBlock,
+				draftWatch: playerSave.draftWatch,
 				notes: playerSave.notes,
 				
 				spring2018: (playerSave.spring2018) ? {

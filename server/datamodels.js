@@ -96,7 +96,8 @@ module.exports = {
 		route: Number,
 		speed: Number,
 		hands: Number,
-		evalCatch: Number,
+		draftBlock: Boolean,
+		draftWatch: Boolean,
 		
 		spring2018: {
 			division: String,

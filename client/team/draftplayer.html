@@ -55,24 +55,20 @@
 				<span class="draftPageLabel">Requests:</span> {{ player.requests }}
 			</div>
 			
-			<div>
-				<span class="draftPageLabel">Coach Notes</span><br>{{ player.notes }}
-			</div>
-			
 			<div class="draftSpacer"></div>
 			
 			<table class="draftPageTable viewPlayerTable">
 			<tr>
 				<th>&nbsp;</th>
-				<th ng-repeat="season in seasons">{{ season.year }}<br>{{ season.season.charAt(0).toUpperCase() + season.season.slice(1); }}</th>
+				<th ng-repeat="season in seasons">{{ season.playerDivision.year }}<br>{{ season.playerDivision.season.charAt(0).toUpperCase() + season.playerDivision.season.slice(1); }}</th>
 			</tr>
 			<tr>
 				<td>Rank</td>
-				<td ng-repeat="season in seasons">{{ season.rank }}</td>
+				<td ng-repeat="season in seasons">{{ season.draftRank }}</td>
 			</tr>
 			<tr>
 				<td>Round</td>
-				<td ng-repeat="season in seasons">{{ season.round }}</td>
+				<td ng-repeat="season in seasons">{{ season.draftRound }}</td>
 			</tr>
 			<tr>
 				<td>Catch</td>
@@ -94,8 +90,8 @@
 			
 			<div class="draftSpacer"></div>
 			
-			<div ng-repeat="season in seasons | filter: { year: 2018 }">
-				<span class="draftPageLabel">{{ season.year }} {{ season.season.charAt(0).toUpperCase() + season.season.slice(1); }}:</span> {{ season.team }}
+			<div ng-repeat="season in seasons">
+				<span class="draftPageLabel">{{ season.playerDivision.year }} {{ season.playerDivision.season.charAt(0).toUpperCase() + season.playerDivision.season.slice(1); }}:</span> {{ season.team.name }}
 			</div>
 		</md-content>
 		

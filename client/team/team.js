@@ -561,7 +561,8 @@ teamApp.controller("evalCtl", function($rootScope, $scope, $http, $location) {
 					|| player.route
 					|| player.speed
 					|| player.hands
-					|| player.evalCatch
+					|| player.draftBlock
+					|| player.draftWatch
 					) {
 					player.completed = true;
 				}
@@ -602,7 +603,8 @@ teamApp.controller("evalCtl", function($rootScope, $scope, $http, $location) {
 						|| $scope.popup.player.route
 						|| $scope.popup.player.speed
 						|| $scope.popup.player.hands
-						|| $scope.popup.player.evalCatch
+						|| $scope.popup.player.draftBlock
+						|| $scope.popup.player.draftWatch
 						) {
 						$scope.popup.player.completed = true;
 					}
@@ -629,7 +631,8 @@ teamApp.controller("evalCtl", function($rootScope, $scope, $http, $location) {
 			$scope.popup.player.route = null;
 			$scope.popup.player.speed = null;
 			$scope.popup.player.hands = null;
-			$scope.popup.player.evalCatch = null;
+			$scope.popup.player.draftBlock = null;
+			$scope.popup.player.draftWatch = null;
 		}
 		
 		$scope.closePlayer();
@@ -1169,16 +1172,16 @@ function viewPlayerCtl(player, $scope, $mdDialog) {
 	
 	$scope.age = new Date(Date.now() - (new Date(log.draft.players[0].dateOfBirth)).getTime()).getFullYear() - 1970;
 	$scope.seasons = player.prev
-		.filter(function (season) { return season.round })
+		.filter(season =>  season.draftRound )
 		.sort(function (season1, season2) {
-			if (season1.year < season2.year) {
-				return -1;
-			}
-			else if (season1.year > season2.year) {
+			if (season1.playerDivision.year < season2.playerDivision.year) {
 				return 1;
 			}
+			else if (season1.playerDivision.year > season2.playerDivision.year) {
+				return -1;
+			}
 			else {
-				return season1.season < season2.season ? -1 : 1;
+				return season1.playerDivision.season < season2.playerDivision.season ? 1 : -1;
 			}
 		});
 	
@@ -1188,10 +1191,10 @@ function viewPlayerCtl(player, $scope, $mdDialog) {
 		round: player.draftRound,
 		runTime: player.runTime,
 		running: player.running,
-		season: "spring",
+		season: player.playerDivision.season,
 		team: "",
 		throwing: player.throwing,
-		year: 2019
+		year: player.playerDivision.year
 	});
 	
 	$scope.close = function () {
