@@ -555,6 +555,21 @@ teamApp.controller("evalCtl", function($rootScope, $scope, $http, $location) {
 	$http({url: "/api/eval/load?divisionid=" + $rootScope.managedTeam.teamDivision.id})
 		.then(response => {
 			$scope.players = response.data.players;
+			
+			$scope.players.forEach(player => {
+				if (player.height
+					|| player.route
+					|| player.speed
+					|| player.hands
+					|| player.evalCatch
+					) {
+					player.completed = true;
+				}
+				else {
+					player.completed = false;
+				}
+			});
+			
 			$scope.isLoading = false;
 		}, error => {
 			$scope.showMessage("error", "There was an error loading data");
@@ -583,6 +598,18 @@ teamApp.controller("evalCtl", function($rootScope, $scope, $http, $location) {
 		if ($scope.popup.active) {
 			$http({ url: "/api/eval/savePlayer", method: "post", data: { player: $scope.popup.player } })
 				.then(response => {
+					if ($scope.popup.player.height
+						|| $scope.popup.player.route
+						|| $scope.popup.player.speed
+						|| $scope.popup.player.hands
+						|| $scope.popup.player.evalCatch
+						) {
+						$scope.popup.player.completed = true;
+					}
+					else {
+						$scope.popup.player.completed = false;
+					}
+					
 					$scope.showMessage("info", "Player saved");
 					$scope.popup.player = null;
 					$scope.popup.active = false;
