@@ -65,6 +65,12 @@
 
 .playerPopup h2.label {
 	font-size: 18px;
+	flex: 1;
+}
+
+.header .button {
+	margin-left: 20px;
+	cursor: pointer;
 }
 
 .playerPopup .container {
