@@ -149,10 +149,12 @@ module.exports = function (app) {
 				];
 		}
 		
+		var players = [];
+		
 		data.player.find(filter)
 			.exec()
 			.then((playersDb) => {
-				var players = playersDb.map((playerDb) => {
+				players = playersDb.map((playerDb) => {
 					return {
 						id: playerDb._id,
 						playerDivision: playerDb.playerDivision ? {
@@ -178,6 +180,7 @@ module.exports = function (app) {
 						parentEmail: playerDb.parentEmail,
 						Phone: playerDb.Phone,
 						shirtSize: playerDb.shirtSize,
+						allergies: playerDb.allergies,
 						
 						requests: playerDb.requests,
 						coachRequest: playerDb.coachRequest,
@@ -197,17 +200,6 @@ module.exports = function (app) {
 						draftWatch: playerDb.draftWatch,
 						notes: playerDb.notes,
 						
-						spring2018: (playerDb.spring2018) ? {
-							division: playerDb.spring2018.division,
-							recRank: playerDb.spring2018.recRank,
-							coachProtect: playerDb.spring2018.coachProtect,
-							coachRequest: playerDb.spring2018.coachRequest,
-							team: playerDb.spring2018.team,
-							throwing: playerDb.spring2018.throwing,
-							catching: playerDb.spring2018.catching,
-							running: playerDb.spring2018.running,
-							runTime: playerDb.spring2018.runTime
-						} : null,
 						prev: playerDb.prev ? playerDb.prev.map((prev) => {
 							return {
 								year: prev.year,
@@ -226,6 +218,21 @@ module.exports = function (app) {
 						}) : []
 						
 					};
+				});
+				
+				return data.player.find().exec();
+			})
+			.then(playersAllDb => {
+				players.forEach(player => {
+					player.prev = playersAllDb.filter(playerAll => 
+						player.playerDivision.id != playerAll.playerDivision.id
+						&& player.firstName
+						&& player.parentEmail
+						&& playerAll.firstName
+						&& playerAll.parentEmail
+						&& player.parentEmail.toLowerCase() == playerAll.parentEmail.toLowerCase()
+						&& player.firstName.toLowerCase() == playerAll.firstName.toLowerCase()
+					);
 				});
 				
 				response.status(200).json({players: players});
@@ -277,6 +284,7 @@ module.exports = function (app) {
 					playerDb.parentEmail = playerSave.parentEmail ? playerSave.parentEmail : playerDb.parentEmail;
 					playerDb.Phone = playerSave.Phone ? playerSave.Phone : playerDb.Phone;
 					playerDb.shirtSize = playerSave.shirtSize ? playerSave.shirtSize : playerDb.shirtSize;
+					playerDb.allergies = playerSave.allergies ? playerSave.allergies : playerDb.allergies;
 					
 					playerDb.requests = playerSave.requests ? playerSave.requests : playerDb.requests;
 					playerDb.coachRequest = playerSave.coachRequest ? playerSave.coachRequest : playerDb.coachRequest;
@@ -295,35 +303,6 @@ module.exports = function (app) {
 					playerDb.draftBlock = playerSave.draftBlock || playerSave.draftBlock === "" ? playerSave.draftBlock || null : playerDb.draftBlock;
 					playerDb.draftWatch = playerSave.draftWatch || playerSave.draftWatch === "" ? playerSave.draftWatch || null : playerDb.draftWatch;
 					playerDb.notes = playerSave.notes ? playerSave.notes : playerDb.notes;
-					
-					playerDb.spring2018 = (playerSave.spring2018) ? {
-						division: playerSave.spring2018.division ? playerSave.spring2018.division : playerDb.spring2018.division,
-						recRank: playerSave.spring2018.recRank ? playerSave.spring2018.recRank : playerDb.spring2018.recRank,
-						coachProtect: playerSave.spring2018.coachProtect ? playerSave.spring2018.coachProtect : playerDb.spring2018.coachProtect,
-						coachRequest: playerSave.spring2018.coachRequest ? playerSave.spring2018.coachRequest : playerDb.spring2018.coachRequest,
-						team: playerSave.spring2018.team ? playerSave.spring2018.team : playerDb.spring2018.team,
-						throwing: playerSave.spring2018.throwing ? playerSave.spring2018.throwing : playerDb.spring2018.throwing,
-						catching: playerSave.spring2018.catching ? playerSave.spring2018.catching : playerDb.spring2018.catching,
-						running: playerSave.spring2018.running ? playerSave.spring2018.running : playerDb.spring2018.running,
-						runTime: playerSave.spring2018.runTime ? playerSave.spring2018.runTime : playerDb.spring2018.runTime
-					} : playerDb.spring2018;
-					
-					playerDb.prev = playerSave.prev ? playerSave.prev.map((prev) => {
-						return {
-							year: prev.year,
-							season: prev.season,
-							division: prev.division,
-							rank: prev.rank,
-							round: prev.round,
-							coachProtect: prev.coachProtect,
-							coachRequest: prev.coachRequest,
-							team: prev.team,
-							throwing: prev.throwing,
-							catching: prev.catching,
-							running: prev.running,
-							runTime: prev.runTime
-						};
-					}) : playerDb.prev || [];
 					
 					return playerDb.save();
 				})
@@ -360,6 +339,7 @@ module.exports = function (app) {
 				parentEmail: playerSave.parentEmail,
 				Phone: playerSave.Phone,
 				shirtSize: playerSave.shirtSize,
+				allergies: playerSave.allergies,
 				
 				requests: playerSave.requests,
 				coachRequest: playerSave.coachRequest,
@@ -377,35 +357,7 @@ module.exports = function (app) {
 				hands: playerSave.hands,
 				draftBlock: playerSave.draftBlock,
 				draftWatch: playerSave.draftWatch,
-				notes: playerSave.notes,
-				
-				spring2018: (playerSave.spring2018) ? {
-					division: playerSave.spring2018.division,
-					recRank: playerSave.spring2018.recRank,
-					coachProtect: playerSave.spring2018.coachProtect,
-					coachRequest: playerSave.spring2018.coachRequest,
-					team: playerSave.spring2018.team,
-					throwing: playerSave.spring2018.throwing,
-					catching: playerSave.spring2018.catching,
-					running: playerSave.spring2018.running,
-					runTime: playerSave.spring2018.runTime
-				} : null,
-				prev: playerSave.prev ? playerSave.prev.map((prev) => {
-						return {
-							year: prev.year,
-							season: prev.season,
-							division: prev.division,
-							rank: prev.rank,
-							round: prev.round,
-							coachProtect: prev.coachProtect,
-							coachRequest: prev.coachRequest,
-							team: prev.team,
-							throwing: prev.throwing,
-							catching: prev.catching,
-							running: prev.running,
-							runTime: prev.runTime
-						};
-					}) : null
+				notes: playerSave.notes
 			})
 			.save()
 			.then((playerDb) => {

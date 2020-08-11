@@ -26,23 +26,7 @@ module.exports = function (app) {
 				
 				output.players = body.players;
 				
-				webRequest({ url: request.protocol + "://" + request.get("host") + "/data/player", json: true }, (error, webResponse, body) => {
-					if (error) {
-						response.status(553).json({error: error});
-						return;
-					}
-					
-					var prevPlayers = body.players;
-					
-					output.players.forEach(player => {
-						player.prev = prevPlayers.filter(prevPlayer => 
-							player.playerDivision.id != prevPlayer.playerDivision.id
-							&& player.parentEmail == prevPlayer.parentEmail
-						);
-					});
-					
-					response.status(200).json(output);
-				});
+				response.status(200).json(output);
 			});
 		});
 	});
