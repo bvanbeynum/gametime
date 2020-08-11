@@ -1,0 +1,104 @@
+.evalPage {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.playerContainer {
+	padding: 20px;
+	border: 3px solid rgb(50,50,50);
+	margin: 15px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 110px;
+	height: 80px;
+	justify-content: center;
+	cursor: pointer;
+	outline: none;
+}
+
+.draftNumber {
+	font-weight: bold;
+	font-size: 40px;
+}
+
+.playerName {
+	font-size: 10px;
+}
+
+.playerContainer.protected {
+	background-color: rgb(255 255 168);
+	border-color: rgb(175 177 27);
+}
+.playerContainer.completed {
+	color: rgb(170,170,170);
+	text-decoration: line-through;
+}
+
+.playerPopup {
+	position: absolute;
+	font-weight: bold;
+	top: 8%;
+	bottom: 3%;
+	display: none;
+	left: 3%;
+	right: 3%;
+	background-color: white;
+	flex: 1;
+	border: solid 1px rgb(200,200,200);
+	box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.10);
+	flex-direction: column;
+}
+.playerPopup.active {
+	display: flex;
+}
+
+.playerPopup .header {
+	background-color: rgb(0,150,136);
+	color: rgb(255,255,255);
+	display: flex;
+	padding: 8px 15px;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.playerPopup h2.label {
+	font-size: 18px;
+}
+
+.playerPopup .container {
+	padding: 8px 15px;
+}
+
+.playerPopup .dataContainer {
+	display: flex;
+	margin-left: 20px;
+	justify-content: space-around;
+}
+
+.playerPopup .boxItem {
+	border: solid 1px black;
+	width: 75px;
+	height: 75px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	outline: none;
+}
+.playerPopup .boxItem.selected {
+	background-color: rgb(255 255 168);
+	border-color: rgb(175 177 27);
+	color: rgb(175 177 27);
+}
+.playerPopup .boxItem.small {
+	font-size: 15px;
+}
+.playerPopup .boxItem.medium {
+	font-size: 30px;
+}
+.playerPopup .boxItem.tall {
+	font-size: 50px;
+}
