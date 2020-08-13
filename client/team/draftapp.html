@@ -1,0 +1,249 @@
+<link rel="stylesheet" type="text/css" href="/team/draftapp.css">
+
+<div ng-show="isLoading" class="loadingContainer">
+	<div class="loadingContent">
+		<div>Loading</div>
+	</div>
+</div>
+
+<div ng-show="!isLoading" class="draftPage">
+	<div class="pageHeader">
+		<div class="headerButton" ng-click="changeTab('teams')">Teams</div>
+		<div class="headerButton" ng-click="changeTab('players')">Players</div>
+		<div class="headerButton" ng-click="changeTab('draft')">Draft</div>
+	</div>
+	
+	<div class="pageContent" ng-show="activeTab == 'teams'">
+		<table class="teamTable">
+		<tr>
+			<th>Coach</th>
+			<th>Team Name</th>
+			<th>Round</th>
+			<th>&nbsp;</th>
+		</tr>
+		<tr ng-repeat="team in teams">
+			<td>{{team.coach}}</td>
+			<td>{{team.name}}</td>
+			<td>{{team.draftRound}}</td>
+			<td><a href ng-click="manageTeam(team)">Edit</a></td>
+		</tr>
+		</table>
+		
+		<div class="pageBottom">
+			<div class="addButton" ng-click="manageTeam()">
+				Add Team
+			</div>
+		</div>
+	</div>
+	
+	<div class="pageContent" ng-show="activeTab == 'players'">
+		<table class="playerTable">
+		<tr>
+			<th>RND</th>
+			<th ng-class="{ 'draftSorted': playerSort == 'draftRank' }" ng-click="sortPlayers('draftRank')">RNK</th>
+			<th ng-class="{ 'draftSorted': playerSort == 'brettRank' }" ng-click="sortPlayers('brettRank')">BvB</th>
+			<th ng-class="{ 'draftSorted': playerSort == '-catching' }" ng-click="sortPlayers('-catching')">C</th>
+			<th ng-class="{ 'draftSorted': playerSort == 'draftNumber' }" ng-click="sortPlayers('draftNumber')">#</th>
+			<th>Name</th>
+			<th>Note</th>
+		</tr>
+		<tr ng-repeat="player in players | orderBy: playerSort" ng-class="{ 'draftAlternate': (($index + 1) / teams.length) % 2 > 1 && playerSort == 'draftRank' }" ng-click="viewPlayer(player)">
+			<td>{{player.draftRound}}</td>
+			<td>{{player.draftRank}}</td>
+			<td>{{player.brettRank}}</td>
+			<td>{{player.catching}}</td>
+			<td>{{player.draftNumber}}</td>
+			<td ng-class="{ 'draftProtected': player.coachProtect.length > 0, 'draftPicked': player.draftPick, 'draftAvailable': !player.draftPick && player.coachProtect.length == 0 }">{{player.firstName + " " + player.lastName}}</td>
+			<td>
+				{{ player.requests }}
+				<div ng-show="player.coachRequest.length > 0">
+					Request: {{ player.coachRequest }}
+				</div>
+			</td>
+		</tr>
+		</table>
+	</div>
+	
+	<div class="pageContent" ng-show="activeTab == 'draft'">
+		<table class="draftTable">
+		<tr>
+			<th>RND</th>
+			<th>PCK</th>
+			<th>Coach</th>
+			<th>#</th>
+			<th>Player</th>
+		</tr>
+		<tr ng-repeat="pick in draftPicks" ng-class="{ 'draftAlternate': pick.round % 2 == 0 }">
+			<td>{{pick.round}}</td>
+			<td>{{ pick.roundPick + " / " + pick.pick }}</td>
+			<td>{{ pick.team ? pick.team.coach : "-" }}</td>
+			<td>
+				<a href ng-click="selectPick(pick)">{{ pick.player ? pick.player.draftNumber : "pick" }}</span>
+			</td>
+			<td>{{ pick.player ? pick.player.firstName + " " + pick.player.lastName : "-" }}</td>
+		</tr>
+		</table>
+	</div>
+</div>
+
+<div class="popup" ng-class="{ 'active': popupTeam.active }">
+	<div class="header">
+
+		<h2 class="label">{{popupTeam.title}}</h2>
+		
+		<div ng-click="closeTeam()" class="button">
+			<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+				<path d="M0 0h24v24H0z" fill="none"/>
+				<path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+			</svg>
+		</div>
+		
+		<div ng-click="cancelTeam()" class="button">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px">
+				<path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+			</svg>
+		</div>
+	</div>
+	
+	<div class="loading" ng-show="popupTeam.isLoading">
+		Loading
+	</div>
+	
+	<div class="container" ng-show="!popupTeam.isLoading">
+		<div class="editItem">
+			<h2 class="label">Coach</h2>
+			<input type="text" class="textInput" placeholder="Coach" ng-model="popupTeam.team.coach" />
+		</div>
+		
+		<div class="editItem">
+			<h2 class="label">Team Name</h2>
+			<input type="text" class="textInput" placeholder="Team Name" ng-model="popupTeam.team.name" />
+		</div>
+		
+		<div class="editItem">
+			<h2 class="label">Draft Round</h2>
+			<input type="number" class="textInput" placeholder="Draft Round" ng-model="popupTeam.team.draftRound" />
+		</div>
+	</div>
+
+</div>
+
+<div class="popup" ng-class="{ 'active': popupPlayer.active }">
+	<div class="header">
+
+		<h2 class="label">{{ popupPlayer.player.firstName + " " + popupPlayer.player.lastName }}</h2>
+		
+		<div ng-click="closePlayer()" class="button">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px">
+				<path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+			</svg>
+		</div>
+
+	</div>
+	
+	<div class="container">
+		<div><span class="label">Name:</span> {{ popupPlayer.player.firstName + " " + popupPlayer.player.lastName }}</div>
+		<div><span class="label">Age:</span> {{ popupPlayer.player.age }}</div>
+
+		<div class="spacer"></div>
+		
+		<div><span class="label">Rank:</span> {{ popupPlayer.player.draftRank }}</div>
+		<div><span class="label">Brett:</span> {{ popupPlayer.player.brettRank }}</div>
+		
+		<div class="spacer"></div>
+		
+		<div><span class="label">Protected:</span> {{ popupPlayer.player.coachProtect }}</div>
+		<div><span class="label">Requested:</span> {{ popupPlayer.player.coachRequest }}</div>
+		<div><span class="label">Requests:</span> {{ popupPlayer.player.requests }}</div>
+		<div><span class="label">Notes:</span> {{ popupPlayer.player.comments }}</div>
+		
+		<div class="spacer"></div>
+		
+		<table class="viewPlayerTable">
+		<tr>
+			<th>&nbsp;</th>
+			<th ng-repeat="season in popupPlayer.seasons">{{ season.playerDivision.year }}<br>{{ season.playerDivision.season.charAt(0).toUpperCase() + season.playerDivision.season.slice(1); }}</th>
+		</tr>
+		<tr>
+			<td>Rank</td>
+			<td ng-repeat="season in popupPlayer.seasons">{{ season.draftRank }}</td>
+		</tr>
+		<tr>
+			<td>Round</td>
+			<td ng-repeat="season in popupPlayer.seasons">{{ season.draftRound }}</td>
+		</tr>
+		<tr>
+			<td>Catch</td>
+			<td ng-repeat="season in popupPlayer.seasons">{{ season.catching }}</td>
+		</tr>
+		<tr>
+			<td>Run</td>
+			<td ng-repeat="season in popupPlayer.seasons">{{ season.running }}</td>
+		</tr>
+		<tr>
+			<td>Time</td>
+			<td ng-repeat="season in popupPlayer.seasons">{{ season.runTime }}</td>
+		</tr>
+		<tr>
+			<td>Throw</td>
+			<td ng-repeat="season in popupPlayer.seasons">{{ season.throwing }}</td>
+		</tr>
+		</table>
+		
+		<div class="draftSpacer"></div>
+		
+		<div ng-repeat="season in popupPlayer.seasons">
+			<span class="label">{{ season.playerDivision.year }} {{ season.playerDivision.season.charAt(0).toUpperCase() + season.playerDivision.season.slice(1); }}:</span> {{ season.team.name }}
+		</div>
+	</div>
+
+</div>
+
+<div class="popup" ng-class="{ 'active': popupPick.active }">
+	<div class="header">
+
+		<h2 class="label">Pick {{ popupPick.pick.roundPick }} / {{ popupPick.pick.pick }}</h2>
+		
+		<div ng-click="savePick()" class="button">
+			<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+				<path d="M0 0h24v24H0z" fill="none"/>
+				<path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+			</svg>
+		</div>
+		
+		<div ng-click="cancelPick()" class="button">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px">
+				<path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+			</svg>
+		</div>
+
+	</div>
+	
+	<div class="loading" ng-show="popupPick.isLoading">
+		Loading
+	</div>
+	
+	<div class="container" ng-show="!popupPick.isLoading">
+		
+		<div><span class="label">Pick:</span> {{ popupPick.pick.pick }}</div>
+		<div><span class="label">Round:</span> {{ popupPick.pick.round }}</div>
+		<div><span class="label">Round Pick:</span> {{ popupPick.pick.roundPick }}</div>
+		
+		<div class="spacer"></div>
+		
+		<div><span class="label">Coach:</span> {{ popupPick.pick.team.coach }}</div>
+		
+		<div class="spacer"></div>
+		
+		<div class="editItem">
+			<h2 class="label">Select player number</h2>
+			<input type="number" class="textInput" placeholder="" ng-model="popupPick.pickNumber" ng-change="pickChange()" />
+		</div>
+		
+		<div class="pickPlayer" ng-class="{'playerTaken': popupPick.selectedError }">
+			{{popupPick.pick.player.firstName}} {{popupPick.pick.player.lastName}}
+		</div>
+	</div>
+
+</div>
+

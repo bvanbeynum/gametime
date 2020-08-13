@@ -24,7 +24,7 @@
 		<md-content class="md-padding">
 			<div layout="row" layout-align="space-between">
 				<div><span class="draftPageLabel">Name:</span> {{ player.firstName + " " + player.lastName }}</div>
-				<div><span class="draftPageLabel">Age:</span> {{ age }}</div>
+				<div><span class="draftPageLabel">Age:</span> {{ player.age }}</div>
 			</div>
 			
 			<div class="draftSpacer"></div>
@@ -35,10 +35,6 @@
 			
 			<div>
 				<span class="draftPageLabel">Brett:</span> {{ player.brettRank }}
-			</div>
-			
-			<div>
-				<span class="draftPageLabel">Height:</span> {{ player.height }}
 			</div>
 			
 			<div class="draftSpacer"></div>
@@ -53,6 +49,10 @@
 			
 			<div>
 				<span class="draftPageLabel">Requests:</span> {{ player.requests }}
+			</div>
+			
+			<div>
+				<span class="draftPageLabel">Notes:</span> {{ player.comments }}
 			</div>
 			
 			<div class="draftSpacer"></div>

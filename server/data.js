@@ -198,25 +198,7 @@ module.exports = function (app) {
 						hands: playerDb.hands,
 						draftBlock: playerDb.draftBlock,
 						draftWatch: playerDb.draftWatch,
-						notes: playerDb.notes,
-						
-						prev: playerDb.prev ? playerDb.prev.map((prev) => {
-							return {
-								year: prev.year,
-								season: prev.season,
-								division: prev.division,
-								rank: prev.rank,
-								round: prev.round,
-								coachProtect: prev.coachProtect,
-								coachRequest: prev.coachRequest,
-								team: prev.team,
-								throwing: prev.throwing,
-								catching: prev.catching,
-								running: prev.running,
-								runTime: prev.runTime
-							};
-						}) : []
-						
+						notes: playerDb.notes
 					};
 				});
 				
@@ -484,7 +466,7 @@ module.exports = function (app) {
 	});
 	
 	app.post("/data/team", (request, response) => {
-		if (!request.body.team || !request.body.team.name) {
+		if (!request.body.team || !request.body.team.coach) {
 			response.status(500).json({error: "Invalid team save request" });
 			return;
 		}
@@ -500,7 +482,7 @@ module.exports = function (app) {
 						throw new Error("Team is not found");
 					}
 					
-					teamDb.name = teamSave.name ? teamSave.name : teamDb.name;
+					teamDb.name = teamSave.name || teamSave.name == "" ? teamSave.name || null : teamDb.name;
 					teamDb.teamDivision = teamSave.teamDivision ? {
 						id: teamSave.teamDivision.id ? teamSave.teamDivision.id : teamDb.teamDivision.id,
 						name: teamSave.teamDivision.name ? teamSave.teamDivision.name : teamDb.teamDivision.name,
@@ -511,11 +493,11 @@ module.exports = function (app) {
 					teamDb.confrence = teamSave.confrence ? teamSave.confrence : teamDb.confrence;
 					teamDb.coach = teamSave.coach ? teamSave.coach : teamDb.coach;
 					teamDb.isManaged = teamSave.isManaged ? teamSave.isManaged : teamDb.isManaged;
-					teamDb.draftRound = teamSave.draftRound ? teamSave.draftRound : teamDb.draftRound;
-					teamDb.practiceDay = teamSave.practiceDay ? teamSave.practiceDay : teamDb.practiceDay;
-					teamDb.practiceTime = teamSave.practiceTime ? teamSave.practiceTime : teamDb.practiceTime;
-					teamDb.practiceLocation = teamSave.practiceLocation ? teamSave.practiceLocation : teamDb.practiceLocation;
-					teamDb.practiceWeekend = teamSave.practiceWeekend ? teamSave.practiceWeekend : teamDb.practiceWeekend;
+					teamDb.draftRound = teamSave.draftRound || teamSave.draftRound === null ? teamSave.draftRound : teamDb.draftRound;
+					teamDb.practiceDay = teamSave.practiceDay || teamSave.practiceDay == "" ? teamSave.practiceDay || null : teamDb.practiceDay;
+					teamDb.practiceTime = teamSave.practiceTime  || teamSave.practiceTime == "" ? teamSave.practiceTime || null : teamDb.practiceTime;
+					teamDb.practiceLocation = teamSave.practiceLocation  || teamSave.practiceLocation == "" ? teamSave.practiceLocation || null : teamDb.practiceLocation;
+					teamDb.practiceWeekend = teamSave.practiceWeekend  || teamSave.practiceWeekend == "" ? teamSave.practiceWeekend || null : teamDb.practiceWeekend;
 					
 					return teamDb.save();
 				})

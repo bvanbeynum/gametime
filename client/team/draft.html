@@ -20,9 +20,9 @@
 					<th>#</th>
 					<th>Player</th>
 				</tr>
-				<tr ng-repeat="pick in draft" ng-class="{ 'draftAlternate': pick.round % 2 == 0 }">
+				<tr ng-repeat="pick in draftPicks" ng-class="{ 'draftAlternate': pick.round % 2 == 0 }">
 					<td>{{ pick.round }}</td>
-					<td>{{ pick.teamPick + " / " + pick.pick }}</td>
+					<td>{{ pick.roundPick + " / " + pick.pick }}</td>
 					<td>{{ pick.team ? pick.team.coach : "-" }}</td>
 					<td>
 						<a href ng-click="selectPick(pick)">{{ pick.player ? pick.player.draftNumber : "pick" }}</span>

@@ -1,0 +1,201 @@
+.draftPage {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.pageHeader {
+	display: flex;
+	justify-content: center;
+	background-color: rgb(0,150,136);
+	color: white;
+}
+
+.headerButton {
+	padding: 10px 5px;
+	margin: 0px 15px;
+	font-size: 15px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.pageContent {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.draftPage table {
+	border-collapse: collapse;
+}
+
+.draftPage th {
+	text-align: left;
+	font-weight: bold;
+	border-bottom: solid 2px rgb(170,170,170);
+}
+
+.draftPage .draftAlternate {
+	background-color: rgb(230, 230, 230);
+}
+
+.teamTable th, .teamTable td {
+	font-size: .9em;
+	padding: 10px 3px;
+}
+
+.teamTable tr:nth-child(2n) {
+	background-color: rgb(245,245,245);
+}
+
+.playerTable th, .playerTable td {
+	font-size: .8em;
+	padding: 10px 8px;
+}
+
+.playerTable td {
+	border-bottom: solid 1px rgb(200,200,200);
+}
+
+.playerTable .draftAvailable {
+	color: rgb(0, 125, 0);
+	font-weight: bold;
+}
+
+.playerTable .draftProtected {
+	color: rgb(150,150,150);
+}
+
+.playerTable .draftPicked {
+	text-decoration: line-through;
+	color: rgb(150,150,150);
+}
+
+.playerTable td:nth-child(7) {
+	color: rgb(150,150,150);
+	text-align: left;
+	font-size: 0.65em;
+}
+
+.playerTable .draftSorted {
+	font-weight: bold;
+}
+
+.draftTable th, .draftTable td {
+	font-size: .9em;
+	padding: 8px 3px;
+}
+
+.pageBottom {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.addButton {
+	background-color: rgb(0,150,136);
+	padding: 10px 20px;
+	color: white;
+	font-weight: bold;
+	margin-bottom: 20px;
+}
+
+.popup {
+	position: fixed;
+	top: 15%;
+	display: none;
+	left: 8%;
+	right: 8%;
+	background-color: white;
+	flex: 1;
+	border: solid 1px rgb(200,200,200);
+	box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.10);
+	flex-direction: column;
+}
+.popup.active {
+	display: flex;
+}
+
+.popup .header {
+	background-color: rgb(0,150,136);
+	color: rgb(255,255,255);
+	display: flex;
+	padding: 0px 15px;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.popup h2.label {
+	font-size: 18px;
+	flex: 1;
+}
+
+.popup .header .button {
+	margin-right: 15px;
+}
+
+.popup .loading {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	flex: 1;
+}
+
+.popup .button {
+	cursor: pointer;
+}
+
+.popup .container {
+	padding: 15px;
+	display: flex;
+	flex-direction: column;
+}
+
+.popup .textInput {
+	margin-left: 20px;
+}
+
+.popup .editItem {
+	margin-bottom: 30px;
+}
+
+.popup .pickPlayer {
+	font-weight: normal;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.popup .playerTaken {
+	font-weight: bold;
+	color: rgb(220 68 68);
+}
+
+.popup .spacer {
+	margin: 10px 0px;
+	border-bottom: 1px solid rgb(220,220,220);
+}
+
+.popup .label {
+	font-weight: bold;
+}
+
+.popup .viewPlayerTable {
+	margin: 30px 0px;
+	border-collapse: collapse;
+}
+
+.popup .viewPlayerTable td:first-child {
+	text-align: left;
+}
+
+.popup .viewPlayerTable td:nth-child(n+1) {
+	text-align: center;
+}
+
+.popup .viewPlayerTable tr:nth-child(2n) {
+	background-color: rgb(224 224 224);
+}

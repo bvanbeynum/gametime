@@ -35,6 +35,10 @@ teamApp.config(function($mdThemingProvider, $routeProvider, $locationProvider) {
 		templateUrl: "/team/eval.html",
 		controller: "evalCtl"
 	})
+	.when("/draftapp", {
+		templateUrl: "/team/draftapp.html",
+		controller: "draftAppCtl"
+	})
 	.when("/draft", {
 		templateUrl: "/team/draft.html",
 		controller: "draftCtl"
@@ -150,9 +154,9 @@ teamApp.controller("standingsCtl", function($rootScope, $scope, $http, $location
 					$rootScope.teams = teams.map(function (team) {
 						return {
 							id: team.id,
-							name: team.name,
+							name: team.name || team.coach,
 							confrence: team.confrence,
-							img: "/team/media/" + team.name.toLowerCase().replace(/ /, "") + ".png",
+							img: team.name ? "/team/media/" + team.name.toLowerCase().replace(/ /, "") + ".png" : "/team/media/blank.png",
 							wins: $rootScope.schedule.filter(function (game) {
 									return (
 											(game.awayTeam.id == team.id && game.awayTeam.isWinner) ||
@@ -640,6 +644,315 @@ teamApp.controller("evalCtl", function($rootScope, $scope, $http, $location) {
 	
 });
 
+teamApp.controller("draftAppCtl", function($rootScope, $scope, $http, $location) {
+	if (!$rootScope.managedTeam) {
+		$location.path("/");
+		return;
+	}
+	
+	log.draftApp = $scope;
+	$scope.isLoading = true;
+	$scope.activeTab = "teams";
+	$scope.message = { text: "", active: false };
+	$scope.popupTeam = { active: false };
+	$scope.popupPlayer = { active: false };
+	$scope.popupPick = { active: false };
+	
+	$scope.playerSort = "draftRank";
+	
+	$http({url: "/draft/load?divisionid=" + $rootScope.managedTeam.teamDivision.id}).then(response => {
+		
+		$scope.teams = response.data.teams;
+		$scope.players = response.data.players;
+		
+		resetDraft();
+		
+		$scope.isLoading = false;
+		
+	}, error => {
+		$scope.showMessage("error", "There was an error loading draft");
+		console.warn("Warning", error);
+		$location.path("/standings");
+	});
+	
+	$scope.changeTab = tab => {
+		$scope.activeTab = tab;
+	};
+	
+	$scope.manageTeam = (team) => {
+		$scope.popupTeam.team = team;
+		$scope.popupTeam.title = team ? team.coach : "Add Team";
+		
+		$scope.popupTeam.active = true;
+	};
+	
+	$scope.cancelTeam = () => {
+		$scope.popupTeam.team = null;
+		$scope.popupTeam.title = null;
+		
+		$scope.popupTeam.active = false;
+		$scope.popupTeam.isLoading = false;
+	};
+	
+	$scope.closeTeam = () => {
+		$scope.popupTeam.isLoading = true;
+		
+		if (!$scope.popupTeam.team.id) {
+			$scope.popupTeam.team.teamDivision = $rootScope.managedTeam.teamDivision;
+		}
+		
+		$http({url: "/data/team", method: "POST", data: { team: $scope.popupTeam.team }}).then(response => {
+			$scope.showMessage("info", "Team " + $scope.popupTeam.team.name + " saved");
+			console.log("team " + $scope.popupTeam.team.name + " saved");
+			
+			$http({url: "/draft/load?divisionid=" + $rootScope.managedTeam.teamDivision.id}).then(response => {
+				$scope.teams = response.data.teams;
+				$scope.players = response.data.players;
+				
+				resetDraft();
+				
+				$scope.popupTeam.team = null;
+				$scope.popupTeam.title = null;
+				
+				$scope.popupTeam.isLoading = false;
+				$scope.popupTeam.active = false;
+			}, error => {
+				$scope.showMessage("error", "There was an error loading draft");
+				console.warn("Warning", error);
+				
+				$scope.popupTeam.team = null;
+				$scope.popupTeam.title = null;
+				
+				$scope.popupTeam.isLoading = false;
+				$scope.popupTeam.active = false;
+			});
+			
+		}, error => {
+			$scope.showMessage("error", "There was an error saving team");
+			console.warn("Warning", error);
+			
+			$scope.popupTeam.team = null;
+			$scope.popupTeam.title = null;
+			
+			$scope.popupTeam.isLoading = false;
+			$scope.popupTeam.active = false;
+		});
+	};
+	
+	$scope.sortPlayers = sortBy => {
+		$scope.playerSort = sortBy;
+	};
+	
+	$scope.viewPlayer = player => {
+		$scope.popupPlayer.player = player;
+		
+		if (player.height
+			|| player.route
+			|| player.speed
+			|| player.hands
+			|| player.draftBlock
+			|| player.draftWatch) {
+				
+			player.comments = "This player " +
+				(player.height == 1 ? "is short, " : "") +
+				(player.height == 2 ? "is average height, " : "") +
+				(player.height == 3 ? "is tall, " : "") +
+				(player.hands == 1 ? "has good hands, " : "") +
+				(player.hands == -1 ? "can't catch, " : "") +
+				(player.speed == 1 ? "is slow, " : "") +
+				(player.fast == 2 ? "is fast, " : "") +
+				(player.route == 1 ? "has a sloppy route, " : "") +
+				(player.route == 2 ? "has a sharp route, " : "");
+			
+			player.comments = player.comments.substr(0, player.comments.length - 2) + ".";
+			
+			if (player.draftBlock) {
+				player.comments += "\r\nNot a good pickup.";
+			}
+			if (player.draftWatch) {
+				player.comments += "\r\nGood pickup.";
+			}
+		}
+		else {
+			player.comments = "Didn't show at draft";
+		}
+		
+		player.age = new Date(Date.now() - (new Date(player.dateOfBirth)).getTime()).getFullYear() - 1970;
+		
+		$scope.popupPlayer.seasons = [{
+			catching: player.catching,
+			draftRank: player.draftRank,
+			draftRound: player.draftRound,
+			runTime: player.runTime,
+			running: player.running,
+			season: player.playerDivision.season,
+			team: player.team,
+			throwing: player.throwing,
+			playerDivision: player.playerDivision
+		}];
+		
+		$scope.popupPlayer.seasons = $scope.popupPlayer.seasons.concat(player.prev
+			.filter(season =>  season.draftRound )
+			.sort(function (season1, season2) {
+				if (season1.playerDivision.year < season2.playerDivision.year) {
+					return 1;
+				}
+				else if (season1.playerDivision.year > season2.playerDivision.year) {
+					return -1;
+				}
+				else {
+					return season1.playerDivision.season < season2.playerDivision.season ? 1 : -1;
+				}
+			}));
+		
+		$scope.popupPlayer.active = true;
+	};
+	
+	$scope.closePlayer = () => {
+		$scope.popupPlayer.player = null;
+		$scope.popupPlayer.active = false;
+	};
+	
+	$scope.selectPick = pick => {
+		$scope.popupPick.pick = pick;
+		
+		if (pick.player) {
+			$scope.popupPick.pickNumber = pick.player.draftNumber;
+			$scope.popupPick.existingPlayer = pick.player;
+		}
+		else {
+			$scope.popupPick.pickNumber = null;
+		}
+		
+		$scope.popupPick.selectedError = false;
+		$scope.popupPick.isLoading = false;
+		$scope.popupPick.active = true;
+	};
+	
+	$scope.pickChange = () => {
+		var player = $scope.players.find(player => player.draftNumber == $scope.popupPick.pickNumber );
+		
+		if (player) {
+			if ($scope.draftPicks.some(draftPick => draftPick.player && draftPick.player.id == player.id)) {
+				$scope.popupPick.selectedError = true;
+			}
+			else {
+				$scope.popupPick.selectedError = false;
+			}
+			
+			$scope.popupPick.pick.player = player;
+		}
+		else {
+			$scope.popupPick.pick.player = null;
+			$scope.popupPick.selectedError = false;
+		}
+	};
+	
+	$scope.cancelPick = () => {
+		$scope.popupPick.pick.player = $scope.popupPick.existingPlayer;
+		
+		$scope.popupPick.pickNumber = null;
+		$scope.popupPick.selectedError = false;
+		$scope.popupPick.pick = null;
+		$scope.popupPick.existingPlayer = null;
+		$scope.popupPick.isLoading = false;
+		$scope.popupPick.active = false;
+	};
+	
+	$scope.savePick = () => {
+		$scope.popupPick.isLoading = true;
+			
+		if (($scope.popupPick.existingPlayer && !$scope.popupPick.pick.player) || ($scope.popupPick.existingPlayer && $scope.popupPick.pick.player && $scope.popupPick.existingPlayer.id != $scope.popupPick.pick.player.id)) {
+			// Pick changed
+			$scope.popupPick.existingPlayer.team = null;
+			$scope.popupPick.existingPlayer.draftPick = null;
+			
+			$http({url: "/data/player", method: "POST", data: { player: $scope.popupPick.existingPlayer }}).then(response => {
+				console.log("Cleared existing player");
+			}, error => {
+				$scope.showMessage("error", "There was an error saving existing player");
+				console.warn("Warning", error);
+			});
+		}
+		
+		if ($scope.popupPick.pick.player) {
+			$scope.popupPick.pick.player.team = $scope.teams.find(team => team.draftRound == $scope.popupPick.pick.roundPick );
+			$scope.popupPick.pick.player.draftPick = $scope.popupPick.pick.pick;
+			
+			$http({url: "/data/player", method: "POST", data: { player: $scope.popupPick.pick.player }}).then(response => {
+				console.log("Player " + $scope.popupPick.pick.player.firstName + " " + $scope.popupPick.pick.player.lastName + " saved");
+				
+				$scope.popupPick.pickNumber = null;
+				$scope.popupPick.selectedError = false;
+				$scope.popupPick.pick = null;
+				$scope.popupPick.existingPlayer = null;
+				$scope.popupPick.isLoading = false;
+				$scope.popupPick.active = false;
+			}, error => {
+				$scope.showMessage("error", "There was an error saving pick");
+				console.warn("Warning", error);
+				
+				$scope.popupPick.pickNumber = null;
+				$scope.popupPick.selectedError = false;
+				$scope.popupPick.pick = null;
+				$scope.popupPick.existingPlayer = null;
+				$scope.popupPick.isLoading = false;
+				$scope.popupPick.active = false;
+			});
+		}
+		else {
+			$scope.popupPick.pickNumber = null;
+			$scope.popupPick.selectedError = false;
+			$scope.popupPick.pick = null;
+			$scope.popupPick.existingPlayer = null;
+			$scope.popupPick.isLoading = false;
+			$scope.popupPick.active = false;
+			
+		}
+	};
+	
+	function resetDraft() {
+		if ($scope.teams && $scope.teams.length > 0 && $scope.players && $scope.players.length > 0) {
+			$scope.rounds = Math.ceil($scope.players.length / $scope.teams.length);
+			
+			$scope.draftPlayers = $scope.players.filter(p => p.draftRank).length;
+			$scope.hatPlayers = $scope.players.filter(p => !p.draftRank).length;
+			
+			$scope.draftPicks = $scope.players.map((player, index) => {
+				// The pick should be the modulus of the teams. If mod returns 0 then it should be the number of teams
+				var roundPick = (index + 1) % $scope.teams.length == 0 ? $scope.teams.length : (index + 1) % $scope.teams.length;
+				
+				return {
+					pick: index + 1,
+					round: Math.ceil((index + 1) / $scope.teams.length),
+					roundPick: roundPick,
+					team: $scope.teams.find(team => team.draftRound == roundPick),
+					player: $scope.players.find(player => player.draftPick == index + 1)
+				};
+			});
+			
+		}
+		else {
+			$scope.draft = [];
+			$scope.rounds = 1;
+		}
+	}
+	
+	$scope.showMessage = (type, message) => {
+		$scope.message.text = message;
+		$scope.message.active = true;
+		$scope.message.type = type;
+		
+		setTimeout(() => {
+			$scope.message.active = false;
+			$scope.message.text = "";
+			$scope.message.type = "";
+			$scope.$apply();
+		}, 4000);
+	};
+	
+});
+
 teamApp.controller("draftCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
 	if (!$rootScope.managedTeam) {
 		$location.path("/");
@@ -676,26 +989,22 @@ teamApp.controller("draftCtl", function($rootScope, $scope, $http, $location, $m
 		if ($scope.teams && $scope.teams.length > 0 && $scope.players && $scope.players.length > 0) {
 			$scope.rounds = Math.ceil($scope.players.length / $scope.teams.length);
 			
-			$scope.draft = $scope.players.map(function (player, index) {
-				var round = Math.ceil((index + 1) / $scope.teams.length),
-					teamPick = Math.ceil((index + 1) / $scope.teams.length) % 2 == 0 ?
-						($scope.teams.length + 1) - (((index + 1) % $scope.teams.length) != 0 ? (index + 1) % $scope.teams.length : 10) :
-						((index + 1) % $scope.teams.length) != 0 ? (index + 1) % $scope.teams.length : 10,
-					pickTeam = $scope.teams.find(function (team) {
-						return team.draftRound == teamPick;
-					}),
-					pickPlayer = $scope.players.find(function (player) {
-						return player.draftPick == index + 1;
-					});
+			$scope.draftPlayers = $scope.players.filter(p => p.draftRank);
+			$scope.hatPlayers = $scope.players.filter(p => !p.draftRank);
+			
+			$scope.draftPicks = $scope.players.map((player, index) => {
+				// The pick should be the modulus of the teams. If mod returns 0 then it should be the number of teams
+				var roundPick = (index + 1) % $scope.teams.length == 0 ? $scope.teams.length : (index + 1) % $scope.teams.length;
 				
 				return {
-					round: round,
 					pick: index + 1,
-					teamPick: teamPick,
-					team: pickTeam,
-					player: pickPlayer
+					round: Math.ceil((index + 1) / $scope.teams.length),
+					roundPick: roundPick,
+					team: $scope.teams.find(team => team.draftRound == roundPick),
+					player: $scope.players.find(player => player.draftPick == index + 1)
 				};
 			});
+			
 		}
 		else {
 			$scope.draft = [];
@@ -1170,7 +1479,38 @@ function pickPlayerCtl(pick, players, draft, $scope, $mdDialog) {
 function viewPlayerCtl(player, $scope, $mdDialog) {
 	$scope.player = player;
 	
-	$scope.age = new Date(Date.now() - (new Date(log.draft.players[0].dateOfBirth)).getTime()).getFullYear() - 1970;
+	if (player.height
+		|| player.route
+		|| player.speed
+		|| player.hands
+		|| player.draftBlock
+		|| player.draftWatch) {
+			
+		player.comments = "This player " +
+			(player.height == 1 ? "is short, " : "") +
+			(player.height == 2 ? "is average height, " : "") +
+			(player.height == 3 ? "is tall, " : "") +
+			(player.hands == 1 ? "has good hands, " : "") +
+			(player.hands == -1 ? "can't catch, " : "") +
+			(player.speed == 1 ? "is slow, " : "") +
+			(player.fast == 2 ? "is fast, " : "") +
+			(player.route == 1 ? "has a sloppy route, " : "") +
+			(player.route == 2 ? "has a sharp route, " : "");
+		
+		player.comments = player.comments.substr(0, player.comments.length - 2) + ".";
+		
+		if (player.draftBlock) {
+			player.comments += "<br>Not a good pickup.";
+		}
+		if (player.draftWatch) {
+			player.comments += "<br><strong>Good pickup.</strong>";
+		}
+	}
+	else {
+		player.comments = "Didn't show at draft";
+	}
+	
+	player.age = new Date(Date.now() - (new Date(player.dateOfBirth)).getTime()).getFullYear() - 1970;
 	$scope.seasons = player.prev
 		.filter(season =>  season.draftRound )
 		.sort(function (season1, season2) {
@@ -1187,14 +1527,14 @@ function viewPlayerCtl(player, $scope, $mdDialog) {
 	
 	$scope.seasons.unshift({
 		catching: player.catching,
-		rank: player.draftRank,
-		round: player.draftRound,
+		draftRank: player.draftRank,
+		draftRound: player.draftRound,
 		runTime: player.runTime,
 		running: player.running,
 		season: player.playerDivision.season,
-		team: "",
+		team: player.team,
 		throwing: player.throwing,
-		year: player.playerDivision.year
+		playerDivision: player.playerDivision
 	});
 	
 	$scope.close = function () {
@@ -1259,6 +1599,10 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 	
 	$scope.openEval = function () {
 		$location.path("/eval");
+	};
+	
+	$scope.openDraftApp = function () {
+		$location.path("/draftapp");
 	};
 	
 	$scope.openDraft = function () {
