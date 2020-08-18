@@ -962,7 +962,8 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 		{ name: "Lookout Park", address: "1965 Newberry Ln, Tega Cay, SC 29708", mapURL: "https://goo.gl/maps/PuQzsRnjsvL2" },
 		{ name: "Tega Cay Elementary", address: "2185 Gold Hill Rd, Fort Mill, SC 29708", mapURL: "https://goo.gl/maps/tBSofZBq6CC2" },
 		{ name: "Baxter Field", address: "3187 Colonel Springs Way, Fort Mill, SC 29708", mapURL: "https://goo.gl/maps/Ktk7HoBcN5D2" },
-		{ name: "Walter Elisha Park", address: "345 N White St, Fort Mill, SC 29715", mapURL: "https://goo.gl/maps/vu8c17kgtP52" }
+		{ name: "Walter Elisha Park", address: "345 N White St, Fort Mill, SC 29715", mapURL: "https://goo.gl/maps/vu8c17kgtP52" },
+		{ name: "Runde Park", address: "5116 Windward Dr, Tega Cay, SC 29708", mapURL: "https://goo.gl/maps/aVmZiiuijMxoT7pT9" }
 		];
 	
 	$http({url: "/emailer/emailload?divisionid=" + $rootScope.managedTeam.teamDivision.id + "&teamid=" + $rootScope.managedTeam.id}).then(
