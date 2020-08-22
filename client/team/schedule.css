@@ -1,0 +1,27 @@
+.scheduleContainer {
+	padding: 30px 10px;
+	display: flex;
+	flex-direction: column;
+}
+
+.teamHeader {
+	display: flex;
+}
+
+.scheduleTeam img {
+	width: 24px;
+	height: 24px;
+	margin-right: 10px;
+}
+
+.scheduleSection {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+@media (min-width: 600px) {
+	.gameContainer {
+		flex-direction: row;
+	}
+}

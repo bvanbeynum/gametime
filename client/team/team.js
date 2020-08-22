@@ -151,7 +151,9 @@ teamApp.controller("standingsCtl", function($rootScope, $scope, $http, $location
 						return {
 							id: team.id,
 							name: team.name || team.coach,
-							confrence: team.confrence,
+							coach: team.coach,
+							teamDivision: team.teamDivision,
+							confrence: team.confrence || "",
 							img: team.name ? "/team/media/" + team.name.toLowerCase().replace(/ /, "") + ".png" : "/team/media/blank.png",
 							wins: $rootScope.schedule.filter(function (game) {
 									return (
@@ -264,14 +266,50 @@ teamApp.controller("scheduleCtl", function($rootScope, $scope, $http, $location,
 	log.schedule = $scope;
 	$rootScope.selectedGame = null;
 	
+	$scope.isLoading = true;
+	$scope.team = $rootScope.selectedTeam;
+	$scope.message = { text: "", active: false };
+	
 	$scope.teamSchedule = $rootScope.schedule.filter(function (game) {
 		return game.awayTeam.id == $rootScope.selectedTeam.id || game.homeTeam.id == $rootScope.selectedTeam.id;
+	});
+	
+	$http({ url: "/api/schedule/load?teamid=" + $scope.team.id }).then((response) => {
+		
+		$scope.players = response.data.players;
+		
+		var cutOffDate = new Date($rootScope.managedTeam.teamDivision.year, 8, 1);
+		
+		$scope.players.forEach(function (player) {
+			player.age = (player.dateOfBirth) ? Math.floor((cutOffDate - (new Date(player.dateOfBirth))) / 31536000000) : null;
+		});
+		
+		$scope.isLoading = false;
+		
+	}, (error) => {
+		
+		$scope.showMessage("error", "There was an error loading data");
+		console.warn(error);
+		
 	});
 	
 	$scope.selectGame = function (game) {
 		$rootScope.isLoading = true;
 		$rootScope.selectedGame = game;
 		$location.path("/game");
+	};
+	
+	$scope.showMessage = (type, message) => {
+		$scope.message.text = message;
+		$scope.message.active = true;
+		$scope.message.type = type;
+		
+		setTimeout(() => {
+			$scope.message.active = false;
+			$scope.message.text = "";
+			$scope.message.type = "";
+			$scope.$apply();
+		}, 4000);
 	};
 	
 });

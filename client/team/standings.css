@@ -1,0 +1,65 @@
+.confrenceContainer {
+	display: flex;
+	flex-direction: column;
+}
+
+.section {
+	margin: 20px;
+}
+
+.confrence {
+	flex: 1;
+}
+
+.standingDate {
+	margin: 8px 0px;
+	font-size: 1.1em;
+	color: rgb(100,100,100);
+}
+
+.scheduleSection {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+img {
+	width: 24px;
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+th, td {
+	padding: 8px 5px;
+	border-bottom: 1px solid rgb(223, 225, 229);
+}
+
+th {
+	font-weight: normal;
+	text-align: left;
+}
+
+td:nth-child(2) {
+	width: 70%;
+}
+
+tr:nth-child(n+2):hover {
+	background-color: rgb(245, 245, 245);
+}
+
+tr:nth-child(n+2) {
+	cursor: pointer;
+}
+
+th:nth-child(n+2), td:nth-child(n+3) {
+	text-align: center;
+}
+
+@media (min-width: 600px) {
+	.confrenceContainer {
+		flex-direction: row;
+	}
+}

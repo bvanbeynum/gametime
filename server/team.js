@@ -51,6 +51,25 @@ module.exports = (app) => {
 		});
 	});
 	
+	app.get("/api/schedule/load", (request, response) => {
+		if (!request.query.teamid) {
+			response.status(501).json({error: "Invalid request"});
+			response.end();
+			return;
+		}
+		
+		webRequest({ url: request.protocol + "://" + request.get("host") + "/data/player?teamid=" + request.query.teamid, json: true }, (error, webResponse, body) => {
+			if (error) {
+				response.status(500).json({error: error.message});
+				response.end();
+				return;
+			}
+			
+			var players = body.players;
+			response.status(200).json({ players: players });
+		});
+	});
+	
 	app.get("/api/eval/load", (request, response) => {
 		if (!request.query.divisionid) {
 			response.status(501).json({error: "Invalid request"});

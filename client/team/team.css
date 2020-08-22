@@ -31,54 +31,9 @@ table {
 	font-size: 12px;
 }
 
-.standingsHeader {
+.header {
 	color: rgb(100,100,100);
 	margin: 10px 5px;
-}
-
-.confrence {
-	margin: 20px;
-}
-
-.confrence img {
-	width: 24px;
-}
-
-.confrence table {
-	border-collapse: collapse;
-	width: 100%;
-}
-
-.confrence th, .confrence td {
-	padding: 8px 5px;
-	border-bottom: 1px solid rgb(223, 225, 229);
-}
-
-.confrence th {
-	font-weight: normal;
-	text-align: left;
-}
-
-.confrence td:nth-child(2) {
-	width: 70%;
-}
-
-.confrence tr:nth-child(n+2):hover {
-	background-color: rgb(245, 245, 245);
-}
-
-.confrence tr:nth-child(n+2) {
-	cursor: pointer;
-}
-
-.confrence th:nth-child(n+2), .confrence td:nth-child(n+3) {
-	text-align: center;
-}
-
-.standingDate {
-	margin: 8px 0px;
-	font-size: 1.1em;
-	color: rgb(100,100,100);
 }
 
 .gameHighlight {
@@ -86,30 +41,39 @@ table {
 	color: black;
 }
 
-.scheduleContainer {
-	padding: 30px 10px;
-}
-
-.scheduleTeam img {
-	width: 24px;
-	height: 24px;
-	margin-right: 10px;
-}
-
-.standingsGame {
-	width: 320px;
-}
-
 .gameContainer {
 	padding: 10px 20px;
 	border: solid 1px rgb(224, 224, 224);
 	border-collapse: collapse;
 	cursor: pointer;
+	margin: 10px;
+	width: 320px;
+	display: flex;
 }
 
 .scheduleTeams {
 	border-right: solid 1px rgb(224, 224, 224);
 	margin-right: 10px;
+	display: flex;
+	flex-direction: column;
+	flex: 75;
+}
+
+.scheduleDateContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	flex: 25;
+}
+
+.scheduleTeam {
+	display: flex;
+	align-items: center;
+}
+
+.scheduleTeamName {
+	margin: 0px 10px;
 }
 
 .gamePageSchedule {
@@ -164,6 +128,10 @@ table {
 
 .gamePageStatsContainer {
 	margin: 20px 0px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	flex: 5;
 }
 
 .divisionTeam {
