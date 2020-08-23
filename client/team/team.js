@@ -89,13 +89,13 @@ teamApp.controller("divisionCtl", function($rootScope, $scope, $http, $location,
 						})
 						.sort(function (prev, next) { 
 							if (prev.teamDivision.year < next.teamDivision.year) {
-								return -1;
-							}
-							else if (prev.teamDivision.year > next.teamDivision.year) {
 								return 1;
 							}
+							else if (prev.teamDivision.year > next.teamDivision.year) {
+								return -1;
+							}
 							else {
-								return prev.teamDivision.season > next.teamDivision.season ? -1 : 1;
+								return prev.teamDivision.season > next.teamDivision.season ? 1 : -1;
 							}
 						})
 				};
@@ -1388,6 +1388,7 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 	log.http = $http;
 	
 	$rootScope.isLoading = false;
+	$rootScope.isMenuOpen = false;
 	
 	$scope.back = function () {
 		switch ($location.path()) {
@@ -1417,10 +1418,10 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 			break;
 		
 		case "/eval":
-			$location.path("/eval");
+			$location.path("/standings");
 			break;
 			
-		case "/draft":
+		case "/draftapp":
 			$location.path("/standings");
 			break;
 			
@@ -1430,24 +1431,30 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 		}
 	};
 	
-	$scope.openMenu = function ($mdMenu, event) {
-		$mdMenu.open(event);
+	$scope.openMenu = (event) => {
+		$rootScope.isMenuOpen = true;
+		event.stopPropagation();
+		event.preventDefault();
 	};
 	
-	$scope.openPlaybook = function () {
-		$location.path("/playbook");
+	$scope.closeMenu = () => {
+		$rootScope.isMenuOpen = false;
 	};
 	
-	$scope.openEval = function () {
-		$location.path("/eval");
-	};
-	
-	$scope.openDraftApp = function () {
-		$location.path("/draftapp");
-	};
-
-	$scope.openEmail = function () {
-		$location.path("/email");
+	$scope.menuClick = (page) => {
+		switch (page) {
+			case "evaluation":
+				$location.path("/eval");
+				break;
+				
+			case "draft":
+				$location.path("/draftapp");
+				break;
+				
+			case "email":
+				$location.path("/email");
+				break;
+		}
 	};
 	
 });
