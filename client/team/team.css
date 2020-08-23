@@ -5,9 +5,6 @@
 	md-toolbar.toolbar {
 		display: none;
 	}
-	.gameEditButton {
-		display: none;
-	}
 }
 
 html, body {
@@ -76,11 +73,6 @@ table {
 	margin: 0px 10px;
 }
 
-.gamePageSchedule {
-	border-bottom: solid 1px rgb(224, 224, 224);
-	padding: 20px 10px;
-}
-
 .teamScore {
 	text-align: center;
 	font-size: 2.5em;
@@ -92,41 +84,33 @@ table {
 	font-size: 0.8em;
 }
 
-.gamePageTeamContainer {
-	margin: 20px 0px 10px 0px;
-}
-
-.gamePageStatsTeam {
-	font-weight: bold;
-}
-
-.gamePageTeamStats {
+.teamStats {
 	width: 95%;
 	border-collapse: collapse;
 }
 
-.gamePageTeamStats th {
+.teamStats th {
 	border-bottom: solid 1px rgb(224, 224, 224);
 	font-weight: normal;
 }
 
-.gamePageTeamStats th, .gamePageTeamStats td {
+.teamStats th, .teamStats td {
 	padding: 8px 5px;
 }
 
-.gamePageTeamStats th:nth-child(2) {
+.teamStats th:nth-child(2) {
 	text-align: left;
 }
 
-.gamePageTeamStats td:nth-child(1), .gamePageTeamStats td:nth-child(n+3) {
+.teamStats td:nth-child(1), .teamStats td:nth-child(n+3) {
 	text-align: center;
 }
 
-.gamePageTeamStats td {
+.teamStats td {
 	font-size: 0.85em;
 }
 
-.gamePageStatsContainer {
+.statsContainer {
 	margin: 20px 0px;
 	display: flex;
 	flex-direction: column;

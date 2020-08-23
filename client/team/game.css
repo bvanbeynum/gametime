@@ -1,0 +1,46 @@
+.schedule {
+	border-bottom: solid 1px rgb(224, 224, 224);
+	padding: 20px 10px;
+}
+
+.gameTitle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.gameEditButton {
+	cursor: pointer;
+}
+
+.teamContainer {
+	margin: 20px 0px 10px 0px;
+}
+
+.teamContainer {
+	margin: 20px 0px 10px 0px;
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+}
+
+.statsTeam {
+	font-weight: bold;
+}
+
+.statsTeams {
+	display: flex;
+	flex-direction: column;
+}
+
+@media print {
+	.gameEditButton {
+		display: none;
+	}
+}
+
+@media (min-width: 600px) {
+	.statsTeams {
+		flex-direction: row;
+	}
+}
