@@ -180,7 +180,8 @@ module.exports = {
 	user: mongoose.model("user", {
 		name: String,
 		authToken: String,
-		divisionIds: [String]
+		divisionIds: [String],
+		access: [String]
 	})
 	
 };

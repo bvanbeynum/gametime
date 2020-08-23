@@ -23,21 +23,13 @@ teamApp.config(function($mdThemingProvider, $routeProvider, $locationProvider) {
 		templateUrl: "/team/game.html",
 		controller: "gameCtl"
 	})
-	.when("/playbook", {
-		templateUrl: "/team/playbook.html",
-		controller: "playbookCtl"
+	.when("/evaluation", {
+		templateUrl: "/team/evaluation.html",
+		controller: "evaluationCtl"
 	})
-	.when("/playmaker", {
-		templateUrl: "/team/playmaker.html",
-		controller: "playCtl"
-	})
-	.when("/eval", {
-		templateUrl: "/team/eval.html",
-		controller: "evalCtl"
-	})
-	.when("/draftapp", {
-		templateUrl: "/team/draftapp.html",
-		controller: "draftAppCtl"
+	.when("/draft", {
+		templateUrl: "/team/draft.html",
+		controller: "draftCtl"
 	})
 	.when("/email", {
 		templateUrl: "/team/email.html",
@@ -51,7 +43,7 @@ teamApp.config(function($mdThemingProvider, $routeProvider, $locationProvider) {
 	$locationProvider.html5Mode(true);
 });
 
-teamApp.controller("divisionCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
+teamApp.controller("divisionCtl", function($rootScope, $scope, $http, $location, $mdToast) {
 	log.division = $scope;
 	$rootScope.managedTeam = null;
 	$rootScope.isLoading = true;
@@ -62,6 +54,14 @@ teamApp.controller("divisionCtl", function($rootScope, $scope, $http, $location,
 		});
 		
 		var teams = response.data.teams;
+		$rootScope.user = response.data.user;
+		
+		if ($rootScope.user) {
+			$rootScope.menu.items = $rootScope.user.access.map(access => ({
+				id: access,
+				display: access.charAt(0).toUpperCase() + access.substr(1).toLowerCase()
+			}));
+		}
 		
 		$scope.divisions.forEach(function (division) {
 			division.teams = teams.filter(function (team) { return team.teamDivision.id == division.id });
@@ -413,173 +413,7 @@ teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $md
 	$http({url: "/data/player?divisionid=" + $rootScope.managedTeam.teamDivision.id + "&teamid=" + $rootScope.selectedGame.homeTeam.id}).then(httpSuccess, httpError);
 });
 
-teamApp.controller("playbookCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
-	if (!$rootScope.managedTeam) {
-		$location.path("/");
-		return;
-	}
-	
-	$rootScope.selectedPlay = null;
-	$scope.isLoading = true;
-	log.playBook = $scope;
-	
-	$http({url: "/data/play?divisionid=" + $rootScope.managedTeam.teamDivision.id}).then(function (response) {
-		$scope.plays = response.data.plays;
-		$scope.isLoading = false;
-	}, function (error) {
-		$mdToast.show(
-			$mdToast.simple()
-				.textContent("There was an error loading")
-				.position("bottom left")
-				.hideDelay(3000)
-		);
-		
-		console.log(error);
-		$location.path("/standings");
-	});
-	
-	$scope.openPlay = function (play) {
-		if (play) {
-			$rootScope.selectedPlay = play;
-		}
-		else {
-			$rootScope.selectedPlay = {
-				division: {
-					id: $rootScope.managedTeam.teamDivision.id,
-					name: $rootScope.managedTeam.teamDivision.name,
-					year: $rootScope.managedTeam.teamDivision.year,
-					season: $rootScope.managedTeam.teamDivision.season,
-				},
-				players: []
-			};
-		}
-		
-		$location.path("/playmaker");
-	};
-});
-
-teamApp.controller("playCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
-	if (!$rootScope.managedTeam) {
-		$location.path("/");
-		return;
-	}
-	else if (!$rootScope.selectedPlay) {
-		$location.path("/playbook");
-		return;
-	}
-	
-	log.playMaker = $scope;
-	$scope.playData = $rootScope.selectedPlay;
-	
-	$scope.addMenu = function (menu, event) {
-		menu.open(event);
-	};
-	
-	$scope.modeMenu = function (menu, event) {
-		menu.open(event);
-	};
-	
-	$scope.addPlayer = function (playerType) {
-		$scope.playData.players.push({ type: playerType });
-		$scope.controller.refresh();
-	};
-	
-	$scope.changeMode = function (newMode) {
-		$scope.controller.lineMode = newMode;
-	};
-	
-	$scope.save = function () {
-		if (!$scope.playForm.$invalid) {
-			$scope.isLoading = true;
-			
-			var savePlay = {
-				id: $scope.playData.id,
-				division: $scope.playData.division,
-				name: $scope.playData.name,
-				scrimageLine: $scope.playData.scrimageLine,
-				players: $scope.playData.players.map(function (player) {
-					return {
-						type: player.type,
-						location: player.location,
-						route: player.route
-					};
-				})
-			};
-			
-			$http({url: "/data/play", method: "POST", data: { play: savePlay }}).then(
-				function (response) {
-					$rootScope.selectedPlay = null;
-					$location.path("/playbook");
-				}, function (error) {
-					$scope.isLoading = false;
-					
-					console.log(error);
-					
-					$mdToast.show(
-						$mdToast.simple()
-							.textContent("There was an error saving the play")
-							.position("bottom left")
-							.hideDelay(3000)
-					);
-				});
-		}
-		else {
-			$mdToast.show(
-				$mdToast.simple()
-					.textContent("Must enter a name for the play")
-					.position("bottom left")
-					.hideDelay(3000)
-			);
-		}
-	};
-	
-	$scope.cancel = function () {
-		$rootScope.selectedPlay = null;
-		$location.path("/playbook");
-	};
-	
-	$scope.delete = function (event) {
-		
-		$mdDialog.show($mdDialog.confirm()
-			.title("Confirm Delete")
-			.textContent("Are you sure you want to delete the play?")
-			.ariaLabel("Confirm Delete")
-			.targetEvent(event)
-			.ok("Delete")
-			.cancel("Cancel")
-		)
-		.then(function () {
-			$scope.isLoading = true;
-			
-			$http({url: "/data/play?id=" + $scope.playData.id, method: "DELETE"}).then(
-				function (response) {
-					
-					$scope.isLoading = false;
-					$rootScope.selectedPlay = null;
-					$location.path("/playbook");
-					
-				}, function (error) {
-					
-					$scope.isLoading = false;
-					console.log(error);
-					
-					$mdToast.show(
-						$mdToast.simple()
-							.textContent("There was an error deleting the play")
-							.position("bottom left")
-							.hideDelay(3000)
-					);
-					
-				});
-		}, function () {
-			// Cancel
-		});
-		
-	};
-	
-});
-
-teamApp.controller("evalCtl", function($rootScope, $scope, $http, $location) {
+teamApp.controller("evaluationCtl", function($rootScope, $scope, $http, $location) {
 	if (!$rootScope.managedTeam) {
 		$location.path("/");
 		return;
@@ -678,13 +512,13 @@ teamApp.controller("evalCtl", function($rootScope, $scope, $http, $location) {
 	
 });
 
-teamApp.controller("draftAppCtl", function($rootScope, $scope, $http, $location) {
+teamApp.controller("draftCtl", function($rootScope, $scope, $http, $location) {
 	if (!$rootScope.managedTeam) {
 		$location.path("/");
 		return;
 	}
 	
-	log.draftApp = $scope;
+	log.draft = $scope;
 	$scope.isLoading = true;
 	$scope.activeTab = "teams";
 	$scope.message = { text: "", active: false };
@@ -1254,141 +1088,15 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 	};
 });
 
-function teamManageCtl(team, allTeams, $scope, $mdDialog, $mdToast) {
-	if (team) {
-		$scope.editType = "Manage";
-	}
-	else {
-		team = {};
-		$scope.editType = "Add";
-	}
-	
-	$scope.team = team;
-	
-	$scope.close = function () {
-		var dupTeams = allTeams.filter(function (allTeam) { return allTeam.id != $scope.team.id && $scope.team.draftRound && allTeam.draftRound == $scope.team.draftRound });
-		
-		if ($scope.team.name.length == 0) {
-			$scope.errorMessage = "You must enter a team name";
-		}
-		else if (dupTeams.length > 0) {
-			$scope.errorMessage = "Round already taken: " + dupTeams
-				.map(function (team) { return team.name })
-				.join(", ");
-		}
-		else {
-			$mdDialog.hide($scope.team);
-		}
-	};
-}
-
-function pickPlayerCtl(pick, players, draft, $scope, $mdDialog) {
-	$scope.player = pick.player;
-	
-	if ($scope.player) {
-		$scope.playerNumber = $scope.player.draftNumber;
-		$scope.playerName = $scope.player.firstName + " " + $scope.player.lastName;
-	}
-	
-	$scope.pickChange = function () {
-		var player = players.find(function (player) { return player.draftNumber == $scope.playerNumber; });
-		
-		$scope.isSelected = false;
-		$scope.errorMessage = null;
-
-		if (player && draft.some(function (draftPick) { return draftPick.player && draftPick.player.id == player.id })) {
-			$scope.isSelected = true;
-			$scope.errorMessage = "Player is already selected";
-		}
-		if (player) {
-			$scope.player = player;
-			$scope.playerName = player.firstName + " " + player.lastName;
-		}
-		else {
-			$scope.player = null;
-			$scope.playerName = null;
-		}
-	};
-	
-	$scope.close = function () {
-		if (!$scope.isSelected) {
-			$mdDialog.hide($scope.player);
-		}
-	};
-}
-
-function viewPlayerCtl(player, $scope, $mdDialog) {
-	$scope.player = player;
-	
-	if (player.height
-		|| player.route
-		|| player.speed
-		|| player.hands
-		|| player.draftBlock
-		|| player.draftWatch) {
-			
-		player.comments = "This player " +
-			(player.height == 1 ? "is short, " : "") +
-			(player.height == 2 ? "is average height, " : "") +
-			(player.height == 3 ? "is tall, " : "") +
-			(player.hands == 1 ? "has good hands, " : "") +
-			(player.hands == -1 ? "can't catch, " : "") +
-			(player.speed == 1 ? "is slow, " : "") +
-			(player.fast == 2 ? "is fast, " : "") +
-			(player.route == 1 ? "has a sloppy route, " : "") +
-			(player.route == 2 ? "has a sharp route, " : "");
-		
-		player.comments = player.comments.substr(0, player.comments.length - 2) + ".";
-		
-		if (player.draftBlock) {
-			player.comments += "<br>Not a good pickup.";
-		}
-		if (player.draftWatch) {
-			player.comments += "<br><strong>Good pickup.</strong>";
-		}
-	}
-	else {
-		player.comments = "Didn't show at draft";
-	}
-	
-	player.age = new Date(Date.now() - (new Date(player.dateOfBirth)).getTime()).getFullYear() - 1970;
-	$scope.seasons = player.prev
-		.filter(season =>  season.draftRound )
-		.sort(function (season1, season2) {
-			if (season1.playerDivision.year < season2.playerDivision.year) {
-				return 1;
-			}
-			else if (season1.playerDivision.year > season2.playerDivision.year) {
-				return -1;
-			}
-			else {
-				return season1.playerDivision.season < season2.playerDivision.season ? 1 : -1;
-			}
-		});
-	
-	$scope.seasons.unshift({
-		catching: player.catching,
-		draftRank: player.draftRank,
-		draftRound: player.draftRound,
-		runTime: player.runTime,
-		running: player.running,
-		season: player.playerDivision.season,
-		team: player.team,
-		throwing: player.throwing,
-		playerDivision: player.playerDivision
-	});
-	
-	$scope.close = function () {
-		$mdDialog.hide();
-	};
-}
-
 teamApp.controller("teamController", function ($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
 	log = {root: $rootScope, team: $scope};
 	log.http = $http;
 	
 	$rootScope.isLoading = false;
-	$rootScope.isMenuOpen = false;
+	
+	$rootScope.menu = {
+		active: false
+	};
 	
 	$scope.back = function () {
 		switch ($location.path()) {
@@ -1408,20 +1116,12 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 				$location.path("/standings");
 			}
 			break;
-		
-		case "/playbook":
-			$location.path("/standings");
-			break;
-		
-		case "/playmaker":
-			$location.path("/playbook");
-			break;
-		
-		case "/eval":
+
+		case "/evaluation":
 			$location.path("/standings");
 			break;
 			
-		case "/draftapp":
+		case "/draft":
 			$location.path("/standings");
 			break;
 			
@@ -1432,29 +1132,17 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 	};
 	
 	$scope.openMenu = (event) => {
-		$rootScope.isMenuOpen = true;
+		$rootScope.menu.active = true;
 		event.stopPropagation();
 		event.preventDefault();
 	};
 	
 	$scope.closeMenu = () => {
-		$rootScope.isMenuOpen = false;
+		$rootScope.menu.active = false;
 	};
 	
 	$scope.menuClick = (page) => {
-		switch (page) {
-			case "evaluation":
-				$location.path("/eval");
-				break;
-				
-			case "draft":
-				$location.path("/draftapp");
-				break;
-				
-			case "email":
-				$location.path("/email");
-				break;
-		}
+		$location.path("/" + page);
 	};
 	
 });

@@ -31,21 +31,11 @@ module.exports = (app) => {
 						
 						var users = webBody.users;
 						
-						if (users.length == 1) {
-							divisions = divisions.filter(division => !division.restricted || users[0].divisionIds.some(divisionId => division.id == divisionId));
-						}
-						else {
-							divisions = divisions.filter(division => !division.restricted);
-						}
-						
-						teams = teams.filter(team => divisions.some(division => division.id == team.teamDivision.id));
-						response.status(200).json({ divisions: divisions, teams: teams });
+						response.status(200).json({ divisions: divisions, teams: teams, user: users.length == 1 ? users[0] : null });
 					});
 				}
 				else {
-					divisions = divisions.filter(division => !division.restricted);
-					teams = teams.filter(team => divisions.some(division => division.id == team.teamDivision.id));
-					response.status(200).json({ divisions: divisions, teams: teams });
+					response.status(200).json({ divisions: divisions, teams: teams, user: null });
 				}
 			});
 		});

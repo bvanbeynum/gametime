@@ -1089,7 +1089,8 @@ module.exports = function (app) {
 					id: userDB._id,
 					name: userDB.name,
 					authToken: userDB.authToken,
-					divisionIds: userDB.divisionIds ? userDB.divisionIds : []
+					divisionIds: userDB.divisionIds ? userDB.divisionIds : [],
+					access: userDB.access ? userDB.access : []
 				}));
 				
 				response.status(200).json({users: users});
