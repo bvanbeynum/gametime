@@ -25,13 +25,17 @@
 		
 		<div class="menuContainer" ng-class="{ 'active': menu.active }">
 			<div class="menu">
-				<div class="item" ng-repeat="item in menu.items | orderBy: 'item.display'" ng-click="menuClick(item.id)">{{ item.display }}</div>
+				<div class="item" ng-repeat="item in menu.items | orderBy: 'display'" ng-click="menuClick(item.id)">{{ item.display }}</div>
 			</div>
 		</div>
 	</div>
 	
 	<div ng-view class="pageContent"></div>
 
+</div>
+
+<div class="toast" ng-class="[toast.type, { 'isActive': toast.active } ]">
+	{{toast.text}}
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>

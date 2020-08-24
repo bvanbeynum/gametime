@@ -114,6 +114,42 @@ module.exports = (app) => {
 		});
 	});
 	
+	app.get("/api/depthchart/load", (request, response) => {
+		if (!request.query.teamid) {
+			response.status(500).json({error: "Invalid request"});
+			return;
+		}
+		
+		webRequest({ url: request.protocol + "://" + request.get("host") + "/data/player?teamid=" + request.query.teamid, json: true }, (error, webResponse, body) => {
+			if (error) {
+				response.status(500).json({ error: error.message });
+				return;
+			}
+			
+			var players = body.players;
+			response.status(200).json({ players: players });
+			
+		});
+	});
+	
+	app.post("/api/depthchart/saveplayer", (request, response) => {
+		if (!request.body.player) {
+			response.status(500).json({error: "Invalid player" });
+			return;
+		}
+		
+		webRequest.post({url: request.protocol + "://" + request.headers.host + "/data/player", form: { player: request.body.player }, json: true }, (error, webResponse, body) => {
+			if (error) {
+				response.status(500).json({error: error.message});
+				response.end();
+				return;
+			}
+			
+			var playerId = body.playerId;
+			response.status(200).json({ playerId: playerId });
+		});
+	});
+	
 	app.get("/", (request, response) => {
 		response.sendFile("/client/team/index.html", { root: app.get("root") });
 	});

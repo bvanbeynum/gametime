@@ -35,6 +35,10 @@ teamApp.config(function($mdThemingProvider, $routeProvider, $locationProvider) {
 		templateUrl: "/team/email.html",
 		controller: "emailCtl"
 	})
+	.when("/depthchart", {
+		templateUrl: "/team/depthchart.html",
+		controller: "depthChartCtl"
+	})
 	.otherwise({
 		templateUrl: "/team/division.html",
 		controller: "divisionCtl"
@@ -1088,15 +1092,134 @@ teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $m
 	};
 });
 
+teamApp.controller("depthChartCtl", function ($rootScope, $scope, $http, $location) {
+	if (!$rootScope.managedTeam) {
+		$location.path("/");
+		return;
+	}
+	
+	log.depth = $scope;
+	
+	$scope.isLoading = true;
+	$scope.team = $rootScope.managedTeam;
+	$scope.selectedGame = null;
+	$scope.positions = {};
+	
+	$http({ url: "/api/depthchart/load?teamid=" + $scope.team.id }).then(response => {
+		$scope.players = response.data.players;
+		$scope.players.forEach(player => {
+			player.depthGroup = player.depthGroup ? player.depthGroup + "" : "";
+		});
+		
+		$scope.resetPositions();
+		
+		$scope.isLoading = false;
+	}, error => {
+		$rootScope.showMessage("error", "There was an error loading data");
+		console.warn(error);
+	});
+	
+	$scope.changePlayer = player => {
+		$http({ url: "/api/depthchart/saveplayer", method: "post", data: { player: player } }).then(response => {
+			console.log(response.data);
+		}, error => {
+			$rootScope.showMessage("error", "There was an error saving the player " + player.firstName);
+			console.warn(error);
+		});
+		
+		$scope.resetPositions();
+	};
+	
+	$scope.resetPositions = () => {
+		$scope.positions.offense = d3.nest()
+			.key(player => player.depthOffense)
+			.entries($scope.players)
+			.map(group => (
+				{ 
+					position: group.key, 
+					
+					group1: group.values
+						.filter(player => player.depthGroup == 1 || !player.depthGroup)
+						.map(p => p.firstName)
+						.join(""), 
+						
+					group2: group.values
+						.filter(player => player.depthGroup == 2)
+						.map(player => player.firstName)
+						.join("")
+				}));
+		
+		$scope.positions.defense = d3.nest()
+			.key(player => player.depthDefense)
+			.entries($scope.players)
+			.map(group => (
+				{ 
+					position: group.key, 
+					
+					group1: group.values
+						.filter(player => player.depthGroup == 1 || !player.depthGroup)
+						.map(p => p.firstName)
+						.join(""), 
+						
+					group2: group.values
+						.filter(player => player.depthGroup == 2)
+						.map(player => player.firstName)
+						.join("")
+				}));
+		
+		$scope.positions.leftWR = $scope.players
+				.filter(player => player.depthOffense == "Left WR")
+				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
+				.map(player => player.firstName)
+				.join(" / ");
+		
+		$scope.positions.leftG = $scope.players
+				.filter(player => player.depthOffense == "Left G")
+				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
+				.map(player => player.firstName)
+				.join(" / ");
+		
+		$scope.positions.center = $scope.players
+				.filter(player => player.depthOffense == "C")
+				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
+				.map(player => player.firstName)
+				.join(" / ");
+		
+		$scope.positions.rightG = $scope.players
+				.filter(player => player.depthOffense == "Right G")
+				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
+				.map(player => player.firstName)
+				.join(" / ");
+		
+		$scope.positions.rightWR = $scope.players
+				.filter(player => player.depthOffense == "Right WR")
+				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
+				.map(player => player.firstName)
+				.join(" / ");
+		
+		$scope.positions.qb = $scope.players
+				.filter(player => player.depthOffense == "QB")
+				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
+				.map(player => player.firstName)
+				.join(" / ");
+		
+		$scope.positions.rb = $scope.players
+				.filter(player => player.depthOffense == "RB")
+				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
+				.map(player => player.firstName)
+				.join(" / ");
+		
+	};
+});
+
 teamApp.controller("teamController", function ($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
 	log = {root: $rootScope, team: $scope};
 	log.http = $http;
 	
 	$rootScope.isLoading = false;
 	
-	$rootScope.menu = {
-		active: false
-	};
+	$rootScope.menu = { active: false };
+	$rootScope.toast = { text: "", active: false, type: "info" };
 	
 	$scope.back = function () {
 		switch ($location.path()) {
@@ -1143,6 +1266,19 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 	
 	$scope.menuClick = (page) => {
 		$location.path("/" + page);
+	};
+	
+	$rootScope.showMessage = (type, message) => {
+		$rootScope.toast.text = message;
+		$rootScope.toast.active = true;
+		$rootScope.toast.type = type;
+		
+		setTimeout(() => {
+			$rootScope.toast.active = false;
+			$rootScope.toast.text = "";
+			$rootScope.toast.type = "info";
+			$rootScope.$apply();
+		}, 4000);
 	};
 	
 });

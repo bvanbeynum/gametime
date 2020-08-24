@@ -99,6 +99,10 @@ module.exports = {
 		draftBlock: Boolean,
 		draftWatch: Boolean,
 		
+		depthGroup: Number,
+		depthOffense: String,
+		depthDefense: String,
+		
 		spring2018: {
 			division: String,
 			recRank: Number,

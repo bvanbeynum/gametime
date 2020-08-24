@@ -1,12 +1,3 @@
-@media print {
-	@page {
-		size: letter portrait;
-	}
-	md-toolbar.toolbar {
-		display: none;
-	}
-}
-
 html, body {
 	font-family: verdana, sans-serif;
 	font-size: 12px;
@@ -16,12 +7,6 @@ html, body {
 h2 {
 	font-size: 24px;
 	margin: 1rem 0px;
-}
-
-md-toolbar.toolbar {
-	box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.14), 0px 0px 2px 2px rgba(0, 0, 0, 0.098), 0px 0px 5px 1px rgba(0, 0, 0, 0.084);
-	background: rgb(246, 246, 246);
-	color: rgb(32, 32, 32);
 }
 
 table {
@@ -180,7 +165,7 @@ table {
 	flex: 100;
 }
 
-.popupMessage {
+.toast {
 	position: absolute;
 	font-weight: bold;
 	bottom: 3%;
@@ -188,16 +173,25 @@ table {
 	padding: 8px 15px;
 	display: none;
 }
-.popupMessage.isActive {
+.toast.isActive {
 	display: flex;
 }
-.popupMessage.info {
+.toast.info {
 	border: solid 2px rgb(79, 116, 128);
 	background-color: rgb(152, 188, 255);
 	color: rgb(79, 116, 128);
 }
-.popupMessage.error {
+.toast.error {
 	border: solid 2px rgb(220, 80, 80);
 	background-color: rgb(244, 174, 174);
 	color: rgb(222, 23, 23);
+}
+
+@media print {
+	@page {
+		size: letter portrait;
+	}
+	.toolbar {
+		display: none;
+	}
 }

@@ -198,7 +198,11 @@ module.exports = function (app) {
 						hands: playerDb.hands,
 						draftBlock: playerDb.draftBlock,
 						draftWatch: playerDb.draftWatch,
-						notes: playerDb.notes
+						notes: playerDb.notes,
+						
+						depthGroup: playerDb.depthGroup,
+						depthOffense: playerDb.depthOffense,
+						depthDefense: playerDb.depthDefense
 					};
 				});
 				
@@ -286,6 +290,10 @@ module.exports = function (app) {
 					playerDb.draftWatch = playerSave.draftWatch || playerSave.draftWatch === "" ? playerSave.draftWatch || null : playerDb.draftWatch;
 					playerDb.notes = playerSave.notes ? playerSave.notes : playerDb.notes;
 					
+					playerDb.depthGroup = playerSave.depthGroup || playerSave.depthGroup === "" ? playerSave.depthGroup || null : playerDb.depthGroup;
+					playerDb.depthOffense = playerSave.depthOffense || playerSave.depthOffense === "" ? playerSave.depthOffense || null : playerDb.depthOffense;
+					playerDb.depthDefense = playerSave.depthDefense || playerSave.depthDefense === "" ? playerSave.depthDefense || null : playerDb.depthDefense;
+					
 					return playerDb.save();
 				})
 				.then((playerDb) => {
@@ -339,7 +347,11 @@ module.exports = function (app) {
 				hands: playerSave.hands,
 				draftBlock: playerSave.draftBlock,
 				draftWatch: playerSave.draftWatch,
-				notes: playerSave.notes
+				notes: playerSave.notes,
+				
+				depthGroup: playerSave.depthGroup,
+				depthOffense: playerSave.depthOffense,
+				depthDefense: playerSave.depthDefense
 			})
 			.save()
 			.then((playerDb) => {
