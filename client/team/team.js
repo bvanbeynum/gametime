@@ -1133,7 +1133,7 @@ teamApp.controller("depthChartCtl", function ($rootScope, $scope, $http, $locati
 	$scope.resetPositions = () => {
 		$scope.positions.offense = d3.nest()
 			.key(player => player.depthOffense)
-			.entries($scope.players)
+			.entries($scope.players.filter(player => player.depthOffense))
 			.map(group => (
 				{ 
 					position: group.key, 
@@ -1151,7 +1151,7 @@ teamApp.controller("depthChartCtl", function ($rootScope, $scope, $http, $locati
 		
 		$scope.positions.defense = d3.nest()
 			.key(player => player.depthDefense)
-			.entries($scope.players)
+			.entries($scope.players.filter(player => player.depthDefense ))
 			.map(group => (
 				{ 
 					position: group.key, 
