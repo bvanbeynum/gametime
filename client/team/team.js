@@ -273,6 +273,7 @@ teamApp.controller("scheduleCtl", function($rootScope, $scope, $http, $location,
 	$scope.isLoading = true;
 	$scope.team = $rootScope.selectedTeam;
 	$scope.message = { text: "", active: false };
+	$scope.popupPlayer = { active: false };
 	
 	$scope.teamSchedule = $rootScope.schedule.filter(function (game) {
 		return game.awayTeam.id == $rootScope.selectedTeam.id || game.homeTeam.id == $rootScope.selectedTeam.id;
@@ -316,6 +317,76 @@ teamApp.controller("scheduleCtl", function($rootScope, $scope, $http, $location,
 		}, 4000);
 	};
 	
+	$scope.viewPlayer = player => {
+		$scope.popupPlayer.player = player;
+		
+		if (player.height
+			|| player.route
+			|| player.speed
+			|| player.hands
+			|| player.draftBlock
+			|| player.draftWatch) {
+				
+			player.comments = "This player " +
+				(player.height == 1 ? "is short, " : "") +
+				(player.height == 2 ? "is average height, " : "") +
+				(player.height == 3 ? "is tall, " : "") +
+				(player.hands == 1 ? "has good hands, " : "") +
+				(player.hands == -1 ? "can't catch, " : "") +
+				(player.speed == 1 ? "is slow, " : "") +
+				(player.fast == 2 ? "is fast, " : "") +
+				(player.route == 1 ? "has a sloppy route, " : "") +
+				(player.route == 2 ? "has a sharp route, " : "");
+			
+			player.comments = player.comments.substr(0, player.comments.length - 2) + ".";
+			
+			if (player.draftBlock) {
+				player.comments += "\r\nNot a good pickup.";
+			}
+			if (player.draftWatch) {
+				player.comments += "\r\nGood pickup.";
+			}
+		}
+		else {
+			player.comments = "Didn't show at draft";
+		}
+		
+		player.age = new Date(Date.now() - (new Date(player.dateOfBirth)).getTime()).getFullYear() - 1970;
+		
+		$scope.popupPlayer.seasons = [{
+			catching: player.catching,
+			draftRank: player.draftRank,
+			draftRound: player.draftRound,
+			runTime: player.runTime,
+			running: player.running,
+			season: player.playerDivision.season,
+			team: player.team,
+			throwing: player.throwing,
+			playerDivision: player.playerDivision
+		}];
+		
+		$scope.popupPlayer.seasons = $scope.popupPlayer.seasons.concat(player.prev
+			.filter(season =>  season.draftRound )
+			.sort(function (season1, season2) {
+				if (season1.playerDivision.year < season2.playerDivision.year) {
+					return 1;
+				}
+				else if (season1.playerDivision.year > season2.playerDivision.year) {
+					return -1;
+				}
+				else {
+					return season1.playerDivision.season < season2.playerDivision.season ? 1 : -1;
+				}
+			}));
+		
+		$scope.popupPlayer.active = true;
+	};
+	
+	$scope.closePlayer = () => {
+		$scope.popupPlayer.player = null;
+		$scope.popupPlayer.active = false;
+	};
+	
 });
 
 teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog) {
@@ -334,6 +405,7 @@ teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $md
 	}
 	
 	log.game = $scope;
+	$scope.popupPlayer = { active: false };
 	
 	$scope.editGame = function () {
 		$scope.isLoading = true;
@@ -375,7 +447,7 @@ teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $md
 		
 		var players = response.data.players.sort(function (prev, curr) {
 			if (prev.draftRank || curr.draftRank) {
-				return (prev.draftRank ? prev.draftRank : 99) - (curr.draftRank ? curr.draftRank : 99);
+				return (prev.draftPick ? prev.draftPick : 99) - (curr.draftPick ? curr.draftPick : 99);
 			}
 			else {
 				return prev.firstName > curr.firstName;
@@ -415,6 +487,77 @@ teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $md
 	
 	$http({url: "/data/player?divisionid=" + $rootScope.managedTeam.teamDivision.id + "&teamid=" + $rootScope.selectedGame.awayTeam.id}).then(httpSuccess, httpError);
 	$http({url: "/data/player?divisionid=" + $rootScope.managedTeam.teamDivision.id + "&teamid=" + $rootScope.selectedGame.homeTeam.id}).then(httpSuccess, httpError);
+	
+	$scope.viewPlayer = player => {
+		$scope.popupPlayer.player = player;
+		
+		if (player.height
+			|| player.route
+			|| player.speed
+			|| player.hands
+			|| player.draftBlock
+			|| player.draftWatch) {
+				
+			player.comments = "This player " +
+				(player.height == 1 ? "is short, " : "") +
+				(player.height == 2 ? "is average height, " : "") +
+				(player.height == 3 ? "is tall, " : "") +
+				(player.hands == 1 ? "has good hands, " : "") +
+				(player.hands == -1 ? "can't catch, " : "") +
+				(player.speed == 1 ? "is slow, " : "") +
+				(player.fast == 2 ? "is fast, " : "") +
+				(player.route == 1 ? "has a sloppy route, " : "") +
+				(player.route == 2 ? "has a sharp route, " : "");
+			
+			player.comments = player.comments.substr(0, player.comments.length - 2) + ".";
+			
+			if (player.draftBlock) {
+				player.comments += "\r\nNot a good pickup.";
+			}
+			if (player.draftWatch) {
+				player.comments += "\r\nGood pickup.";
+			}
+		}
+		else {
+			player.comments = "Didn't show at draft";
+		}
+		
+		player.age = new Date(Date.now() - (new Date(player.dateOfBirth)).getTime()).getFullYear() - 1970;
+		
+		$scope.popupPlayer.seasons = [{
+			catching: player.catching,
+			draftRank: player.draftRank,
+			draftRound: player.draftRound,
+			runTime: player.runTime,
+			running: player.running,
+			season: player.playerDivision.season,
+			team: player.team,
+			throwing: player.throwing,
+			playerDivision: player.playerDivision
+		}];
+		
+		$scope.popupPlayer.seasons = $scope.popupPlayer.seasons.concat(player.prev
+			.filter(season =>  season.draftRound )
+			.sort(function (season1, season2) {
+				if (season1.playerDivision.year < season2.playerDivision.year) {
+					return 1;
+				}
+				else if (season1.playerDivision.year > season2.playerDivision.year) {
+					return -1;
+				}
+				else {
+					return season1.playerDivision.season < season2.playerDivision.season ? 1 : -1;
+				}
+			}));
+		
+		$scope.popupPlayer.active = true;
+	};
+	
+	$scope.closePlayer = () => {
+		$scope.popupPlayer.player = null;
+		$scope.popupPlayer.active = false;
+	};
+	
 });
 
 teamApp.controller("evaluationCtl", function($rootScope, $scope, $http, $location) {
@@ -1157,14 +1300,10 @@ teamApp.controller("depthChartCtl", function ($rootScope, $scope, $http, $locati
 					position: group.key, 
 					
 					group1: group.values
-						.filter(player => player.depthGroup == 1 || !player.depthGroup)
 						.map(p => p.firstName)
-						.join(""), 
+						.join(" / "), 
 						
-					group2: group.values
-						.filter(player => player.depthGroup == 2)
-						.map(player => player.firstName)
-						.join("")
+					group2: null
 				}));
 		
 		$scope.positions.leftWR = $scope.players
@@ -1180,7 +1319,7 @@ teamApp.controller("depthChartCtl", function ($rootScope, $scope, $http, $locati
 				.join(" / ");
 		
 		$scope.positions.center = $scope.players
-				.filter(player => player.depthOffense == "C")
+				.filter(player => player.depthOffense == "Center")
 				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
 				.map(player => player.firstName)
 				.join(" / ");
@@ -1245,6 +1384,10 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 			break;
 			
 		case "/draft":
+			$location.path("/standings");
+			break;
+			
+		case "/depthchart":
 			$location.path("/standings");
 			break;
 			

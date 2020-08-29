@@ -33,7 +33,7 @@
 	
 	<div class="statsTeams">
 		<div class="statsContainer">
-			<div class="statsTeam">{{selectedGame.awayTeam.name}}</div>
+			<div class="statsTeam">{{selectedGame.awayTeam.name}} / {{selectedGame.awayTeam.team.coach}}</div>
 			
 			<table class="teamStats">
 			<tr>
@@ -44,8 +44,8 @@
 				<th>Run</th>
 				<th>Age</th>
 			</tr>
-			<tr ng-repeat="player in selectedGame.awayTeam.players">
-				<td>{{ player.draftRank ? player.draftRank : "-"}}</td>
+			<tr ng-repeat="player in selectedGame.awayTeam.players" ng-click="viewPlayer(player)">
+				<td>{{ player.draftPick ? player.draftPick : "-"}} / {{ player.draftRank ? player.draftRank : "-"}}</td>
 				<td>{{ player.firstName + " " + player.lastName}}</td>
 				<td>{{ player.throwing ? player.throwing : "-"}}</td>
 				<td>{{ player.catching ? player.catching : "-"}}</td>
@@ -56,7 +56,7 @@
 		</div>
 		
 		<div class="statsContainer" layout="column" flex-gt-xs="50" layout-align="start center">
-			<div class="statsTeam">{{selectedGame.homeTeam.name}}</div>
+			<div class="statsTeam">{{selectedGame.homeTeam.name}} / {{selectedGame.homeTeam.team.coach}}</div>
 			
 			<table class="teamStats">
 			<tr>
@@ -67,8 +67,8 @@
 				<th>Run</th>
 				<th>Age</th>
 			</tr>
-			<tr ng-repeat="player in selectedGame.homeTeam.players">
-				<td>{{ player.draftRank ? player.draftRank : "-"}}</td>
+			<tr ng-repeat="player in selectedGame.homeTeam.players" ng-click="viewPlayer(player)">
+				<td>{{ player.draftPick ? player.draftPick : "-"}} / {{ player.draftRank ? player.draftRank : "-"}}</td>
 				<td>{{ player.firstName + " " + player.lastName}}</td>
 				<td>{{ player.throwing ? player.throwing : "-"}}</td>
 				<td>{{ player.catching ? player.catching : "-"}}</td>
@@ -85,4 +85,75 @@
 	<div class="loadingContent">
 		<div>Loading</div>
 	</div>
+</div>
+
+<div class="popup" ng-class="{ 'active': popupPlayer.active }">
+	<div class="popupHeader">
+
+		<h2 class="label">{{ popupPlayer.player.firstName + " " + popupPlayer.player.lastName }}</h2>
+		
+		<div ng-click="closePlayer()" class="button">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px">
+				<path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+			</svg>
+		</div>
+
+	</div>
+	
+	<div class="popupContainer">
+		<div><span class="label">Name:</span> {{ popupPlayer.player.firstName + " " + popupPlayer.player.lastName }}</div>
+		<div><span class="label">Age:</span> {{ popupPlayer.player.age }}</div>
+
+		<div class="spacer"></div>
+		
+		<div><span class="label">Rank:</span> {{ popupPlayer.player.draftRank }}</div>
+		<div><span class="label">Brett:</span> {{ popupPlayer.player.brettRank }}</div>
+		
+		<div class="spacer"></div>
+		
+		<div><span class="label">Protected:</span> {{ popupPlayer.player.coachProtect }}</div>
+		<div><span class="label">Requested:</span> {{ popupPlayer.player.coachRequest }}</div>
+		<div><span class="label">Requests:</span> {{ popupPlayer.player.requests }}</div>
+		<div><span class="label">Notes:</span> {{ popupPlayer.player.comments }}</div>
+		
+		<div class="spacer"></div>
+		
+		<table class="viewPlayerTable">
+		<tr>
+			<th>&nbsp;</th>
+			<th ng-repeat="season in popupPlayer.seasons">{{ season.playerDivision.year }}<br>{{ season.playerDivision.season.charAt(0).toUpperCase() + season.playerDivision.season.slice(1); }}</th>
+		</tr>
+		<tr>
+			<td>Rank</td>
+			<td ng-repeat="season in popupPlayer.seasons">{{ season.draftRank }}</td>
+		</tr>
+		<tr>
+			<td>Round</td>
+			<td ng-repeat="season in popupPlayer.seasons">{{ season.draftRound }}</td>
+		</tr>
+		<tr>
+			<td>Catch</td>
+			<td ng-repeat="season in popupPlayer.seasons">{{ season.catching }}</td>
+		</tr>
+		<tr>
+			<td>Run</td>
+			<td ng-repeat="season in popupPlayer.seasons">{{ season.running }}</td>
+		</tr>
+		<tr>
+			<td>Time</td>
+			<td ng-repeat="season in popupPlayer.seasons">{{ season.runTime }}</td>
+		</tr>
+		<tr>
+			<td>Throw</td>
+			<td ng-repeat="season in popupPlayer.seasons">{{ season.throwing }}</td>
+		</tr>
+		</table>
+		
+		<div class="draftSpacer"></div>
+		
+		<div ng-repeat="season in popupPlayer.seasons">
+			<span class="label">{{ season.playerDivision.year }} {{ season.playerDivision.season.charAt(0).toUpperCase() + season.playerDivision.season.slice(1); }}:</span> {{ season.team.name }}
+		</div>
+	</div>
+
 </div>

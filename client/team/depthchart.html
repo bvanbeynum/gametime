@@ -32,6 +32,11 @@
 	max-width: 600px;
 }
 
+.positionTable h4 {
+	color: rgb(100,100,100);
+	text-align: center;
+}
+
 .positions {
 	font-size: .85em;
 	max-width: 600px;
@@ -103,7 +108,7 @@
 		<th>Group 2</th>
 	</tr>
 	<tr>
-		<td class="header" colspan="3">Offense</td>
+		<td colspan="3"><h4>Offense</h4></td>
 	</tr>
 	<tr ng-repeat="position in positions.offense | orderBy: 'position'">
 		<td>{{ position.position }}</td>
@@ -111,7 +116,7 @@
 		<td>{{ position.group2 }}</td>
 	</tr>
 	<tr>
-		<td class="header" colspan="3">Defense</td>
+		<td colspan="3"><h4>Defense</h4></td>
 	</tr>
 	<tr ng-repeat="position in positions.defense | orderBy: 'position'">
 		<td>{{ position.position }}</td>
