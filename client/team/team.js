@@ -1246,12 +1246,36 @@ teamApp.controller("depthChartCtl", function ($rootScope, $scope, $http, $locati
 	$scope.isLoading = true;
 	$scope.team = $rootScope.managedTeam;
 	$scope.selectedGame = null;
-	$scope.positions = {};
+	// $scope.positions = {};
+	
+	$scope.positions = {
+		all: [
+			{ side: "offense", id: "center", name: "Center" },
+			{ side: "offense", id: "leftG", name: "Left G" },
+			{ side: "offense", id: "rightG", name: "Right G" },
+			{ side: "offense", id: "leftWR", name: "Left WR" },
+			{ side: "offense", id: "rightWR", name: "Right WR" },
+			{ side: "offense", id: "rb", name: "RB" },
+			{ side: "offense", id: "qb", name: "QB" },
+			{ side: "defense", id: "leftC", name: "Left Corner" },
+			{ side: "defense", id: "rightC", name: "Right Corner" },
+			{ side: "defense", id: "leftT", name: "Left Tackle" },
+			{ side: "defense", id: "tackle", name: "Tackle" },
+			{ side: "defense", id: "rightT", name: "Right Tackle" },
+			{ side: "defense", id: "leftLB", name: "Left LB" },
+			{ side: "defense", id: "lb", name: "LB" },
+			{ side: "defense", id: "leftLB", name: "Right LB" },
+			{ side: "defense", id: "leftS", name: "Left Safety" },
+			{ side: "defense", id: "safety", name: "Safety" },
+			{ side: "defense", id: "rightS", name: "Right Safety" }
+		]
+	};
 	
 	$http({ url: "/api/depthchart/load?teamid=" + $scope.team.id }).then(response => {
 		$scope.players = response.data.players;
 		$scope.players.forEach(player => {
-			player.depthGroup = player.depthGroup ? player.depthGroup + "" : "";
+			player.depthOffenseGroup = player.depthOffenseGroup ? player.depthOffenseGroup + "" : "";
+			player.depthDefenseGroup = player.depthDefenseGroup ? player.depthDefenseGroup + "" : "";
 		});
 		
 		$scope.resetPositions();
@@ -1274,79 +1298,39 @@ teamApp.controller("depthChartCtl", function ($rootScope, $scope, $http, $locati
 	};
 	
 	$scope.resetPositions = () => {
-		$scope.positions.offense = d3.nest()
-			.key(player => player.depthOffense)
-			.entries($scope.players.filter(player => player.depthOffense))
-			.map(group => (
-				{ 
-					position: group.key, 
-					
-					group1: group.values
-						.filter(player => player.depthGroup == 1 || !player.depthGroup)
-						.map(p => p.firstName)
-						.join(""), 
-						
-					group2: group.values
-						.filter(player => player.depthGroup == 2)
-						.map(player => player.firstName)
-						.join("")
-				}));
+		$scope.positions.offense = $scope.positions.all
+			.filter(position => position.side == "offense")
+			.map(position => ({
+				name: position.name,
+				id: position.id,
+				players: $scope.players
+					.filter(player => player.depthOffense == position.name)
+					.sort((playerA, playerB) => playerA.depthOffenseGroup - playerB.depthOffenseGroup)
+					.map(player => player.firstName)
+			}))
+			.filter(position => position.players.length > 0);
 		
-		$scope.positions.defense = d3.nest()
-			.key(player => player.depthDefense)
-			.entries($scope.players.filter(player => player.depthDefense ))
-			.map(group => (
-				{ 
-					position: group.key, 
-					
-					group1: group.values
-						.map(p => p.firstName)
-						.join(" / "), 
-						
-					group2: null
-				}));
+		$scope.positions.defense = $scope.positions.all
+			.filter(position => position.side == "defense")
+			.map(position => ({
+				name: position.name,
+				id: position.id,
+				players: $scope.players
+					.filter(player => player.depthDefense == position.name)
+					.sort((playerA, playerB) => playerA.depthDefenseGroup - playerB.depthDefenseGroup)
+					.map(player => player.firstName)
+			}))
+			.filter(position => position.players.length > 0);
 		
-		$scope.positions.leftWR = $scope.players
-				.filter(player => player.depthOffense == "Left WR")
-				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
-				.map(player => player.firstName)
-				.join(" / ");
+		$scope.positions.offense.forEach(position => {
+			$scope.positions[position.id] = position.players.join(" / ");
+		});
 		
-		$scope.positions.leftG = $scope.players
-				.filter(player => player.depthOffense == "Left G")
-				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
-				.map(player => player.firstName)
-				.join(" / ");
-		
-		$scope.positions.center = $scope.players
-				.filter(player => player.depthOffense == "Center")
-				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
-				.map(player => player.firstName)
-				.join(" / ");
-		
-		$scope.positions.rightG = $scope.players
-				.filter(player => player.depthOffense == "Right G")
-				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
-				.map(player => player.firstName)
-				.join(" / ");
-		
-		$scope.positions.rightWR = $scope.players
-				.filter(player => player.depthOffense == "Right WR")
-				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
-				.map(player => player.firstName)
-				.join(" / ");
-		
-		$scope.positions.qb = $scope.players
-				.filter(player => player.depthOffense == "QB")
-				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
-				.map(player => player.firstName)
-				.join(" / ");
-		
-		$scope.positions.rb = $scope.players
-				.filter(player => player.depthOffense == "RB")
-				.sort((playerA, playerB) => playerA.depthGroup - playerB.depthGroup)
-				.map(player => player.firstName)
-				.join(" / ");
+		$scope.positions.all.forEach(position => {
+			$scope.positions[position.id] = $scope.positions[position.side]
+				.filter(side => side.id == position.id && side.players.length > 0)
+				.map(side => side.players.join(" / ")).join("");
+		});
 		
 	};
 });

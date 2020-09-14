@@ -1,16 +1,23 @@
 <style>
 .depthPage {
 	display: flex;
-	align-items: center;
 	flex-direction: column;
 	padding: 20px 10px;
 }
 
+.depthPage h3 {
+	color: rgb(148, 148, 148);
+	text-align: center;
+	margin: 50px 0px 20px 0px;
+}
+
+.playerContainer {
+	display: flex;
+	flex-direction: column;
+}
+
 .depthPage table {
 	border-collapse: collapse;
-	max-width: 600px;
-	width: 100%;
-	margin-bottom: 30px;
 }
 
 
@@ -28,8 +35,9 @@
 	font-size: 0.85em;
 }
 
-.positionTable {
-	max-width: 600px;
+.editTable th:nth-child(n+2), 
+.editTable td:nth-child(n+2) {
+	text-align: center;
 }
 
 .positionTable h4 {
@@ -39,8 +47,7 @@
 
 .positions {
 	font-size: .85em;
-	max-width: 600px;
-	margin: 30px 0px;
+	width: 400px;
 }
 
 .positions line {
@@ -51,11 +58,58 @@
 .positions circle {
 	stroke: rgb(100,100,100);
 	stroke-width: 2px;
+	fill: rgb(200,200,200);
+}
+
+.scoreboard {
+	display: none;
+}
+
+.scoreboard td {
+	border: solid 1px black;
+	height: 30px;
+}
+
+.scoreboard td:nth-child(1) {
+	font-weight: bold;
+	width: 80px;
 }
 
 @media print {
 	.depthPage .editTable {
 		display: none;
+	}
+	
+	.playerContainer {
+		flex-direction: row;
+	}
+	
+	.positionTable {
+		flex: 1;
+	}
+	
+	.positions {
+		flex: 1;
+		margin-left: 50px;
+	}
+	
+	.scoreboard {
+		display: table;
+	}
+}
+
+@media (min-width: 600px) {
+	.playerContainer {
+		flex-direction: row;
+	}
+	
+	.positionTable {
+		flex: 1;
+	}
+	
+	.positions {
+		flex: 1;
+		margin-left: 50px;
 	}
 }
 </style>
@@ -64,19 +118,13 @@
 	<table class="editTable">
 	<tr>
 		<th>Player</th>
-		<th>Group</th>
 		<th>Offense</th>
+		<th>Offense<br>Group</th>
 		<th>Defense</th>
+		<th>Defense<br>Group</th>
 	</tr>
 	<tr ng-repeat="player in players | orderBy: 'firstName'">
 		<td>{{player.firstName}} {{ player.lastName }}</td>
-		<td>
-			<select ng-model="player.depthGroup" ng-change="changePlayer(player)">
-				<option value="">-</option>
-				<option value="1">1</option>
-				<option value="2">2</option>
-			</select>
-		</td>
 		<td>
 			<select ng-model="player.depthOffense" ng-change="changePlayer(player)">
 				<option value="">-</option>
@@ -90,102 +138,270 @@
 			</select>
 		</td>
 		<td>
+			<select ng-model="player.depthOffenseGroup" ng-change="changePlayer(player)">
+				<option value="">-</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+			</select>
+		</td>
+		<td>
 			<select ng-model="player.depthDefense" ng-change="changePlayer(player)">
 				<option value="">-</option>
+				<option>Left Tackle</option>
 				<option>Tackle</option>
-				<option>Corner</option>
+				<option>Right Tackle</option>
+				<option>Left Corner</option>
+				<option>Right Corner</option>
+				<option>Left LB</option>
 				<option>LB</option>
+				<option>Right LB</option>
+				<option>Left Safety</option>
 				<option>Safety</option>
+				<option>Right Safety</option>
+			</select>
+		</td>
+		<td>
+			<select ng-model="player.depthDefenseGroup" ng-change="changePlayer(player)">
+				<option value="">-</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
 			</select>
 		</td>
 	</tr>
 	</table>
 	
-	<table class="positionTable">
+	<h3>Offense</h3>
+	
+	<div class="playerContainer">
+		<table class="positionTable">
+		<tr>
+			<th>Position</th>
+			<th>Group 1</th>
+			<th>Group 2</th>
+		</tr>
+		<tr ng-repeat="position in positions.offense | orderBy: 'name'">
+			<td>{{ position.name }}</td>
+			<td>{{ position.players[0] }}</td>
+			<td>{{ position.players[1] }}</td>
+		</tr>
+		</table>
+		
+		<svg class="positions" viewBox="0 0 400 200">
+			<line x1="0" y1="5" x2="400" y2="5"></line>
+			
+			<line x1="0" y1="29" x2="20" y2="29"></line>
+			<line x1="123" y1="29" x2="143" y2="29"></line>
+			<line x1="257" y1="29" x2="277" y2="29"></line>
+			<line x1="380" y1="29" x2="400" y2="29"></line>
+			
+			<line x1="0" y1="53" x2="20" y2="53"></line>
+			<line x1="123" y1="53" x2="143" y2="53"></line>
+			<line x1="257" y1="53" x2="277" y2="53"></line>
+			<line x1="380" y1="53" x2="400" y2="53"></line>
+			
+			<line x1="0" y1="76" x2="20" y2="76"></line>
+			<line x1="123" y1="76" x2="143" y2="76"></line>
+			<line x1="257" y1="76" x2="277" y2="76"></line>
+			<line x1="380" y1="76" x2="400" y2="76"></line>
+			
+			<line x1="0" y1="100" x2="20" y2="100"></line>
+			<line x1="123" y1="100" x2="143" y2="100"></line>
+			<line x1="257" y1="100" x2="277" y2="100"></line>
+			<line x1="380" y1="100" x2="400" y2="100"></line>
+			
+			<line x1="0" y1="124" x2="400" y2="124"></line>
+			
+			<line x1="0" y1="148" x2="20" y2="148"></line>
+			<line x1="123" y1="148" x2="143" y2="148"></line>
+			<line x1="257" y1="148" x2="277" y2="148"></line>
+			<line x1="380" y1="148" x2="400" y2="148"></line>
+			
+			<line x1="0" y1="171" x2="20" y2="171"></line>
+			<line x1="123" y1="171" x2="143" y2="171"></line>
+			<line x1="257" y1="171" x2="277" y2="171"></line>
+			<line x1="380" y1="171" x2="400" y2="171"></line>
+			
+			<line x1="0" y1="195" x2="20" y2="195"></line>
+			<line x1="123" y1="195" x2="143" y2="195"></line>
+			<line x1="257" y1="195" x2="277" y2="195"></line>
+			<line x1="380" y1="195" x2="400" y2="195"></line>
+			
+			<circle r="8" cx="22" cy="38"></circle>
+			<text x="0" y="62">{{ positions.leftWR }}</text>
+			
+			<circle r="8" cx="145" cy="38"></circle>
+			<text x="145" y="22" text-anchor="middle">{{ positions.leftG }}</text>
+			
+			<circle r="8" cx="200" cy="38"></circle>
+			<text x="200" y="62" text-anchor="middle">{{ positions.center }}</text>
+			
+			<circle r="8" cx="255" cy="38"></circle>
+			<text x="255" y="22" text-anchor="middle">{{ positions.rightG }}</text>
+			
+			<circle r="8" cx="378" cy="38"></circle>
+			<text x="400" y="62" text-anchor="end">{{ positions.rightWR }}</text>
+			
+			<circle r="8" cx="200" cy="90"></circle>
+			<text x="200" y="114" text-anchor="middle">{{ positions.qb }}</text>
+			
+			<circle r="8" cx="200" cy="155"></circle>
+			<text x="200" y="179" text-anchor="middle">{{ positions.rb }}</text>
+		</svg>
+	</div>
+	
+	<h3>Defense</h3>
+	
+	<div class="playerContainer">
+		<table class="positionTable">
+		<tr>
+			<th>Position</th>
+			<th>Group 1</th>
+			<th>Group 2</th>
+		</tr>
+		<tr ng-repeat="position in positions.defense | orderBy: 'name'">
+			<td>{{ position.name }}</td>
+			<td>{{ position.players[0] }}</td>
+			<td>{{ position.players[1] }}</td>
+		</tr>
+		</table>
+		
+		<svg class="positions" viewBox="0 0 400 200">
+			<line x1="0" y1="5" x2="400" y2="5"></line>
+			
+			<line x1="0" y1="29" x2="20" y2="29"></line>
+			<line x1="123" y1="29" x2="143" y2="29"></line>
+			<line x1="257" y1="29" x2="277" y2="29"></line>
+			<line x1="380" y1="29" x2="400" y2="29"></line>
+			
+			<line x1="0" y1="53" x2="20" y2="53"></line>
+			<line x1="123" y1="53" x2="143" y2="53"></line>
+			<line x1="257" y1="53" x2="277" y2="53"></line>
+			<line x1="380" y1="53" x2="400" y2="53"></line>
+			
+			<line x1="0" y1="76" x2="20" y2="76"></line>
+			<line x1="123" y1="76" x2="143" y2="76"></line>
+			<line x1="257" y1="76" x2="277" y2="76"></line>
+			<line x1="380" y1="76" x2="400" y2="76"></line>
+			
+			<line x1="0" y1="100" x2="20" y2="100"></line>
+			<line x1="123" y1="100" x2="143" y2="100"></line>
+			<line x1="257" y1="100" x2="277" y2="100"></line>
+			<line x1="380" y1="100" x2="400" y2="100"></line>
+			
+			<line x1="0" y1="124" x2="400" y2="124"></line>
+			
+			<line x1="0" y1="148" x2="20" y2="148"></line>
+			<line x1="123" y1="148" x2="143" y2="148"></line>
+			<line x1="257" y1="148" x2="277" y2="148"></line>
+			<line x1="380" y1="148" x2="400" y2="148"></line>
+			
+			<line x1="0" y1="171" x2="20" y2="171"></line>
+			<line x1="123" y1="171" x2="143" y2="171"></line>
+			<line x1="257" y1="171" x2="277" y2="171"></line>
+			<line x1="380" y1="171" x2="400" y2="171"></line>
+			
+			<line x1="0" y1="195" x2="20" y2="195"></line>
+			<line x1="123" y1="195" x2="143" y2="195"></line>
+			<line x1="257" y1="195" x2="277" y2="195"></line>
+			<line x1="380" y1="195" x2="400" y2="195"></line>
+			
+			<g ng-show="positions.leftC">
+				<circle r="8" cx="65" cy="60"></circle>
+				<text x="65" y="84" text-anchor="middle">{{ positions.leftC }}</text>
+			</g>
+			
+			<g ng-show="positions.leftT">
+				<circle r="8" cx="155" cy="23"></circle>
+				<text x="155" y="47" text-anchor="middle">{{ positions.leftT }}</text>
+			</g>
+			
+			<g ng-show="positions.tackle">
+				<circle r="8" cx="200" cy="23"></circle>
+				<text x="200" y="47" text-anchor="middle">{{ positions.tackle }}</text>
+			</g>
+			
+			<g ng-show="positions.rightT">
+				<circle r="8" cx="245" cy="23"></circle>
+				<text x="245" y="47" text-anchor="middle">{{ positions.rightT }}</text>
+			</g>
+			
+			<g ng-show="positions.leftLB">
+				<circle r="8" cx="155" cy="100"></circle>
+				<text x="155" y="124" text-anchor="middle">{{ positions.leftLB }}</text>
+			</g>
+			
+			<g ng-show="positions.lb">
+				<circle r="8" cx="200" cy="100"></circle>
+				<text x="200" y="124" text-anchor="middle">{{ positions.lb }}</text>
+			</g>
+			
+			<g ng-show="positions.rightLB">
+				<circle r="8" cx="245" cy="100"></circle>
+				<text x="245" y="124" text-anchor="middle">{{ positions.rightLB }}</text>
+			</g>
+			
+			<g ng-show="positions.rightC">
+				<circle r="8" cx="335" cy="60"></circle>
+				<text x="335" y="84" text-anchor="middle">{{ positions.rightC }}</text>
+			</g>
+			
+			<g ng-show="positions.leftS">
+				<circle r="8" cx="115" cy="176"></circle>
+				<text x="115" y="200" text-anchor="middle">{{ positions.leftS }}</text>
+			</g>
+			
+			<g ng-show="positions.leftS">
+				<circle r="8" cx="200" cy="176"></circle>
+				<text x="115" y="200" text-anchor="middle">{{ positions.leftS }}</text>
+			</g>
+			
+			<g ng-show="positions.rightS">
+				<circle r="8" cx="285" cy="176"></circle>
+				<text x="285" y="200" text-anchor="middle">{{ positions.rightS }}</text>
+			</g>
+		</svg>
+	</div>
+	
+	<h3 class="scoreboard">Scoreboard</h3>
+	
+	<table class="scoreboard">
 	<tr>
-		<th>Position</th>
-		<th>Group 1</th>
-		<th>Group 2</th>
+		<td>Cougars</td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
 	</tr>
 	<tr>
-		<td colspan="3"><h4>Offense</h4></td>
-	</tr>
-	<tr ng-repeat="position in positions.offense | orderBy: 'position'">
-		<td>{{ position.position }}</td>
-		<td>{{ position.group1 }}</td>
-		<td>{{ position.group2 }}</td>
-	</tr>
-	<tr>
-		<td colspan="3"><h4>Defense</h4></td>
-	</tr>
-	<tr ng-repeat="position in positions.defense | orderBy: 'position'">
-		<td>{{ position.position }}</td>
-		<td>{{ position.group1 }}</td>
-		<td>{{ position.group2 }}</td>
+		<td>Opponent</td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
 	</tr>
 	</table>
-	
-	<svg class="positions" viewBox="0 0 400 200">
-		<line x1="0" y1="5" x2="400" y2="5"></line>
-		
-		<line x1="0" y1="29" x2="20" y2="29"></line>
-		<line x1="123" y1="29" x2="143" y2="29"></line>
-		<line x1="257" y1="29" x2="277" y2="29"></line>
-		<line x1="380" y1="29" x2="400" y2="29"></line>
-		
-		<line x1="0" y1="53" x2="20" y2="53"></line>
-		<line x1="123" y1="53" x2="143" y2="53"></line>
-		<line x1="257" y1="53" x2="277" y2="53"></line>
-		<line x1="380" y1="53" x2="400" y2="53"></line>
-		
-		<line x1="0" y1="76" x2="20" y2="76"></line>
-		<line x1="123" y1="76" x2="143" y2="76"></line>
-		<line x1="257" y1="76" x2="277" y2="76"></line>
-		<line x1="380" y1="76" x2="400" y2="76"></line>
-		
-		<line x1="0" y1="100" x2="20" y2="100"></line>
-		<line x1="123" y1="100" x2="143" y2="100"></line>
-		<line x1="257" y1="100" x2="277" y2="100"></line>
-		<line x1="380" y1="100" x2="400" y2="100"></line>
-		
-		<line x1="0" y1="124" x2="400" y2="124"></line>
-		
-		<line x1="0" y1="148" x2="20" y2="148"></line>
-		<line x1="123" y1="148" x2="143" y2="148"></line>
-		<line x1="257" y1="148" x2="277" y2="148"></line>
-		<line x1="380" y1="148" x2="400" y2="148"></line>
-		
-		<line x1="0" y1="171" x2="20" y2="171"></line>
-		<line x1="123" y1="171" x2="143" y2="171"></line>
-		<line x1="257" y1="171" x2="277" y2="171"></line>
-		<line x1="380" y1="171" x2="400" y2="171"></line>
-		
-		<line x1="0" y1="195" x2="20" y2="195"></line>
-		<line x1="123" y1="195" x2="143" y2="195"></line>
-		<line x1="257" y1="195" x2="277" y2="195"></line>
-		<line x1="380" y1="195" x2="400" y2="195"></line>
-		
-		<circle r="8" cx="22" cy="38" fill="rgb(255 161 9)"></circle>
-		<text x="0" y="62">{{ positions.leftWR }}</text>
-		
-		<circle r="8" cx="145" cy="38" fill="rgb(48 216 40)"></circle>
-		<text x="145" y="22" text-anchor="middle">{{ positions.leftG }}</text>
-		
-		<circle r="8" cx="200" cy="38" fill="rgb(56 84 243)"></circle>
-		<text x="200" y="62" text-anchor="middle">{{ positions.center }}</text>
-		
-		<circle r="8" cx="255" cy="38" fill="rgb(0 0 0)"></circle>
-		<text x="255" y="22" text-anchor="middle">{{ positions.rightG }}</text>
-		
-		<circle r="8" cx="378" cy="38" fill="rgb(194 42 228)"></circle>
-		<text x="400" y="62" text-anchor="end">{{ positions.rightWR }}</text>
-		
-		<circle r="8" cx="200" cy="90" fill="rgb(146 201 245)"></circle>
-		<text x="200" y="114" text-anchor="middle">{{ positions.qb }}</text>
-		
-		<circle r="8" cx="200" cy="155" fill="rgb(220 69 69)"></circle>
-		<text x="200" y="179" text-anchor="middle">{{ positions.rb }}</text>
-	</svg>
 </div>
 
 <div ng-show="isLoading" class="loadingContainer">

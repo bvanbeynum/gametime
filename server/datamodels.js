@@ -101,7 +101,9 @@ module.exports = {
 		
 		depthGroup: Number,
 		depthOffense: String,
+		depthOffenseGroup: Number,
 		depthDefense: String,
+		depthDefenseGroup: Number,
 		
 		spring2018: {
 			division: String,

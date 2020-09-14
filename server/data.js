@@ -202,7 +202,9 @@ module.exports = function (app) {
 						
 						depthGroup: playerDb.depthGroup,
 						depthOffense: playerDb.depthOffense,
-						depthDefense: playerDb.depthDefense
+						depthOffenseGroup: playerDb.depthOffenseGroup,
+						depthDefense: playerDb.depthDefense,
+						depthDefenseGroup: playerDb.depthDefenseGroup
 					};
 				});
 				
@@ -292,7 +294,9 @@ module.exports = function (app) {
 					
 					playerDb.depthGroup = playerSave.depthGroup || playerSave.depthGroup === "" ? playerSave.depthGroup || null : playerDb.depthGroup;
 					playerDb.depthOffense = playerSave.depthOffense || playerSave.depthOffense === "" ? playerSave.depthOffense || null : playerDb.depthOffense;
+					playerDb.depthOffenseGroup = playerSave.depthOffenseGroup || playerSave.depthOffenseGroup === "" ? playerSave.depthOffenseGroup || null : playerDb.depthOffenseGroup;
 					playerDb.depthDefense = playerSave.depthDefense || playerSave.depthDefense === "" ? playerSave.depthDefense || null : playerDb.depthDefense;
+					playerDb.depthDefenseGroup = playerSave.depthDefenseGroup || playerSave.depthDefenseGroup === "" ? playerSave.depthDefenseGroup || null : playerDb.depthDefenseGroup;
 					
 					return playerDb.save();
 				})
@@ -351,7 +355,9 @@ module.exports = function (app) {
 				
 				depthGroup: playerSave.depthGroup,
 				depthOffense: playerSave.depthOffense,
-				depthDefense: playerSave.depthDefense
+				depthOffenseGroup: playerSave.depthOffenseGroup,
+				depthDefense: playerSave.depthDefense,
+				depthDefenseGroup: playerSave.depthDefenseGroup
 			})
 			.save()
 			.then((playerDb) => {
