@@ -1,4 +1,6 @@
 var webRequest = require("request");
+var path = require("path");
+var fs = require("fs");
 
 module.exports = (app) => {
 	
@@ -148,6 +150,18 @@ module.exports = (app) => {
 			var playerId = body.playerId;
 			response.status(200).json({ playerId: playerId });
 		});
+	});
+	
+	app.post("/api/uploadfile", (request, response) => {
+		
+		request.busboy.on("file", (fieldName, file, fileName) => {
+			file.pipe(fs.createWriteStream(path.join(app.get("root"), "client/team/emailFiles/" + fileName)));
+		});
+		request.busboy.on("finish", () => {
+			response.status(200).json({status: "ok"});
+		});
+		
+		request.pipe(request.busboy);
 	});
 	
 	app.get("/", (request, response) => {

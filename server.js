@@ -6,6 +6,7 @@ var port = process.env.PORT || 8080;
 
 var mongoose = require("mongoose");
 var bodyParser = require("body-parser");
+var busboy = require("connect-busboy");
 var cookieParser = require("cookie-parser");
 var config = require("./server/config");
 
@@ -26,6 +27,7 @@ app.set("root", __dirname);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(busboy()); 
 
 // Routes =======================================================================
 
