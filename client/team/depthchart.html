@@ -6,7 +6,7 @@
 }
 
 .depthPage h3 {
-	color: rgb(148, 148, 148);
+	color: rgb(50, 50, 50);
 	text-align: center;
 	margin: 50px 0px 20px 0px;
 }
@@ -22,7 +22,7 @@
 
 
 .depthPage th {
-	border-bottom: solid 1px rgb(224, 224, 224);
+	border-bottom: solid 2px rgb(100, 100, 100);
 	font-weight: normal;
 }
 
@@ -33,6 +33,7 @@
 
 .depthPage td {
 	font-size: 0.85em;
+	border-bottom: solid 1px rgb(50,50,50);
 }
 
 .editTable th:nth-child(n+2), 
@@ -51,7 +52,7 @@
 }
 
 .positions line {
-	stroke: rgb(220,220,220);
+	stroke: rgb(150,150,150);
 	stroke-width: 2;
 }
 
@@ -67,12 +68,18 @@
 
 .scoreboard td {
 	border: solid 1px black;
-	height: 30px;
+	padding: 0px;
 }
 
 .scoreboard td:nth-child(1) {
 	font-weight: bold;
-	width: 80px;
+	width: 100px;
+}
+
+.scoreboard line {
+	stroke: rgb(0,0,0);
+	stroke-width: 1px;
+	fill: none;
 }
 
 @media print {
@@ -350,9 +357,9 @@
 				<text x="115" y="200" text-anchor="middle">{{ positions.leftS }}</text>
 			</g>
 			
-			<g ng-show="positions.leftS">
+			<g ng-show="positions.safety">
 				<circle r="8" cx="200" cy="176"></circle>
-				<text x="115" y="200" text-anchor="middle">{{ positions.leftS }}</text>
+				<text x="115" y="200" text-anchor="middle">{{ positions.safety }}</text>
 			</g>
 			
 			<g ng-show="positions.rightS">
@@ -367,39 +374,39 @@
 	<table class="scoreboard">
 	<tr>
 		<td>Cougars</td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
 	</tr>
 	<tr>
 		<td>Opponent</td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
+		<td><svg viewBox="0 0 40 40"><line x1="0" y1="40" x2="40" y2="0"></line></svg></td>
 	</tr>
 	</table>
 </div>
