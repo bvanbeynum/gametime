@@ -16,6 +16,29 @@
 	background-color: rgba(36,255,47,.3);
 	display: block;
 }
+
+.toast {
+	position: absolute;
+	font-weight: bold;
+	bottom: 3%;
+	left: 3%;
+	padding: 8px 15px;
+	display: none;
+}
+.toast.isActive {
+	display: flex;
+}
+.toast.info {
+	border: solid 2px rgb(79, 116, 128);
+	background-color: rgb(152, 188, 255);
+	color: rgb(79, 116, 128);
+}
+.toast.error {
+	border: solid 2px rgb(220, 80, 80);
+	background-color: rgb(244, 174, 174);
+	color: rgb(222, 23, 23);
+}
+
 </style>
 <body ng-controller="uploadCtl">
 
@@ -26,6 +49,27 @@
 	ondragleave="angular.element(this).scope().dragLeave(event)">
 	
 	Drop files to upload
+</div>
+
+<div class="toast" ng-class="[toast.type, { 'isActive': toast.active } ]">
+	{{toast.text}}
+</div>
+
+<div class="updates">
+	<h3>Queue</h3>
+	<ul>
+		<li ng-repeat="item in upload.queue">{{item.name}} - {{ (item.size / 1024 / 1024).toFixed(2) }} MB</li>
+	</ul>
+	
+	<h3>Completed</h3>
+	<ul>
+		<li ng-repeat="item in upload.complete">{{item.name}} - {{ (item.size / 1024 / 1024).toFixed(2) }} MB</li>
+	</ul>
+	
+	<h3>Error</h3>
+	<ul>
+		<li ng-repeat="item in upload.error">{{item.file.name}} - {{ (item.file.size / 1024 / 1024).toFixed(2) }} MB</li>
+	</ul>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
@@ -42,6 +86,7 @@ uploadApp.controller("uploadCtl", ($scope, $http, $window) => {
 	log.http = $http;
 	
 	$scope.upload = { queue: [], error: [], complete: [] };
+	$scope.toast = { text: "", active: false, type: "info", messages: 0 };
 	
 	$scope.saveCategory = () => {
 		$scope.categories.push($scope.newCategory);
@@ -109,13 +154,38 @@ uploadApp.controller("uploadCtl", ($scope, $http, $window) => {
 				console.log(error);
 				
 				var uploadedFile = $scope.upload.queue.shift();
-				$scope.upload.error.push(uploadedFile);
+				$scope.upload.error.push({ file: uploadedFile, error: error });
 				
 				if ($scope.upload.queue.length > 0) {
 					uploadFiles();
 				}
 			});
 	}
+	
+	$scope.showMessage = (type, message) => {
+		if ($scope.toast.active) {
+			$scope.toast.text = message + "<br>" + $scope.toast.text;
+		}
+		else {
+			$scope.toast.text = message;
+		}
+		
+		$scope.toast.active = true;
+		$scope.toast.type = type;
+		
+		setTimeout(() => {
+			var lines = $scope.toast.text.split("<br>");
+			lines.pop();
+			$scope.toast.text = lines.join("<br>");
+			
+			if ($scope.toast.text.length == 0) {
+				$scope.toast.active = false;
+				$scope.toast.type = "info";
+			}
+			
+			$scope.$apply();
+		}, 4000);
+	};
 	
 });
 
