@@ -1264,7 +1264,7 @@ teamApp.controller("depthChartCtl", function ($rootScope, $scope, $http, $locati
 			{ side: "defense", id: "rightT", name: "Right Tackle" },
 			{ side: "defense", id: "leftLB", name: "Left LB" },
 			{ side: "defense", id: "lb", name: "LB" },
-			{ side: "defense", id: "leftLB", name: "Right LB" },
+			{ side: "defense", id: "rightLB", name: "Right LB" },
 			{ side: "defense", id: "leftS", name: "Left Safety" },
 			{ side: "defense", id: "safety", name: "Safety" },
 			{ side: "defense", id: "rightS", name: "Right Safety" }
