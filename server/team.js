@@ -153,8 +153,10 @@ module.exports = (app) => {
 	});
 	
 	app.post("/api/uploadfile", (request, response) => {
+		console.log("uploading video");
 		
 		request.busboy.on("file", (fieldName, file, fileName) => {
+			console.log("file received: " + fileName);
 			file.pipe(fs.createWriteStream(path.join(app.get("root"), "client/team/emailFiles/" + fileName)));
 		});
 		request.busboy.on("finish", () => {

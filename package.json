@@ -9,7 +9,7 @@
     "body-parser": "^1.17.2",
     "cookie-parser": "^1.4.3",
     "connect-busboy": "0.0.2",
-    "express": "^4.15.3",
+    "express": "^4.17.1",
     "mongoose": "^5.7.5",
     "nodemailer": "^4.6.8",
     "request": "^2.88.2"
