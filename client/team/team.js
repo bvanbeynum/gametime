@@ -31,6 +31,10 @@ teamApp.config(function($mdThemingProvider, $routeProvider, $locationProvider) {
 		templateUrl: "/team/draft.html",
 		controller: "draftCtl"
 	})
+	.when("/draft2", {
+		templateUrl: "/team/draft2.html",
+		controller: "draft2Ctl"
+	})
 	.when("/email", {
 		templateUrl: "/team/email.html",
 		controller: "emailCtl"
@@ -966,6 +970,18 @@ teamApp.controller("draftCtl", function($rootScope, $scope, $http, $location) {
 		}, 4000);
 	};
 	
+});
+
+teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
+	if (!$rootScope.managedTeam) {
+		$location.path("/");
+		return;
+	}
+	
+	log.draft = $scope;
+	$scope.isLoading = true;
+	
+	$scope.isLoading = false;
 });
 
 teamApp.controller("emailCtl", function($rootScope, $scope, $http, $location, $mdToast, $mdDialog, $document) {

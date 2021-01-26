@@ -1,0 +1,20 @@
+.draftPage {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.draftContent {
+	flex: 1;
+	display: flex;
+}
+
+.draftNav {
+	display: flex;
+}
+
+.draftNavItem {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+}
