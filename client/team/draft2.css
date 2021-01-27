@@ -4,9 +4,121 @@
 	flex-direction: column;
 }
 
+.error {
+	color: rgb(255 0 0);
+}
+
+.draftPage input {
+	border: 0;
+	border-bottom: 1px solid rgb(150 150 150);
+	font-size: 18px;
+	background-color: rgb(0 0 0 / 0%);
+}
+
+.draftPage input.error {
+	outline: rgb(224 72 72) auto 1px;
+}
+
+.draftPage input:focus {
+	outline: 0;
+}
+
 .draftContent {
 	flex: 1;
 	display: flex;
+	flex-direction: column;
+}
+
+.team {
+	display: flex;
+	flex-direction: column;
+	border-bottom: 1px solid rgb(200,200,200);
+}
+
+.teamHeader {
+	display: flex;
+	align-items: center;
+	height: 55px;
+	cursor: pointer;
+}
+
+.teamAction {
+	width: 40px;
+	margin-left: 10px;
+}
+
+.teamName {
+	width: 180px;
+}
+
+.teamRounds {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+}
+
+.teamPickTick {
+	border: 1px solid rgb(220,220,220);
+	border-radius: 8px;
+	width: 5px;
+	height: 20px;
+}
+
+.teamPickTick.filled {
+	background-color: rgb(140 214 140);
+}
+
+.teamRound {
+	margin: 0px 15px;
+}
+
+.teamRound input {
+	width: 40px;
+}
+
+.teamAction svg {
+	width: 24px;
+	height: 24px;
+}
+
+.teamPicks {
+	padding: 5px 15px;
+	display: flex;
+	flex-direction: column;
+}
+
+.teamPick {
+	border-left: solid 2px rgb(188 188 188);
+	margin: 15px 0px;
+	padding: 5px;
+	display: flex;
+	justify-content: space-between;
+}
+
+.roundNumber {
+	width: 60px;
+}
+
+.teamPick input {
+	width: 60px;
+}
+
+.pickNumber {
+	margin: 0px 15px;
+}
+
+.pickName {
+	flex: 1;
+}
+
+.pickAction {
+	display: flex;
+}
+
+.pickAction svg {
+	width: 24px;
+	margin-left: 15px;
+	cursor: pointer;
 }
 
 .draftNav {
@@ -17,4 +129,9 @@
 	flex: 1;
 	display: flex;
 	justify-content: center;
+}
+
+.draftNavItem svg {
+	width: 36px;
+	height: 36px;
 }
