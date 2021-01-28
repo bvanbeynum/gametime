@@ -981,42 +981,129 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 	log.draft = $scope;
 	$scope.isLoading = true;
 	$scope.page = "teams";
+	$scope.playerSort = "brettRank";
 	
-	$http({url: "/draft/load?divisionid=" + $rootScope.managedTeam.teamDivision.id}).then(response => {
-		
-		$scope.teams = response.data.teams;
-		$scope.players = response.data.players;
-		
-		$scope.updateDraft();
-		
-		$scope.isLoading = false;
-		
-	}, error => {
-		$scope.showMessage("error", "There was an error loading draft");
-		console.warn("Warning", error);
-		$location.path("/standings");
-	});
+	$scope.teams = [];
+	$scope.players = [];
+	$scope.draftPicks = [];
 	
-	$scope.updateDraft = () => {
-		$scope.rounds = Math.ceil($scope.players.length / $scope.teams.length);
-		$scope.teams = $scope.teams.map(team => ({
-			...team,
-			picks: team.draftRound ?
-				new Array($scope.rounds)
+	$scope.refreshDraft = () => {
+		$http({url: "/draft/load?divisionid=" + $rootScope.managedTeam.teamDivision.id}).then(response => {
+			
+			const teams = response.data.teams;
+			const players = response.data.players;
+			
+			// Update existing players
+			$scope.players
+				.forEach(existingPlayer => {
+					const updatePlayer = players.find(newPlayer => existingPlayer.id == newPlayer.id && ((existingPlayer.draftPick !== newPlayer.draftPick) || (newPlayer.draftPick && !existingPlayer.draftTeam)));
+					
+					if (updatePlayer) {
+						existingPlayer.draftPick = updatePlayer.draftPick;
+						existingPlayer.draftTeam = $scope.teams.find(team => team.picks.some(pick => pick.player && pick.player.id == existingPlayer.id));
+					}
+				});
+			
+			// Add new players
+			$scope.players = $scope.players.concat(
+				players
+					.filter(newPlayer => !$scope.players.some(existingPlayer => existingPlayer.id == newPlayer.id))
+					.map(newPlayer => ({
+						...newPlayer,
+						draftTeam: $scope.teams.find(team => team.picks.some(pick => pick.player && pick.player.id == newPlayer.id)),
+						prev: newPlayer.prev.sort((seasonA, seasonB) => 
+							seasonA.year > seasonB.year ? -1 :
+								seasonA.year < seasonB.year ? 1 :
+									seasonA.season > seasonB.season ? -1 :
+										seasonA.season < seasonB.season ? 1 :
+											-1
+						)
+					}))
+				);
+			
+			// Update existing teams
+			const updateTeams = $scope.teams.filter(existingTeam => teams.some(newTeam => newTeam.id == existingTeam.id && newTeam.draftRound != existingTeam.draftRound));
+			updateTeams.forEach(existingTeam => {
+				const newTeam = teams.find(newTeam => newTeam.id == existingTeam.id && newTeam.draftRound != existingTeam.draftRound);
+				existingTeam.draftRound = newTeam.draftRound;
+				
+				existingTeam.picks = new Array( Math.ceil(players.length / teams.length) )
 					.fill({ })
 					.map((object, index) => {
 						const pick = index % 2 == 0 ? // Check for forward or backwork looking
-							(index * $scope.teams.length) + team.draftRound : // current round * number of picks in each round + current position looking forward
-							(index * $scope.teams.length) + 1 + ($scope.teams.length - team.draftRound); // current round * number of picks in each round + 1 for 0 index + number of picks in each round - current position to get backward looking
+								(index * teams.length) + newTeam.draftRound : // current round * number of picks in each round + current position looking forward
+								(index * teams.length) + 1 + (teams.length - newTeam.draftRound), // current round * number of picks in each round + 1 for 0 index + number of picks in each round - current position to get backward looking
+							pickPlayer = players.find(player => player.draftPick === pick);
 							
 						return {
 							pick: pick,
-							player: $scope.players.find(player => player.draftPick === pick)
+							round: index + 1,
+							roundPick: Math.ceil(pick / teams.length),
+							player: pickPlayer,
+							checkNumber: pickPlayer ? pickPlayer.draftNumber : null,
+							team: newTeam
 						};
-					})
-				: {}
-		}));
+					});
+			});
+			
+			// Update Team Picks
+			$scope.teams
+				.flatMap(team => team.picks)
+				.forEach(existingPick => {
+					const pickPlayer = players.find(player => player.draftPick == existingPick.pick);
+					
+					if (
+						(existingPick.player && pickPlayer && existingPick.player.id != pickPlayer.id) ||
+						(!existingPick.player && pickPlayer) ||
+						(existingPick.player && !pickPlayer)
+						) {
+						existingPick.player = pickPlayer;
+						existingPick.checkNumber = pickPlayer ? pickPlayer.draftNumber : null;
+					}
+				});
+			
+			// Add Teams
+			$scope.teams = $scope.teams.concat(
+				teams
+					.filter(newTeam => !$scope.teams.some(existingTeam => existingTeam.id == newTeam.id))
+					.map(newTeam => ({
+						...newTeam,
+						picks: newTeam.draftRound ?
+								new Array( Math.ceil(players.length / teams.length) )
+									.fill({ })
+									.map((object, index) => {
+										const pick = index % 2 == 0 ? // Check for forward or backwork looking
+												(index * teams.length) + newTeam.draftRound : // current round * number of picks in each round + current position looking forward
+												(index * teams.length) + 1 + (teams.length - newTeam.draftRound), // current round * number of picks in each round + 1 for 0 index + number of picks in each round - current position to get backward looking
+											pickPlayer = players.find(player => player.draftPick === pick);
+											
+										return {
+											pick: pick,
+											round: index + 1,
+											roundPick: Math.ceil(pick / teams.length),
+											player: pickPlayer,
+											checkNumber: pickPlayer ? pickPlayer.draftNumber : null,
+											team: newTeam
+										};
+									})
+								: []
+					}))
+				);
+			
+			const allPicks = $scope.teams.flatMap(team => team.picks);
+			
+			// Add draft picks
+			$scope.draftPicks = $scope.draftPicks.concat(allPicks.filter(newPick => !$scope.draftPicks.some(existingPick => existingPick.pick == newPick.pick)));
+			
+			$scope.isLoading = false;
+			
+		}, error => {
+			console.warn("Warning", error);
+		});
 	};
+	
+	$scope.refreshDraft();
+	const refreshInterval = setInterval($scope.refreshDraft, 6000);
 	
 	$scope.updateRound = (team) => {
 		team.roundError = false;
@@ -1024,11 +1111,43 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 		if (team.draftRound == "") {
 			team.draftRound = null;
 		}
-		else if (team.draftRound < 0 || team.draftRound > $scope.teams.length || $scope.teams.some(lookupTeam => lookupTeam.id != team.id && lookupTeam.draftRound === team.draftRound)) {
+		else if (team.draftRound < 0 || team.draftRound > $scope.teams.length) {
 			team.roundError = true;
 		}
 		
+		if ($scope.teams.some(lookupTeam => lookupTeam.id != team.id && lookupTeam.draftRound === team.draftRound)) {
+			const updateTeam = $scope.teams.find(lookupTeam => lookupTeam.id != team.id && lookupTeam.draftRound === team.draftRound);
+			updateTeam.draftRound = null;
+			updateTeam.picks = [];
+			
+			$http({url: "/data/team", method: "post", data: { team: updateTeam }}).then(response => {
+				//$scope.showMessage("info", "Team updated round - " + updateTeam.coach + " - " + updateTeam.draftRound);
+			}, error => {
+				$scope.showMessage("error", "There was an error updating team round - " + updateTeam.coach + " - " + updateTeam.draftRound);
+				console.warn("Warning", error);
+			});
+		}
+		
 		if (!team.roundError) {
+			
+			team.picks = new Array( Math.ceil($scope.players.length / $scope.teams.length) )
+				.fill({ })
+				.map((object, index) => {
+					const pick = index % 2 == 0 ? // Check for forward or backwork looking
+							(index * $scope.teams.length) + team.draftRound : // current round * number of picks in each round + current position looking forward
+							(index * $scope.teams.length) + 1 + ($scope.teams.length - team.draftRound), // current round * number of picks in each round + 1 for 0 index + number of picks in each round - current position to get backward looking
+						pickPlayer = $scope.players.find(player => player.draftPick === pick);
+						
+					return {
+						pick: pick,
+						round: index + 1,
+						roundPick: Math.ceil(pick / $scope.teams.length),
+						player: pickPlayer,
+						checkNumber: pickPlayer ? pickPlayer.draftNumber : null,
+						team: team
+					};
+				});
+					
 			$http({url: "/data/team", method: "post", data: { team: team }}).then(response => {
 				$scope.showMessage("info", "Team updated round - " + team.coach + " - " + team.draftRound);
 			}, error => {
@@ -1049,33 +1168,60 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 	};
 	
 	$scope.selectPlayer = pick => {
+		if (pick.player) {
+			// Remove pick of previous player
+			const prevPick = pick.player;
+			prevPick.draftPick = null;
+			pick.player = null;
+			
+			$http({url: "/data/player", method: "post", data: {player: prevPick} }).then(response => {
+				$scope.showMessage("info", "Removed player " + prevPick.firstName + " " + prevPick.lastName);
+			}, error => {
+				$scope.showMessage("error", "There was an error removing player " + prevPick.firstName + " " + prevPick.lastName);
+				console.warn("Warning", error);
+			});
+		}
+		
 		pick.checkPlayer = $scope.players.find(player => player.draftNumber == pick.checkNumber);
 		pick.confirm = pick.checkPlayer ? true : false;
 		
-		if (pick.checkPlayer.draftPick) {
+		if (pick.checkPlayer && pick.checkPlayer.draftPick !== null) {
 			const pickTeam = $scope.teams.find(team => team.picks.some(teamPick => teamPick.player && teamPick.player.id == pick.checkPlayer.id));
-			const pickTaken = pickTeam.picks.find(teamPick => teamPick.player && teamPick.player.id == pick.checkPlayer.id);
 			
-			pick.existingTeamError = "Pick " + pickTaken.pick + " from " + pickTeam.coach;
+			if (!pickTeam) {
+				pick.existingTeamError = "Already picked #" + pick.checkPlayer.draftPick;
+			}
+			else {
+				const pickTaken = pickTeam.picks.find(teamPick => teamPick.player && teamPick.player.id == pick.checkPlayer.id);
+				pick.existingTeamError = "Pick " + pickTaken.pick + " from " + pickTeam.coach;
+			}
 		}
 	};
 	
 	$scope.confirmPlayer = pick => {
-		if (pick.player) {
-			pick.player.draftPick = null;
-		}
-		
 		if (pick.checkPlayer.draftPick) {
-			const prevTeam = $scope.teams.find(team => team.picks.some(teamPick => teamPick.player && teamPick.player.id == pick.checkPlayer.id));
-			const prevPick = prevTeam.picks.find(teamPick => teamPick.player && teamPick.player.id == pick.checkPlayer.id);
+			const prevPick = $scope.teams
+				.flatMap(team => team.picks)
+				.find(teamPick => teamPick.player && teamPick.player.id == pick.checkPlayer.id);
 			
-			prevPick.player = null;
-			prevPick.checkNumber = null;
-			prevPick.checkPlayer = null;
+			if (prevPick) {
+				prevPick.player = null;
+				prevPick.checkNumber = null;
+				prevPick.checkPlayer = null;
+			}
 		}
 		
+		// Update pick
 		pick.checkPlayer.draftPick = pick.pick;
 		pick.player = pick.checkPlayer;
+		
+		$http({url: "/data/player", method: "post", data: {player: pick.player} }).then(response => {
+			$scope.showMessage("info", "Updated pick player " + (pick.player ? pick.player.firstName : "") + " " + (pick.player ? pick.player.lastName : ""));
+		}, error => {
+			$scope.showMessage("error", "There was an error updating pick player " + (pick.player ? pick.player.firstName : "") + " " + (pick.player ? pick.player.lastName : ""));
+			console.warn("Warning", error);
+		});
+		
 		pick.checkPlayer = null;
 		pick.confirm = false;
 	};

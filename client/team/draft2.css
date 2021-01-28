@@ -2,10 +2,15 @@
 	flex: 1;
 	display: flex;
 	flex-direction: column;
+	min-height: 0;
 }
 
 .error {
 	color: rgb(255 0 0);
+}
+
+.draftPage .draftAlternate {
+	background-color: rgb(230, 230, 230);
 }
 
 .draftPage input {
@@ -27,6 +32,8 @@
 	flex: 1;
 	display: flex;
 	flex-direction: column;
+	margin-bottom: 50px;
+	height: 0;
 }
 
 .team {
@@ -39,12 +46,17 @@
 	display: flex;
 	align-items: center;
 	height: 55px;
-	cursor: pointer;
 }
 
 .teamAction {
 	width: 40px;
 	margin-left: 10px;
+}
+
+.teamAction svg {
+	width: 24px;
+	height: 24px;
+	cursor: pointer;
 }
 
 .teamName {
@@ -76,15 +88,11 @@
 	width: 40px;
 }
 
-.teamAction svg {
-	width: 24px;
-	height: 24px;
-}
-
 .teamPicks {
 	padding: 5px 15px;
 	display: flex;
 	flex-direction: column;
+	min-height: 0;
 }
 
 .teamPick {
@@ -93,6 +101,7 @@
 	padding: 5px;
 	display: flex;
 	justify-content: space-between;
+	height: 35px;
 }
 
 .roundNumber {
@@ -116,13 +125,112 @@
 }
 
 .pickAction svg {
-	width: 24px;
+	width: 18px;
+	height: 18px;
 	margin-left: 15px;
 	cursor: pointer;
 }
 
+.draftPage Table {
+	border-collapse: collapse;
+}
+
+.draftPage tr:focus {
+	outline: none;
+}
+
+.playerTable tr {
+	cursor: pointer;
+}
+
+.draftPage th {
+	text-align: left;
+	border-bottom: solid 2px rgb(170,170,170);
+}
+
+.draftPage td {
+	border-bottom: solid 1px rgb(200,200,200);
+}
+
+.draftPage th, .draftPage td {
+	font-size: .8em;
+	padding: 0px 8px;
+	height: 45px;
+}
+
+.playerTable th {
+	font-weight: normal;
+}
+
+.playerTable .draftSorted {
+	font-weight: bold;
+}
+
+.playerTable td:nth-child(2) {
+	width: 60px;
+}
+
+.playerTable td:nth-child(6) {
+	color: rgb(150,150,150);
+	font-size: 0.65em;
+}
+
+.playerTable .draftProtected {
+	color: rgb(150,150,150);
+}
+
+.playerTable .draftAvailable {
+	color: rgb(0, 125, 0);
+	font-weight: bold;
+}
+
+.playerTable .draftPicked {
+	text-decoration: line-through;
+	color: rgb(150,150,150);
+}
+
+.playerTable svg {
+	width: 15px;
+	height: 15px;
+	vertical-align: sub;
+}
+
+.playerStats {
+	margin: 11px auto;
+}
+
+.playerStats th, .playerStats td {
+	padding: 0px 6px;
+	height: 0;
+}
+
+.playerStats td:nth-child(6) {
+	color: rgb(0 0 0);
+	font-size: .8em;
+}
+
+.positive {
+	fill: rgb(0,128,0);
+	color: rgb(0,128,0);
+}
+
+.negative {
+	fill: rgb(255,0,0);
+	color: rgb(255,0,0);
+}
+
+.draftTable td:nth-child(4) input {
+	width: 50px;
+	font-size: 15px;
+}
+
 .draftNav {
 	display: flex;
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background-color: rgb(250,250,250);
 }
 
 .draftNavItem {
@@ -131,7 +239,12 @@
 	justify-content: center;
 }
 
+.draftNavItem svg:focus {
+	outline: none;
+}
+
 .draftNavItem svg {
 	width: 36px;
 	height: 36px;
+	cursor: pointer;
 }
