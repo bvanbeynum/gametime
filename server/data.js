@@ -164,7 +164,7 @@ module.exports = function (app) {
 							season: playerDb.playerDivision.season
 						}: null,
 						division: playerDb.division,
-						team: (playerDb.team) ? { id: playerDb.team.id, name: playerDb.team.name } : null,
+						team: (playerDb.team) ? { id: playerDb.team.id, name: playerDb.team.name, coach: playerDb.team.coach } : null,
 						
 						draftNumber: playerDb.draftNumber,
 						draftRound: playerDb.draftRound,
@@ -256,7 +256,7 @@ module.exports = function (app) {
 						season: playerSave.playerDivision.season ? playerSave.playerDivision.season : playerDb.playerDivision.season
 					} : playerDb.playerDivision;
 					playerDb.division = playerSave.division ? playerSave.division : playerDb.division;
-					playerDb.team = (playerSave.team) ? { id: playerSave.team.id, name: playerSave.team.name } : playerDb.team;
+					playerDb.team = (playerSave.team) ? { id: playerSave.team.id, name: playerSave.team.name, coach: playerSave.team.coach } : playerDb.team;
 					
 					playerDb.draftNumber = playerSave.draftNumber ? playerSave.draftNumber : playerDb.draftNumber;
 					playerDb.draftRound = playerSave.draftRound ? playerSave.draftRound : playerDb.draftRound;
@@ -317,7 +317,7 @@ module.exports = function (app) {
 					season: playerSave.playerDivision.season
 				} : null,
 				division: playerSave.division,
-				team: (playerSave.team) ? { id: playerSave.team.id, name: playerSave.team.name } : null,
+				team: (playerSave.team) ? { id: playerSave.team.id, name: playerSave.team.name, coach: playerSave.team.coach } : null,
 				
 				draftNumber: playerSave.draftNumber,
 				draftRound: playerSave.draftRound,

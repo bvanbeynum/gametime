@@ -64,7 +64,8 @@ module.exports = {
 		division: String,
 		team: {
 			id: String,
-			name: String
+			name: String,
+			coach: String
 		},
 		draftRound: Number,
 		draftRank: Number,
