@@ -1147,8 +1147,13 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 						team: team
 					};
 				});
-					
-			$http({url: "/data/team", method: "post", data: { team: team }}).then(response => {
+			
+			const teamPost = {
+				...team,
+				picks: []
+			};
+			
+			$http({url: "/data/team", method: "post", data: { team: teamPost }}).then(response => {
 				$scope.showMessage("info", "Team updated round - " + team.coach + " - " + team.draftRound);
 			}, error => {
 				$scope.showMessage("error", "There was an error updating team round - " + team.coach + " - " + team.draftRound);
