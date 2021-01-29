@@ -1010,6 +1010,7 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 					.filter(newPlayer => !$scope.players.some(existingPlayer => existingPlayer.id == newPlayer.id))
 					.map(newPlayer => ({
 						...newPlayer,
+						age: new Date(Date.now() - (new Date(newPlayer.dateOfBirth)).getTime()).getFullYear() - 1970,
 						draftTeam: $scope.teams.find(team => team.picks.some(pick => pick.player && pick.player.id == newPlayer.id)),
 						prev: newPlayer.prev.sort((seasonA, seasonB) => 
 							seasonA.year > seasonB.year ? -1 :

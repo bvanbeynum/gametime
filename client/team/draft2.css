@@ -219,6 +219,11 @@
 	color: rgb(255,0,0);
 }
 
+.warn {
+	fill: rgb(234 169 41);
+	color: rgb(234 169 41);
+}
+
 .draftTable td:nth-child(4) input {
 	width: 50px;
 	font-size: 15px;
