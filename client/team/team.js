@@ -1179,7 +1179,12 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 			prevPick.draftPick = null;
 			pick.player = null;
 			
-			$http({url: "/data/player", method: "post", data: {player: prevPick} }).then(response => {
+			const playerSave = {
+				...prevPick,
+				draftTeam: null
+			};
+			
+			$http({url: "/data/player", method: "post", data: {player: playerSave} }).then(response => {
 				$scope.showMessage("info", "Removed player " + prevPick.firstName + " " + prevPick.lastName);
 			}, error => {
 				$scope.showMessage("error", "There was an error removing player " + prevPick.firstName + " " + prevPick.lastName);
@@ -1220,7 +1225,12 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 		pick.checkPlayer.draftPick = pick.pick;
 		pick.player = pick.checkPlayer;
 		
-		$http({url: "/data/player", method: "post", data: {player: pick.player} }).then(response => {
+		const playerSave = {
+			...pick.player,
+			draftTeam: null
+		};
+		
+		$http({url: "/data/player", method: "post", data: {player: playerSave} }).then(response => {
 			$scope.showMessage("info", "Updated pick player " + (pick.player ? pick.player.firstName : "") + " " + (pick.player ? pick.player.lastName : ""));
 		}, error => {
 			$scope.showMessage("error", "There was an error updating pick player " + (pick.player ? pick.player.firstName : "") + " " + (pick.player ? pick.player.lastName : ""));
