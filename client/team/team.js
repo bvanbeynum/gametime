@@ -972,7 +972,7 @@ teamApp.controller("draftCtl", function($rootScope, $scope, $http, $location) {
 	
 });
 
-teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
+teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location, $window) {
 	if (!$rootScope.managedTeam) {
 		$location.path("/");
 		return;
@@ -980,14 +980,22 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 	
 	log.draft = $scope;
 	$scope.isLoading = true;
+	$scope.isRefresh = false;
 	$scope.page = "teams";
 	$scope.playerSort = "brettRank";
+	$scope.pages = [
+		{ page: "teams", scroll: 0, isSelected: true },
+		{ page: "players", scroll: 0, isSelected: false },
+		{ page: "draft", scroll: 0, isSelected: false }
+		];
 	
 	$scope.teams = [];
 	$scope.players = [];
 	$scope.draftPicks = [];
 	
 	$scope.refreshDraft = () => {
+		$scope.isRefresh = true;
+		
 		$http({url: "/draft/load?divisionid=" + $rootScope.managedTeam.teamDivision.id}).then(response => {
 			
 			const teams = response.data.teams;
@@ -1023,28 +1031,33 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 				);
 			
 			// Update existing teams
-			const updateTeams = $scope.teams.filter(existingTeam => teams.some(newTeam => newTeam.id == existingTeam.id && newTeam.draftRound != existingTeam.draftRound));
-			updateTeams.forEach(existingTeam => {
-				const newTeam = teams.find(newTeam => newTeam.id == existingTeam.id && newTeam.draftRound != existingTeam.draftRound);
-				existingTeam.draftRound = newTeam.draftRound;
+			$scope.teams.forEach(existingTeam => {
+				const updateTeam = teams.find(newTeam => existingTeam.id == newTeam.id && newTeam.draftRound != existingTeam.draftRound);
 				
-				existingTeam.picks = new Array( Math.ceil(players.length / teams.length) )
-					.fill({ })
-					.map((object, index) => {
-						const pick = index % 2 == 0 ? // Check for forward or backwork looking
-								(index * teams.length) + newTeam.draftRound : // current round * number of picks in each round + current position looking forward
-								(index * teams.length) + 1 + (teams.length - newTeam.draftRound), // current round * number of picks in each round + 1 for 0 index + number of picks in each round - current position to get backward looking
-							pickPlayer = players.find(player => player.draftPick === pick);
-							
-						return {
-							pick: pick,
-							round: index + 1,
-							roundPick: Math.ceil(pick / teams.length),
-							player: pickPlayer,
-							checkNumber: pickPlayer ? pickPlayer.draftNumber : null,
-							team: newTeam
-						};
-					});
+				if (existingTeam.isDirty) {
+					existingTeam.isDirty = false;
+				}
+				else if (updateTeam) {
+					existingTeam.draftRound = updateTeam.draftRound;
+					
+					existingTeam.picks = new Array( Math.ceil(players.length / teams.length) )
+						.fill({ })
+						.map((object, index) => {
+							const pick = index % 2 == 0 ? // Check for forward or backwork looking
+									(index * teams.length) + updateTeam.draftRound : // current round * number of picks in each round + current position looking forward
+									(index * teams.length) + 1 + (teams.length - updateTeam.draftRound), // current round * number of picks in each round + 1 for 0 index + number of picks in each round - current position to get backward looking
+								pickPlayer = players.find(player => player.draftPick === pick);
+								
+							return {
+								pick: pick,
+								round: index + 1,
+								roundPick: Math.ceil(pick / teams.length),
+								player: pickPlayer,
+								checkNumber: pickPlayer ? pickPlayer.draftNumber : null,
+								team: updateTeam
+							};
+						});
+				}
 			});
 			
 			// Update Team Picks
@@ -1053,7 +1066,10 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 				.forEach(existingPick => {
 					const pickPlayer = players.find(player => player.draftPick == existingPick.pick);
 					
-					if (
+					if (existingPick.isDirty) {
+						existingPick.isDirty = false;
+					}
+					else if (
 						(existingPick.player && pickPlayer && existingPick.player.id != pickPlayer.id) ||
 						(!existingPick.player && pickPlayer) ||
 						(existingPick.player && !pickPlayer)
@@ -1077,7 +1093,7 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 												(index * teams.length) + newTeam.draftRound : // current round * number of picks in each round + current position looking forward
 												(index * teams.length) + 1 + (teams.length - newTeam.draftRound), // current round * number of picks in each round + 1 for 0 index + number of picks in each round - current position to get backward looking
 											pickPlayer = players.find(player => player.draftPick === pick);
-											
+										
 										return {
 											pick: pick,
 											round: index + 1,
@@ -1096,9 +1112,11 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 			// Add draft picks
 			$scope.draftPicks = $scope.draftPicks.concat(allPicks.filter(newPick => !$scope.draftPicks.some(existingPick => existingPick.pick == newPick.pick)));
 			
+			$scope.isRefresh = false;
 			$scope.isLoading = false;
 			
 		}, error => {
+			$scope.isRefresh = false;
 			console.warn("Warning", error);
 		});
 	};
@@ -1120,6 +1138,7 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 			const updateTeam = $scope.teams.find(lookupTeam => lookupTeam.id != team.id && lookupTeam.draftRound === team.draftRound);
 			updateTeam.draftRound = null;
 			updateTeam.picks = [];
+			updateTeam.isDirty = true;
 			
 			$http({url: "/data/team", method: "post", data: { team: updateTeam }}).then(response => {
 				//$scope.showMessage("info", "Team updated round - " + updateTeam.coach + " - " + updateTeam.draftRound);
@@ -1129,7 +1148,7 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 			});
 		}
 		
-		if (!team.roundError) {
+		if (!team.roundError && team.draftRound) {
 			
 			team.picks = new Array( Math.ceil($scope.players.length / $scope.teams.length) )
 				.fill({ })
@@ -1138,7 +1157,7 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 							(index * $scope.teams.length) + team.draftRound : // current round * number of picks in each round + current position looking forward
 							(index * $scope.teams.length) + 1 + ($scope.teams.length - team.draftRound), // current round * number of picks in each round + 1 for 0 index + number of picks in each round - current position to get backward looking
 						pickPlayer = $scope.players.find(player => player.draftPick === pick);
-						
+					
 					return {
 						pick: pick,
 						round: index + 1,
@@ -1148,6 +1167,10 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 						team: team
 					};
 				});
+		}
+		
+		if (!team.roundError) {
+			team.isDirty = true;
 			
 			const teamPost = {
 				...team,
@@ -1179,6 +1202,7 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 			const prevPick = pick.player;
 			prevPick.draftPick = null;
 			pick.player = null;
+			pick.isDirty = true;
 			
 			const playerSave = {
 				...prevPick,
@@ -1225,6 +1249,7 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 		// Update pick
 		pick.checkPlayer.draftPick = pick.pick;
 		pick.player = pick.checkPlayer;
+		pick.isDirty = true;
 		
 		const playerSave = {
 			...pick.player,
@@ -1246,6 +1271,18 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location) {
 		pick.checkPlayer = null;
 		pick.confirm = false;
 		pick.checkNumber = null;
+	};
+	
+	$scope.changePage = selectedPage => {
+		$scope.pages.forEach(page => {
+			if (page.page == selectedPage) {
+				page.isSelected = true;
+			}
+			else {
+				page.isSelected = false;
+			}
+		});
+		window.scrollTo(0,0);
 	};
 	
 });
