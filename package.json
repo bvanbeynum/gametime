@@ -6,9 +6,8 @@
   "repository": "",
   "author": "Brett van Beynum <maildrop444@gmail.com>",
   "dependencies": {
-    "body-parser": "^1.17.2",
-    "cookie-parser": "^1.4.3",
     "connect-busboy": "0.0.2",
+    "cookie-parser": "^1.4.3",
     "express": "^4.17.1",
     "mongoose": "^5.7.5",
     "nodemailer": "^4.6.8",
