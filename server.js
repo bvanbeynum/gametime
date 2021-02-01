@@ -24,7 +24,7 @@ else {
 app.set("x-powered-by", false);
 app.set("root", __dirname);
 
-app.use(cookieParser());
+//app.use(cookieParser());
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json({limit: "50mb"}));
