@@ -141,6 +141,7 @@
 
 .playerTable tr {
 	cursor: pointer;
+	vertical-align: top;
 }
 
 .draftPage th {
@@ -154,8 +155,7 @@
 
 .draftPage th, .draftPage td {
 	font-size: .8em;
-	padding: 0px 8px;
-	height: 45px;
+	padding: 10px 8px;
 }
 
 .playerTable th {
@@ -166,8 +166,14 @@
 	font-weight: bold;
 }
 
-.playerTable td:nth-child(2) {
-	width: 60px;
+.playerTable th:nth-child(2), .playerTable td:nth-child(2) {
+	width: 40px;
+	text-align: center;
+}
+
+.playerTable th:nth-child(3), .playerTable td:nth-child(3) {
+	width: 40px;
+	text-align: center;
 }
 
 .playerTable td:nth-child(6) {
@@ -197,6 +203,7 @@
 
 .playerStats {
 	margin: 11px auto;
+	width: 98%;
 }
 
 .playerStats th, .playerStats td {

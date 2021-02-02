@@ -91,6 +91,7 @@ module.exports = {
 		recCatching: Number,
 		throwing: Number,
 		catching: Number,
+		evalCatch: Number,
 		running: Number,
 		runTime: Number,
 		height: Number,

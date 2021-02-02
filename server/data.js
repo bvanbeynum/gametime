@@ -190,6 +190,7 @@ module.exports = function (app) {
 						recCatching: playerDb.recCatching,
 						throwing: playerDb.throwing,
 						catching: playerDb.catching,
+						evalCatch: playerDb.evalCatch,
 						running: playerDb.running,
 						runTime: playerDb.runTime,
 						height: playerDb.height,
@@ -282,6 +283,7 @@ module.exports = function (app) {
 					playerDb.recCatching = playerSave.recCatching ? playerSave.recCatching : playerDb.recCatching;
 					playerDb.throwing = playerSave.throwing ? playerSave.throwing : playerDb.throwing;
 					playerDb.catching = playerSave.catching ? playerSave.catching : playerDb.catching;
+					playerDb.evalCatch = playerSave.evalCatch ? playerSave.evalCatch : playerDb.evalCatch;
 					playerDb.running = playerSave.running ? playerSave.running : playerDb.running;
 					playerDb.runTime = playerSave.runTime ? playerSave.runTime : playerDb.runTime;
 					playerDb.height = playerSave.height || playerSave.height === "" ? playerSave.height || null : playerDb.height;
@@ -343,6 +345,7 @@ module.exports = function (app) {
 				recCatching: playerSave.recCatching,
 				throwing: playerSave.throwing,
 				catching: playerSave.catching,
+				evalCatch: playerSave.evalCatch,
 				running: playerSave.running,
 				runTime: playerSave.runTime,
 				height: playerSave.height,

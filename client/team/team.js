@@ -581,6 +581,7 @@ teamApp.controller("evaluationCtl", function($rootScope, $scope, $http, $locatio
 			
 			$scope.players.forEach(player => {
 				if (player.height
+					|| player.evalCatch
 					|| player.route
 					|| player.speed
 					|| player.hands
@@ -623,6 +624,7 @@ teamApp.controller("evaluationCtl", function($rootScope, $scope, $http, $locatio
 			$http({ url: "/api/eval/savePlayer", method: "post", data: { player: $scope.popup.player } })
 				.then(response => {
 					if ($scope.popup.player.height
+						|| $scope.popup.player.evalCatch
 						|| $scope.popup.player.route
 						|| $scope.popup.player.speed
 						|| $scope.popup.player.hands
@@ -651,6 +653,7 @@ teamApp.controller("evaluationCtl", function($rootScope, $scope, $http, $locatio
 	$scope.clearPlayer = () => {
 		if ($scope.popup.player) {
 			$scope.popup.player.height = null;
+			$scope.popup.player.evalCatch = null;
 			$scope.popup.player.route = null;
 			$scope.popup.player.speed = null;
 			$scope.popup.player.hands = null;
@@ -1683,6 +1686,10 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 			break;
 
 		case "/evaluation":
+			$location.path("/standings");
+			break;
+			
+		case "/draft2":
 			$location.path("/standings");
 			break;
 			

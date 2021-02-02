@@ -1,7 +1,7 @@
 <link rel="stylesheet" type="text/css" href="/team/evaluation.css">
 
 <div class="playerPopup" ng-class="{ 'active': popup.active }">
-	<div class="header">
+	<div class="popupheader">
 		<h2 class="label">{{popup.player.draftNumber}}: {{popup.player.firstName}} {{popup.player.lastName}}</h2>
 		
 		<div ng-click="closePlayer()" class="button">
@@ -19,12 +19,34 @@
 	</div>
 	
 	<div class="container">
+		
+		<h2 class="label">Draft</h2>
+		
+		<div class="dataContainer">
+			<div class="boxItem" ng-click="popup.player.draftBlock = !popup.player.draftBlock" ng-class="{'selected': popup.player.draftBlock }">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>
+			</div>
+			<div class="boxItem" ng-click="popup.player.draftWatch = !popup.player.draftWatch" ng-class="{'selected': popup.player.draftWatch }">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px"><path d="M24 24H0V0h24v24z" fill="none"/><path d="M2 20h2c.55 0 1-.45 1-1v-9c0-.55-.45-1-1-1H2v11zm19.83-7.12c.11-.25.17-.52.17-.8V11c0-1.1-.9-2-2-2h-5.5l.92-4.65c.05-.22.02-.46-.08-.66-.23-.45-.52-.86-.88-1.22L14 2 7.59 8.41C7.21 8.79 7 9.3 7 9.83v7.84C7 18.95 8.05 20 9.34 20h8.11c.7 0 1.36-.37 1.72-.97l2.66-6.15z"/></svg>
+			</div>
+		</div>
+		
 		<h2 class="label">Height</h2>
 		
 		<div class="dataContainer">
 			<div class="boxItem small" ng-click="popup.player.height = 1" ng-class="{'selected': popup.player.height == 1}">S</div>
 			<div class="boxItem medium" ng-click="popup.player.height = 2" ng-class="{'selected': popup.player.height == 2}">M</div>
 			<div class="boxItem tall" ng-click="popup.player.height = 3" ng-class="{'selected': popup.player.height == 3}">T</div>
+		</div>
+		
+		<h2 class="label">Catch</h2>
+		
+		<div class="dataContainer">
+			<div class="boxItem" ng-click="popup.player.evalCatch = 1" ng-class="{'selected': popup.player.evalCatch == 1}">1</div>
+			<div class="boxItem" ng-click="popup.player.evalCatch = 2" ng-class="{'selected': popup.player.evalCatch == 2}">2</div>
+			<div class="boxItem" ng-click="popup.player.evalCatch = 3" ng-class="{'selected': popup.player.evalCatch == 3}">3</div>
+			<div class="boxItem" ng-click="popup.player.evalCatch = 4" ng-class="{'selected': popup.player.evalCatch == 4}">4</div>
+			<div class="boxItem" ng-click="popup.player.evalCatch = 5" ng-class="{'selected': popup.player.evalCatch == 5}">5</div>
 		</div>
 		
 		<h2 class="label">Route</h2>
@@ -52,17 +74,6 @@
 			</div>
 		</div>
 		
-		<h2 class="label">Draft</h2>
-		
-		<div class="dataContainer">
-			<div class="boxItem" ng-click="popup.player.draftBlock = !popup.player.draftBlock" ng-class="{'selected': popup.player.draftBlock }">
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>
-			</div>
-			<div class="boxItem" ng-click="popup.player.draftWatch = !popup.player.draftWatch" ng-class="{'selected': popup.player.draftWatch }">
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px"><path d="M24 24H0V0h24v24z" fill="none"/><path d="M2 20h2c.55 0 1-.45 1-1v-9c0-.55-.45-1-1-1H2v11zm19.83-7.12c.11-.25.17-.52.17-.8V11c0-1.1-.9-2-2-2h-5.5l.92-4.65c.05-.22.02-.46-.08-.66-.23-.45-.52-.86-.88-1.22L14 2 7.59 8.41C7.21 8.79 7 9.3 7 9.83v7.84C7 18.95 8.05 20 9.34 20h8.11c.7 0 1.36-.37 1.72-.97l2.66-6.15z"/></svg>
-			</div>
-		</div>
-		
 	</div>
 </div>
 
@@ -74,7 +85,7 @@
 
 <div ng-show="!isLoading" class="evalPage">
 	
-	<div ng-repeat="player in players | orderBy: 'draftNumber'" class="playerContainer" ng-class="[{'protected': player.coachProtect }, {'completed': player.completed }]" ng-click="selectPlayer(player)">
+	<div ng-repeat="player in players | orderBy: 'draftNumber'" class="playerContainer" ng-class="[{'available': !player.completed }, {'protected': player.coachProtect }, {'completed': player.completed }]" ng-click="selectPlayer(player)">
 		<div class="draftNumber">{{player.draftNumber}}</div>
 		<div class="playerName">{{player.firstName}} {{player.lastName}}</div>
 		<div class="playerName">{{player.coachProtect}}</div>
