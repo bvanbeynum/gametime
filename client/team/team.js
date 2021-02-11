@@ -1223,7 +1223,7 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location, $
 		pick.checkPlayer = $scope.players.find(player => player.draftNumber == pick.checkNumber);
 		pick.confirm = pick.checkPlayer ? true : false;
 		
-		if (pick.checkPlayer && pick.checkPlayer.draftPick !== null) {
+		if (pick.checkPlayer && pick.checkPlayer.draftPick) {
 			const pickTeam = $scope.teams.find(team => team.picks.some(teamPick => teamPick.player && teamPick.player.id == pick.checkPlayer.id));
 			
 			if (!pickTeam) {
