@@ -1223,15 +1223,20 @@ teamApp.controller("draft2Ctl", function($rootScope, $scope, $http, $location, $
 		pick.checkPlayer = $scope.players.find(player => player.draftNumber == pick.checkNumber);
 		pick.confirm = pick.checkPlayer ? true : false;
 		
-		if (pick.checkPlayer && pick.checkPlayer.draftPick) {
-			const pickTeam = $scope.teams.find(team => team.picks.some(teamPick => teamPick.player && teamPick.player.id == pick.checkPlayer.id));
-			
-			if (!pickTeam) {
-				pick.existingTeamError = "Already picked #" + pick.checkPlayer.draftPick;
+		if (pick.checkPlayer) {
+			if (pick.checkPlayer.draftPick) {
+				const pickTeam = $scope.teams.find(team => team.picks.some(teamPick => teamPick.player && teamPick.player.id == pick.checkPlayer.id));
+				
+				if (!pickTeam) {
+					pick.existingTeamError = "Already picked #" + pick.checkPlayer.draftPick;
+				}
+				else {
+					const pickTaken = pickTeam.picks.find(teamPick => teamPick.player && teamPick.player.id == pick.checkPlayer.id);
+					pick.existingTeamError = "Pick " + pickTaken.pick + " from " + pickTeam.coach;
+				}
 			}
 			else {
-				const pickTaken = pickTeam.picks.find(teamPick => teamPick.player && teamPick.player.id == pick.checkPlayer.id);
-				pick.existingTeamError = "Pick " + pickTaken.pick + " from " + pickTeam.coach;
+				pick.existingTeamError = "";
 			}
 		}
 	};
