@@ -370,7 +370,6 @@ teamApp.controller("scheduleCtl", function($rootScope, $scope, $http, $location,
 		}];
 		
 		$scope.popupPlayer.seasons = $scope.popupPlayer.seasons.concat(player.prev
-			.filter(season =>  season.draftRound )
 			.sort(function (season1, season2) {
 				if (season1.playerDivision.year < season2.playerDivision.year) {
 					return 1;
