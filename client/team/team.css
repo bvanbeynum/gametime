@@ -17,6 +17,7 @@ table {
 	display: flex;
 	flex-direction: column;
 	flex: 1;
+	outline: none;
 }
 
 .toolbar {

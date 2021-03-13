@@ -23,6 +23,14 @@ teamApp.config(function($mdThemingProvider, $routeProvider, $locationProvider) {
 		templateUrl: "/team/game.html",
 		controller: "gameCtl"
 	})
+	.when("/playbook", {
+		templateUrl: "/team/playbook.html",
+		controller: "playbookCtl"
+	})
+	.when("/playmaker", {
+		templateUrl: "/team/playmaker.html",
+		controller: "playCtl"
+	})
 	.when("/evaluation", {
 		templateUrl: "/team/evaluation.html",
 		controller: "evaluationCtl"
@@ -560,6 +568,369 @@ teamApp.controller("gameCtl", function($rootScope, $scope, $http, $location, $md
 		$scope.popupPlayer.player = null;
 		$scope.popupPlayer.active = false;
 	};
+	
+});
+
+teamApp.controller("playbookCtl", function($rootScope, $scope, $http, $location) {
+	if (!$rootScope.managedTeam) {
+		$location.path("/");
+		return;
+	}
+	
+	$rootScope.selectedPlay = null;
+	$scope.isLoading = true;
+	log.playBook = $scope;
+	
+	$http({url: "/data/play?divisionid=" + $rootScope.managedTeam.teamDivision.id}).then(function (response) {
+		$scope.plays = response.data.plays;
+		
+		$scope.formations = [...new Set($scope.plays.map(play => play.formation))];
+		
+		$scope.formations = $scope.formations
+			.map(formation => ({
+				formation: formation,
+				plays: $scope.plays
+					.filter(play => play.formation === formation)
+					.sort((playA, playB) => playA.name < playB.name ? -1 : 1)
+			}))
+			.sort((formationA, formationB) => formationA.formation < formationB.formation ? -1 : 1 );
+		
+		$scope.isLoading = false;
+	}, function (error) {
+		$scope.showMessage("error", "There was an error loading");
+		
+		console.log(error);
+		$location.path("/standings");
+	});
+	
+	$scope.openPlay = function (play) {
+		if (play) {
+			$rootScope.selectedPlay = play;
+		}
+		else {
+			$rootScope.selectedPlay = {
+				division: {
+					id: $rootScope.managedTeam.teamDivision.id,
+					name: $rootScope.managedTeam.teamDivision.name,
+					year: $rootScope.managedTeam.teamDivision.year,
+					season: $rootScope.managedTeam.teamDivision.season,
+				},
+				field: "standard",
+				players: []
+			};
+		}
+		
+		$location.path("/playmaker");
+	};
+});
+
+teamApp.controller("playCtl", function($rootScope, $scope, $http, $location) {
+	if (!$rootScope.managedTeam) {
+		$location.path("/");
+		return;
+	}
+	else if (!$rootScope.selectedPlay) {
+		$location.path("/playbook");
+		return;
+	}
+	
+	log.playMaker = $scope;
+	$scope.playData = {
+		...$rootScope.selectedPlay,
+		players: $rootScope.selectedPlay.players.map(player => ({...player, route: player.route || [] }))
+		};
+	
+	$scope.field = "standard";
+	$scope.scrimmageLine = 310;
+	$scope.routes = [];
+	
+	buildRoutes();
+	
+	$scope.addPlayer = () => {
+		$scope.playData.players.push({
+			location: { x: 20, y: 390 },
+			color: "red",
+			routeType: "straight",
+			routeAction: "run",
+			route: []
+			});
+	};
+	
+	$scope.selectPlayer = player => {
+		if ($scope.selected && $scope.selected.player == player) {
+			if ($scope.selected.mode === "move") {
+				$scope.selected.mode = "route";
+			}
+			else {
+				$scope.selected = null;
+			}
+		}
+		else {
+			$scope.selected = { mode: "move", player: player };
+		}
+	};
+	
+	$scope.designerClick = event => {
+		if (event.target && event.target.tagName && event.target.tagName === "svg" && $scope.selected) {
+			
+			let translatePoint = event.target.createSVGPoint();
+			translatePoint.x = event.clientX;
+			translatePoint.y = event.clientY;
+			translatePoint = translatePoint.matrixTransform(event.target.getScreenCTM().inverse());
+			
+			const fieldBox = event.target.viewBox.baseVal;
+			
+			if ($scope.selected.mode === "move") {
+				// Snap to right of player
+				let newX = $scope.playData.players
+					.filter(player =>
+						player != $scope.selected.player &&
+						translatePoint.y > player.location.y - 10 &&
+						translatePoint.y < player.location.y + 10 &&
+						translatePoint.x > player.location.x + 8 && 
+						translatePoint.x < player.location.x + 35
+					)
+					.map(player => player.location.x + 30)[0];
+				
+				// Snap to left of player
+				newX = newX || 
+					$scope.playData.players
+					.filter(player =>
+						player != $scope.selected.player &&
+						translatePoint.y > player.location.y - 10 &&
+						translatePoint.y < player.location.y + 10 &&
+						translatePoint.x < player.location.x - 8 && 
+						translatePoint.x > player.location.x - 35
+					)
+					.map(player => player.location.x - 30)[0];
+				
+				/// Snap to center of player
+				newX = newX || 
+					$scope.playData.players
+					.filter(player =>
+						player != $scope.selected.player &&
+						(translatePoint.y > player.location.y + 10 || translatePoint.y < player.location.y - 10) &&
+						translatePoint.x > player.location.x - 12 && 
+						translatePoint.x < player.location.x + 12
+					)
+					.map(player => player.location.x)[0];
+				
+				// Snap to center of field
+				newX = newX ||
+					(translatePoint.x > (fieldBox.width / 2) - 15 && translatePoint.x < (fieldBox.width / 2) + 15 ? newX = fieldBox.width / 2 : null);
+				
+				$scope.selected.player.location.x = newX || translatePoint.x;
+				
+				// Snap to top of player
+				let newY = $scope.playData.players
+					.filter(player =>
+						player != $scope.selected.player &&
+						translatePoint.x > player.location.x - 10 && 
+						translatePoint.x < player.location.x + 10 &&
+						translatePoint.y < player.location.y - 8 &&
+						translatePoint.y > player.location.y - 35
+					)
+					.map(player => player.location.y - 30)[0];
+				
+				// Snap to bottom of player
+				newY = newY || 
+					$scope.playData.players
+					.filter(player =>
+						player != $scope.selected.player &&
+						translatePoint.x > player.location.x - 10 && 
+						translatePoint.x < player.location.x + 10 &&
+						translatePoint.y > player.location.y + 8 &&
+						translatePoint.y < player.location.y + 35
+					)
+					.map(player => player.location.y + 30)[0];
+				
+				/// Snap to center of player
+				newY = newY || 
+					$scope.playData.players
+					.filter(player =>
+						player != $scope.selected.player &&
+						(translatePoint.x > player.location.x + 10 || translatePoint.x < player.location.x - 10) &&
+						translatePoint.y > player.location.y - 12 && 
+						translatePoint.y < player.location.y + 12
+					)
+					.map(player => player.location.y)[0];
+				
+				// Snap to scrimmage line
+				newY = newY ||
+					(translatePoint.y > $scope.scrimmageLine && translatePoint.y < $scope.scrimmageLine + 20 ? newY = translatePoint.y = $scope.scrimmageLine + 13 : null);
+				
+				$scope.selected.player.location.y = newY || translatePoint.y;
+				
+				$scope.selected.player.route = [];
+				buildRoutes();
+				
+			}
+			else if ($scope.selected.mode === "route") {
+				const lastPoint = $scope.selected.player.route[$scope.selected.player.route.length - 1];
+				
+				// Snap to player center X
+				let newX = !lastPoint &&
+					(translatePoint.y < $scope.selected.player.location.y - 8 || translatePoint.y > $scope.selected.player.location.y + 8) &&
+					translatePoint.x > $scope.selected.player.location.x - 12 &&
+					translatePoint.x < $scope.selected.player.location.x + 12 ? $scope.selected.player.location.x : null;
+				
+				// Snap to the last X point
+				newX = newX || (
+					lastPoint &&
+					(translatePoint.y < lastPoint.y - 8 || translatePoint.y > lastPoint.y + 8) &&
+					translatePoint.x > lastPoint.x - 12 && 
+					translatePoint.x < lastPoint.x + 12 ? lastPoint.x : null);
+				
+				// Snap to player center Y
+				let newY = !lastPoint &&
+					(translatePoint.x < $scope.selected.player.location.x - 8 || translatePoint.x > $scope.selected.player.location.x + 8) &&
+					translatePoint.y > $scope.selected.player.location.y - 12 &&
+					translatePoint.y < $scope.selected.player.location.y + 12 ? $scope.selected.player.location.y : null;
+				
+				// Snap to the last Y point
+				newY = newY || (
+					lastPoint &&
+					(translatePoint.x < lastPoint.x - 8 || translatePoint.x > lastPoint.x + 8) &&
+					translatePoint.y > lastPoint.y - 12 && 
+					translatePoint.y < lastPoint.y + 12 ? lastPoint.y : null);
+				
+				$scope.selected.player.route.push({ 
+					x: newX || translatePoint.x, 
+					y: newY || translatePoint.y
+				});
+				
+				buildRoutes();
+			}
+			
+		}
+	};
+	
+	$scope.changeColor = () => {
+		buildRoutes();
+	};
+	
+	$scope.changeRouteType = () => {
+		switch ($scope.selected.player.routeType) {
+			case "straight":
+				$scope.selected.player.routeType = "curved";
+				break;
+			case "curved":
+				$scope.selected.player.routeType = "run";
+				break;
+			case "run":
+				$scope.selected.player.routeType = "straight";
+				break;
+		}
+		
+		buildRoutes();
+	};
+	
+	$scope.changeRouteAction = () => {
+		switch ($scope.selected.player.routeAction) {
+			case "run":
+				$scope.selected.player.routeAction = "block";
+				break;
+			case "block":
+				$scope.selected.player.routeAction = "run";
+				break;
+		}
+		
+		buildRoutes();
+	};
+	
+	$scope.delete = () => {
+		if ($scope.selected.mode === "move") {
+			$scope.playData.players = $scope.playData.players.filter(player => player != $scope.selected.player);
+			$scope.selected = null;
+		}
+		else {
+			$scope.selected.player.route = [];
+		}
+		
+		buildRoutes();
+	};
+	
+	$scope.savePlay = () => {
+		$http({url: "/data/play", method: "POST", data: { play: $scope.playData }}).then(
+			response => {
+				$scope.playData.id = response.data.playId;
+				$scope.showMessage("info", "Play saved");
+			}, 
+			error => {
+				$scope.showMessage("error", "There was an error saving the play");
+				console.log(error);
+			});
+	};
+	
+	$scope.copyPlay = () => {
+		$rootScope.selectedPlay = {...$scope.playData, id: null, name: null };
+		$scope.playData = $rootScope.selectedPlay;
+		$scope.showMessage("info", "Play copied");
+	};
+	
+	$scope.deletePlay = () => {
+		$http({url: "/data/play?id=" + $scope.playData.id, method: "delete"}).then(
+			response => {
+				$scope.showMessage("info", "Play deleted");
+				$rootScope.selectedPlay = null;
+				$location.path("/playbook");
+			},
+			error => {
+				$scope.showMessage("error", "There was an error deleting the play");
+				console.log(error);
+			});
+	};
+	
+	$scope.cancel = () => {
+		$rootScope.selectedPlay = null;
+		$location.path("/playbook");
+	};
+	
+	function buildRoutes() {
+		$scope.routes = $scope.playData.players
+			.filter(player => player.route.length > 0)
+			.map(player => {
+				let route = "";
+				
+				if (player.routeType === "straight" || player.routeType === "run") {
+					route = player.route.map(point => "L" + point.x + "," + point.y).join(" ");
+				}
+				else if (player.routeType === "curved") {
+					route = player.route.map((point, index, routes) => {
+						let path = "";
+						
+						if (index === 0) {
+							// First curve should be bezier
+							
+							if (Math.abs(point.x - player.location.x) > Math.abs(point.y - player.location.y)) {
+								path = "C" + player.location.x + "," + point.y + " " + 
+									point.x + "," + point.y + " " +
+									point.x + "," + point.y + " ";
+							}
+							else {
+								path = "C" + point.x + "," + player.location.y + " " + 
+									point.x + "," + point.y + " " +
+									point.x + "," + point.y + " ";
+							}
+						}
+						else {
+							// Following paths should be S paths
+							path = "S" +point.x + "," + routes[index - 1].y + " " + point.x + "," + point.y;
+						}
+						
+						return path;
+					}).join(" ");
+				}
+					
+				return {
+					color: player.color,
+					routeType: player.routeType,
+					cap: player.routeAction === "block" ? "block" : "arrow",
+					path: "M" + player.location.x + "," + player.location.y + " " + route
+				};
+			});
+			
+	}
 	
 });
 
@@ -1688,7 +2059,15 @@ teamApp.controller("teamController", function ($rootScope, $scope, $http, $locat
 				$location.path("/standings");
 			}
 			break;
-
+		
+		case "/playbook":
+			$location.path("/standings");
+			break;
+		
+		case "/playmaker":
+			$location.path("/playbook");
+			break;
+		
 		case "/evaluation":
 			$location.path("/standings");
 			break;

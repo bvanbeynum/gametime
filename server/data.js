@@ -823,7 +823,7 @@ module.exports = function (app) {
 	});
 	
 	app.get("/data/play", (request, response) => {
-		var validQueries = "|divisionid|id|name|category|";
+		var validQueries = "|divisionid|id|";
 		if (Object.keys(request.query).length > 0) {
 			var invalidQuery = Object.keys(request.query).filter((query) => {
 				return validQueries.indexOf("|" + query + "|") < 0;
@@ -843,12 +843,6 @@ module.exports = function (app) {
 		if (request.query.id) {
 			filter._id = request.query.id;
 		}
-		if (request.query.name) {
-			filter["name"] = { $regex: new RegExp(request.query.name, "i") };
-		}
-		if (request.query.category) {
-			filter["category"] = { $regex: new RegExp(request.query.category, "i") };
-		}
 		
 		data.play.find(filter)
 			.exec()
@@ -862,16 +856,16 @@ module.exports = function (app) {
 							year: playDb.division.year,
 							season: playDb.division.season
 						}: null,
-						category: playDb.category,
+						formation: playDb.formation,
 						name: playDb.name,
-						scrimageLine: playDb.scrimageLine,
-						players: playDb.players.map((player) => {
-							return {
-								type: player.positionType,
-								location: player.location,
-								route: player.route
-							};
-						})
+						field: playDb.field,
+						players: playDb.players ? playDb.players.map(player => ({
+							color: player.color,
+							location: player.location ? { x: player.location.x, y: player.location.y } : null,
+							routeType: player.routeType,
+							routeAction: player.routeAction,
+							route: player.route ? player.route.map(route => ({ x: route.x, y: route.y })) : null
+						})) : null
 					};
 				});
 				
@@ -905,16 +899,16 @@ module.exports = function (app) {
 						year: playSave.division.year ? playSave.division.year : playDb.division.year,
 						season: playSave.division.season ? playSave.division.season : playDb.division.season
 					} : playSave.division;
-					playDb.category = playSave.category ? playSave.category : playDb.category;
+					playDb.formation = playSave.formation ? playSave.formation : null;
 					playDb.name = playSave.name ? playSave.name : playDb.name;
-					playDb.scrimageLine = playSave.scrimageLine ? playSave.scrimageLine : playDb.scrimageLine;
-					playDb.players = playSave.players ? playSave.players.map((player) => {
-						return {
-							positionType: player.type,
+					playDb.field = playSave.field ? playSave.field : null;
+					playDb.players = playSave.players ? playSave.players.map(player => ({
+							color: player.color ? player.color : null,
 							location: player.location ? {x: player.location.x, y: player.location.y} : null,
-							route: player.route ? player.route.map((route) => { return { x: route.x, y: route.y }; }) : null
-						};
-					}) : playDb.players;
+							routeType: player.routeType,
+							routeAction: player.routeAction,
+							route: player.route ? player.route.map(route => ({ x: route.x, y: route.y })) : null
+						})) : playDb.players;
 					
 					return playDb.save();
 				})
@@ -934,13 +928,15 @@ module.exports = function (app) {
 					year: playSave.division.year,
 					season: playSave.division.season
 				} : null,
-				category: playSave.category,
+				formation: playSave.formation,
 				name: playSave.name,
-				scrimageLine: playSave.scrimageLine,
+				field: playSave.field,
 				players: playSave.players ? playSave.players.map((player) => {
 					return {
-						positionType: player.type,
+						color: player.color,
 						location: player.location ? {x: player.location.x, y: player.location.y} : null,
+						routeType: player.routeType,
+						routeAction: player.routeAction,
 						route: player.route ? player.route.map((route) => { return { x: route.x, y: route.y }; }) : null
 					};
 				}) : null

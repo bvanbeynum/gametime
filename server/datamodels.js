@@ -6,7 +6,9 @@ var locationSchema = new mongoose.Schema({
 });
 
 var playerSchema = new mongoose.Schema({
-	positionType: String,
+	color: String,
+	routeType: String,
+	routeAction: String,
 	location: { type: locationSchema },
 	route: [{type: locationSchema}]
 });
@@ -155,9 +157,9 @@ module.exports = {
 			year: Number,
 			season: String
 		},
-		category: String,
+		formation: String,
 		name: String,
-		scrimageLine: Number,
+		field: String,
 		players: [playerSchema]
 	}),
 	
