@@ -125,6 +125,7 @@
 	<table class="editTable">
 	<tr>
 		<th>Player</th>
+		<th>Color</th>
 		<th>Offense</th>
 		<th>Offense<br>Group</th>
 		<th>Defense</th>
@@ -132,6 +133,18 @@
 	</tr>
 	<tr ng-repeat="player in players | orderBy: 'firstName'">
 		<td>{{player.firstName}} {{ player.lastName }}</td>
+		<td>
+			<select ng-model="player.routeColor" ng-change="changePlayer(player)">
+				<option value="">-</option>
+				<option value="red">Red</option>
+				<option value="blue">Blue</option>
+				<option value="orange">Orange</option>
+				<option value="green">Green</option>
+				<option value="black">Black</option>
+				<option value="purple">Purple</option>
+				<option value="lightblue">Light Blue</option>
+			</select>
+		</td>
 		<td>
 			<select ng-model="player.depthOffense" ng-change="changePlayer(player)">
 				<option value="">-</option>
@@ -188,8 +201,8 @@
 		</tr>
 		<tr ng-repeat="position in positions.offense | orderBy: 'name'">
 			<td>{{ position.name }}</td>
-			<td>{{ position.players[0] }}</td>
-			<td>{{ position.players[1] }}</td>
+			<td>{{ position.group1 }}</td>
+			<td>{{ position.group2 }}</td>
 		</tr>
 		</table>
 		
@@ -267,8 +280,8 @@
 		</tr>
 		<tr ng-repeat="position in positions.defense | orderBy: 'name'">
 			<td>{{ position.name }}</td>
-			<td>{{ position.players[0] }}</td>
-			<td>{{ position.players[1] }}</td>
+			<td>{{ position.group1 }}</td>
+			<td>{{ position.group2 }}</td>
 		</tr>
 		</table>
 		

@@ -578,10 +578,20 @@ teamApp.controller("playbookCtl", function($rootScope, $scope, $http, $location)
 	}
 	
 	$rootScope.selectedPlay = null;
+	$scope.selectedPlays = [];
 	$scope.isLoading = true;
 	log.playBook = $scope;
 	
-	$http({url: "/data/play?divisionid=" + $rootScope.managedTeam.teamDivision.id}).then(function (response) {
+	const documentHead = document.head || document.getElementsByTagName("head")[0],
+		documentStyle = document.createElement("style");
+	
+	documentStyle.type = "text/css";
+	documentStyle.media = "print";
+	
+	documentStyle.textContent = "@page { size: portrait }";
+	documentHead.appendChild(documentStyle);
+	
+	$http({url: "/data/play?divisionid=" + $rootScope.managedTeam.teamDivision.id}).then(response => {
 		$scope.plays = response.data.plays;
 		
 		$scope.formations = [...new Set($scope.plays.map(play => play.formation))];
@@ -596,14 +606,36 @@ teamApp.controller("playbookCtl", function($rootScope, $scope, $http, $location)
 			.sort((formationA, formationB) => formationA.formation < formationB.formation ? -1 : 1 );
 		
 		$scope.isLoading = false;
-	}, function (error) {
+	}, error => {
 		$scope.showMessage("error", "There was an error loading");
 		
 		console.log(error);
 		$location.path("/standings");
 	});
 	
-	$scope.openPlay = function (play) {
+	$http({url: "/data/player?teamid=" + $rootScope.managedTeam.id }).then(response => {
+		$scope.players = response.data.players;
+		
+		$scope.routeColors = [
+			...new Set($scope.players.map(player => player.routeColor))
+			]
+			.sort((colorA, colorB) => colorA < colorB ? -1 : 1)
+			.map(color => ({
+				color: color.substr(0,1).toUpperCase() + color.substr(1),
+				group1: $scope.players
+					.filter(player => player.routeColor === color && (player.depthOffenseGroup || 1) === 1 )
+					.map(player => player.firstName)[0],
+				group2: $scope.players
+					.filter(player => player.routeColor === color && (player.depthOffenseGroup || 1) === 2 )
+					.map(player => player.firstName)[0]
+			}));
+		
+	}, error => {
+		$scope.showMessage("error", "There was an error players");
+		console.log(error);
+	});
+	
+	$scope.openPlay = play => {
 		if (play) {
 			$rootScope.selectedPlay = play;
 		}
@@ -622,6 +654,59 @@ teamApp.controller("playbookCtl", function($rootScope, $scope, $http, $location)
 		
 		$location.path("/playmaker");
 	};
+	
+	$scope.selectPlay = play => {
+		play.selected = !play.selected;
+		
+		if (play.selected) {
+			$scope.selectedPlays.push(play);
+		}
+		else {
+			$scope.selectedPlays = $scope.selectedPlays.filter(play => play.selected);
+		}
+	};
+	
+	$scope.print = printMode => {
+		if (printMode === "wrist") {
+			
+			if ($scope.printMode === "wrist") {
+				$scope.printMode = null;
+				$scope.wristCoach = [];
+			}
+			else {
+				$scope.printMode = "wrist";
+				
+				documentHead.removeChild(documentStyle);
+				documentStyle.textContent = "@page { size: landscape }";
+				documentHead.appendChild(documentStyle);
+				
+				$scope.wristCoach = [...Array(24)].map((cell, index) => ({
+					playPosition: index % 2 === 0 ? "Left" : "Right",
+					play: $scope.selectedPlays[Math.floor(index / 2)]
+				}));
+			}
+			
+		}
+		else if (printMode === "playsheet") {
+			if ($scope.printMode === "playsheet") {
+				$scope.printMode = null;
+				$scope.playsheetPlays = [];
+			}
+			else {
+				documentHead.removeChild(documentStyle);
+				documentStyle.textContent = "@page { size: portrait }";
+				documentHead.appendChild(documentStyle);
+				
+				$scope.printMode = "playsheet";
+				
+				$scope.playsheetPlays = [...Array($scope.selectedPlays.length * 2)].map((cell, index) => ({
+					play: $scope.selectedPlays[Math.floor(index / 2)],
+					playPosition: index % 2 === 0 ? "Left" : "Right"
+				}));
+			}
+		}
+	};
+	
 });
 
 teamApp.controller("playCtl", function($rootScope, $scope, $http, $location) {
@@ -2000,6 +2085,12 @@ teamApp.controller("depthChartCtl", function ($rootScope, $scope, $http, $locati
 			.map(position => ({
 				name: position.name,
 				id: position.id,
+				group1: $scope.players
+					.filter(player => player.depthOffense == position.name && (player.depthOffenseGroup || 1) == 1)
+					.map(player => player.firstName).join(", "),
+				group2: $scope.players
+					.filter(player => player.depthOffense == position.name && (player.depthOffenseGroup || 1) == 2)
+					.map(player => player.firstName).join(", "),
 				players: $scope.players
 					.filter(player => player.depthOffense == position.name)
 					.sort((playerA, playerB) => playerA.depthOffenseGroup - playerB.depthOffenseGroup)
@@ -2012,6 +2103,12 @@ teamApp.controller("depthChartCtl", function ($rootScope, $scope, $http, $locati
 			.map(position => ({
 				name: position.name,
 				id: position.id,
+				group1: $scope.players
+					.filter(player => player.depthDefense == position.name && (player.depthDefenseGroup || 1) == 1)
+					.map(player => player.firstName).join(", "),
+				group2: $scope.players
+					.filter(player => player.depthDefense == position.name && (player.depthDefenseGroup || 1) == 2)
+					.map(player => player.firstName).join(", "),
 				players: $scope.players
 					.filter(player => player.depthDefense == position.name)
 					.sort((playerA, playerB) => playerA.depthDefenseGroup - playerB.depthDefenseGroup)

@@ -1,6 +1,133 @@
 /* global d3 */
 /* global teamApp */
 
+teamApp.directive("play", () => ({
+	restrict: "E",
+	scope: {
+		data: "="
+	},
+	link: (scope, element) => {
+		const colors = ["red", "blue", "green", "orange", "black", "purple", "lightblue"]
+		
+		const svg = d3.select(element[0])
+			.append("svg")
+			.attr("viewBox", "0 0 400 410")
+			.attr("preserveAspectRatio", "none")
+			.attr("class", "play");
+		
+		svg.append("line")
+			.attr("x1", "0")
+			.attr("y1", "310")
+			.attr("x2", "400")
+			.attr("y2", "310");
+		
+		const definitions = svg.append("defs");
+		
+		definitions.selectAll("marker")
+			.data(colors)
+			.enter()
+			.append("marker")
+			.attr("id", color => "arrow-" + color)
+			.attr("viewBox", "0 0 10 10")
+			.attr("refX", "1")
+			.attr("refY", "5")
+			.attr("markerWidth", "6")
+			.attr("markerHeight", "6")
+			.attr("orient", "auto-start-reverse")
+			.attr("fill", color => color)
+			.append("polygon")
+			.attr("points", "0 1.5, 10 5, 0 8.5");
+		
+		definitions.selectAll("marker")
+			.data(colors)
+			.enter()
+			.append("marker")
+			.attr("id", color => "block-" + color)
+			.attr("viewBox", "0 0 10 10")
+			.attr("refX", "1")
+			.attr("refY", "5")
+			.attr("markerWidth", "6")
+			.attr("markerHeight", "6")
+			.attr("orient", "auto-start-reverse")
+			.attr("fill", color => color)
+			.append("rect")
+			.attr("x", "0")
+			.attr("y", "1")
+			.attr("width", "3")
+			.attr("height", "10");
+		
+		scope.$watch("data", (newValue, oldValue) => {
+			
+			if (scope.data) {
+				
+				const routes = scope.data.players
+					.filter(player => player.route.length > 0)
+					.map(player => {
+						let route = "";
+						
+						if (player.routeType === "straight" || player.routeType === "run") {
+							route = player.route.map(point => "L" + point.x + "," + point.y).join(" ");
+						}
+						else if (player.routeType === "curved") {
+							route = player.route.map((point, index, routes) => {
+								let path = "";
+								
+								if (index === 0) {
+									// First curve should be bezier
+									
+									if (Math.abs(point.x - player.location.x) > Math.abs(point.y - player.location.y)) {
+										path = "C" + player.location.x + "," + point.y + " " + 
+											point.x + "," + point.y + " " +
+											point.x + "," + point.y + " ";
+									}
+									else {
+										path = "C" + point.x + "," + player.location.y + " " + 
+											point.x + "," + point.y + " " +
+											point.x + "," + point.y + " ";
+									}
+								}
+								else {
+									// Following paths should be S paths
+									path = "S" +point.x + "," + routes[index - 1].y + " " + point.x + "," + point.y;
+								}
+								
+								return path;
+							}).join(" ");
+						}
+							
+						return {
+							color: player.color,
+							routeType: player.routeType,
+							cap: player.routeAction === "block" ? "block" : "arrow",
+							path: "M" + player.location.x + "," + player.location.y + " " + route
+						};
+					});
+				
+				svg.selectAll(".player")
+					.data(scope.data.players)
+					.enter()
+					.append("circle")
+					.attr("r", "8")
+					.attr("cx", player => player.location.x)
+					.attr("cy", player => player.location.y)
+					.attr("fill", player => player.color)
+					.attr("stroke", player => player.color)
+					.attr("class", "player");
+				
+				svg.selectAll(".route")
+					.data(routes)
+					.enter()
+					.append("path")
+					.attr("class", route => "route" + (route.routeType === "run" ? " run" : ""))
+					.attr("marker-end", route => "url(#" + route.cap + "-" + route.color + ")")
+					.attr("stroke", route => route.color)
+					.attr("d", route => route.path);
+				
+			}
+		});
+	}
+}));
+
 teamApp.directive("playmaker", function ($interval) {
 	
 	function getArrow(player) {

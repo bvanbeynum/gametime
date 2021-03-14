@@ -188,6 +188,35 @@ table {
 	color: rgb(222, 23, 23);
 }
 
+
+.play line {
+	stroke: rgb(0 0 0);
+	stroke-width: 2px;
+}
+
+.play .player {
+	cursor: pointer;
+	stroke-width: 2px;
+	outline: none;
+}
+
+.play .player.selectedMove {
+	fill: yellow;
+}
+
+.play .player.selectedRoute {
+	stroke: yellow;
+}
+
+.play path {
+	stroke-width: 3px;
+	fill: none;
+}
+
+.play path.run {
+	stroke-dasharray: 7;
+}
+
 @media print {
 	@page {
 		size: letter portrait;
