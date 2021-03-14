@@ -1,0 +1,179 @@
+.playbookPage {
+	padding: 45px;
+	display: flex;
+	flex-direction: column;
+}
+
+.playbookPage.print {
+	display: none;
+}
+
+.floatingButtonContainer {
+	position: absolute;
+	right: 40px;
+	display: flex;
+	margin-top: 20px;
+}
+
+.floatingButton {
+	margin: 0px 15px;
+	border: 1px solid rgb(180 180 180);
+	background-color: rgb(235 235 235);
+	height: 50px;
+	width: 50px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 25px;
+	cursor: pointer;
+	outline: none;
+}
+
+.floatingButton.selected {
+	background-color: rgb(213, 233, 231);
+}
+
+.formationContainer {
+	display: flex;
+	flex-direction: column;
+}
+
+.playContainer {
+	display: flex;
+}
+
+.playbookPage .playTile {
+	text-align: center;
+	width: 110px;
+	margin: 15px;
+	box-shadow: 0 1px 3px 0 rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 2px 1px -1px rgb(0 0 0 / 12%);
+	outline: none;
+}
+
+.playTile.selected {
+	background-color: rgb(213, 233, 231);
+}
+
+.playTile play svg {
+	margin: 0px 5px;
+}
+
+.tileControls {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 5px;
+	background: rgb(235 235 235);
+	border-top: 1px solid rgb(0 0 0);
+}
+
+.tileControl {
+	cursor: pointer;
+	outline: none;
+	margin: 0px 5px;
+}
+
+.wristCoachContainer {
+	display: none;
+	flex: 1;
+	align-items: center;
+}
+
+.wristCoachContainer.print {
+	display: flex;
+}
+
+.wristCoach {
+	flex: 1;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.playCell {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid rgb(0 0 0);
+	width: 100px;
+	height: 90px;
+}
+
+.playCell .playName {
+	font-size: 9px;
+}
+
+.playCell svg {
+	width: 100px;
+	height: 75px;
+}
+
+.playCell .flipped svg {
+	transform: scale(-1,1);
+}
+
+.playSheetContainer {
+	display: none;
+	flex-direction: column;
+	align-items: center;
+	flex: 1;
+	padding: 0px 70px;
+	justify-content: space-evenly;
+}
+
+.playSheetContainer.print {
+	display: flex;
+}
+
+.playsheetPlays {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.playsheetPlay {
+	margin: 0px 15px;
+}
+
+.playsheetPlays .playName {
+	font-size: 9px;
+}
+
+.playsheetPlay svg {
+	width: 100px;
+}
+
+.playsheetPlay .flipped svg {
+	transform: scale(-1,1);
+}
+
+.playSheetContainer table.playerColor {
+	border-collapse: collapse;
+}
+
+.playerColor th, .playerColor td {
+	padding: 8px 4px;
+	border-bottom: 1px solid rgb(200 200 200);
+}
+
+.playerColor td {
+	border-right: 1px solid rgb(200 200 200);
+	font-size: 10px;
+}
+
+.playerColor th {
+	color: rgb(255 255 255);
+}
+
+.playerColor th:nth-child(1), .playerColor td:nth-child(1) {
+	border-left: 1px solid rgb(200 200 200);
+	border-top: 1px solid rgb(200 200 200);
+	color: black;
+}
+
+@media print{
+	
+	.floatingButtonContainer {
+		display: none;
+	}
+}

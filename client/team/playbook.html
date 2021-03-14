@@ -1,0 +1,115 @@
+<link rel="stylesheet" type="text/css" href="/team/playbook.css">
+
+<div ng-show="isLoading" class="loadingContainer">
+	<div class="loadingContent">
+		<div>Loading</div>
+	</div>
+</div>
+
+<div class="floatingButtonContainer"  ng-class="{'print': printMode && printMode.length > 0}">
+	<div class="floatingButton" ng-click="print('playsheet')" ng-class="{'selected': printMode === 'playsheet'}">
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
+			<path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+		</svg>
+	</div>
+	
+	<div class="floatingButton" ng-click="print('wrist')" ng-class="{'selected': printMode === 'wrist'}">
+		<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" viewBox="0 0 24 24" width="24px" height="24px">
+			<g><g><path d="M3.02,15.62c-0.08,2.42,0.32,4.34,0.67,4.69s2.28,0.76,4.69,0.67L3.02,15.62z"/><path d="M13.08,3.28C10.75,3.7,8.29,4.62,6.46,6.46s-2.76,4.29-3.18,6.62l7.63,7.63c2.34-0.41,4.79-1.34,6.62-3.18 s2.76-4.29,3.18-6.62L13.08,3.28z M9.9,15.5l-1.4-1.4l5.6-5.6l1.4,1.4L9.9,15.5z"/><path d="M20.98,8.38c0.08-2.42-0.32-4.34-0.67-4.69s-2.28-0.76-4.69-0.67L20.98,8.38z"/></g></g>
+		</svg>
+	</div>
+</div>
+
+<div ng-show="!isLoading" class="playbookPage" ng-class="{'print': printMode && printMode.length > 0}">
+
+	<div class="playTile">
+		<play data="play"></play>
+		<div class="playName">New Play</div>
+		
+		<div class="tileControls">
+			<div class="tileControl" ng-click="openPlay(play)">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
+					<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+				</svg>
+			</div>
+		</div>
+	</div>
+	
+	<div ng-repeat="formation in formations" class="formationContainer">
+		<h2>{{formation.formation}}</h2>
+		
+		<div class="playContainer">
+			
+			<div class="playTile" ng-repeat="play in formation.plays" ng-class="{'selected': play.selected}">
+				<play data="play"></play>
+				<div class="playName">{{play.name}}</div>
+				
+				<div class="tileControls">
+					<div class="tileControl" ng-click="selectPlay(play)" ng-show="!play.selected">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
+							<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+						</svg>
+					</div>
+					
+					<div class="tileControl" ng-click="selectPlay(play)" ng-show="play.selected">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
+							<path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+						</svg>
+					</div>
+					
+					<div class="tileControl" ng-click="openPlay(play)">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
+							<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+						</svg>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	
+</div>
+
+<div class="wristCoachContainer" ng-class="{'print': printMode === 'wrist'}">
+	
+	<div class="wristCoach">
+		<div ng-repeat="cell in wristCoach" class="playCell">
+			<play data="cell.play" ng-class="{'flipped': cell.playPosition === 'Left'}"></play>
+			<div class="playName">{{cell.play.formation + " " + cell.play.name + " " + cell.playPosition }}</div>
+		</div>
+	</div>
+	
+	<div class="wristCoach">
+		<div ng-repeat="cell in wristCoach" class="playCell">
+			<play data="cell.play" ng-class="{'flipped': cell.playPosition === 'Left'}"></play>
+			<div class="playName">{{cell.play.formation + " " + cell.play.name + " " + cell.playPosition }}</div>
+		</div>
+	</div>
+	
+</div>
+
+<div class="playSheetContainer" ng-class="{'print': printMode === 'playsheet'}">
+	
+	<div class="playsheetPlays">
+		<div ng-repeat="play in playsheetPlays" class="playsheetPlay">
+			<play data="play.play" ng-class="{'flipped': play.playPosition === 'Left'}"></play>
+			<div class="playName">{{play.play.formation + " " + play.play.name + " " + play.playPosition }}</div>
+		</div>
+	</div>
+	
+	<table class="playerColor">
+	<tr>
+		<th>Group</th>
+		<th ng-repeat="routeColor in routeColors" ng-style="{'background-color': routeColor.color}">{{routeColor.color}}</th>
+	</tr>
+	<tr>
+		<td>1</td>
+		<td ng-repeat="routeColor in routeColors" ng-style="{'color': routeColor.color}">{{routeColor.group1}}</td>
+	</tr>
+	<tr>
+		<td>2</td>
+		<td ng-repeat="routeColor in routeColors" ng-style="{'color': routeColor.color}">{{routeColor.group2}}</td>
+	</tr>
+	</table>
+	
+</div>

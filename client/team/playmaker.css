@@ -1,0 +1,83 @@
+.playPage {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.content {
+	max-width: 600px;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	padding-top: 20px;
+}
+
+.propertiesContainer {
+	display: flex;
+	align-items: center;
+}
+
+.controlContainer {
+	display: flex;
+	align-items: center;
+	background-color: rgb(230 230 230);
+}
+
+.controlButton {
+	padding: 10px 10px;
+	cursor: pointer;
+	outline: none;
+}
+
+.property input, .controlButton select {
+	border: none;
+	border-bottom: 1px solid rgb(0 0 0);
+	margin-right: 15px;
+	font-size: 15px;
+	background-color: transparent;
+	outline: none;
+}
+
+.expanded {
+	flex: 1;
+}
+
+.playDesigner {
+	background-color: rgb(204 232 204);
+	outline: none;
+	flex: 1;
+	display: flex;
+}
+
+.playDesigner svg {
+	flex: 1;
+}
+
+.playDesigner line {
+	stroke: rgb(0 0 0);
+	stroke-width: 2px;
+}
+
+.playDesigner .player {
+	cursor: pointer;
+	stroke-width: 2px;
+	outline: none;
+}
+
+.playDesigner .player.selectedMove {
+	fill: yellow;
+}
+
+.playDesigner .player.selectedRoute {
+	stroke: yellow;
+}
+
+.playDesigner path {
+	stroke-width: 3px;
+	fill: none;
+}
+
+.playDesigner path.run {
+	stroke-dasharray: 7;
+}
