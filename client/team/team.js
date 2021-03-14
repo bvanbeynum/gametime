@@ -966,11 +966,6 @@ teamApp.controller("playCtl", function($rootScope, $scope, $http, $location) {
 			});
 	};
 	
-	$scope.cancel = () => {
-		$rootScope.selectedPlay = null;
-		$location.path("/playbook");
-	};
-	
 	function buildRoutes() {
 		$scope.routes = $scope.playData.players
 			.filter(player => player.route.length > 0)
