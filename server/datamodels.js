@@ -161,6 +161,7 @@ module.exports = {
 		formation: String,
 		name: String,
 		field: String,
+		rating: Number,
 		players: [playerSchema]
 	}),
 	

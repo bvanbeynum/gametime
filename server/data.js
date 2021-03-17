@@ -862,6 +862,7 @@ module.exports = function (app) {
 						formation: playDb.formation,
 						name: playDb.name,
 						field: playDb.field,
+						rating: playDb.rating,
 						players: playDb.players ? playDb.players.map(player => ({
 							color: player.color,
 							location: player.location ? { x: player.location.x, y: player.location.y } : null,
@@ -905,6 +906,7 @@ module.exports = function (app) {
 					playDb.formation = playSave.formation ? playSave.formation : null;
 					playDb.name = playSave.name ? playSave.name : playDb.name;
 					playDb.field = playSave.field ? playSave.field : null;
+					playDb.rating = playSave.rating ? playSave.rating : null;
 					playDb.players = playSave.players ? playSave.players.map(player => ({
 							color: player.color ? player.color : null,
 							location: player.location ? {x: player.location.x, y: player.location.y} : null,
@@ -934,6 +936,7 @@ module.exports = function (app) {
 				formation: playSave.formation,
 				name: playSave.name,
 				field: playSave.field,
+				rating: playSave.rating,
 				players: playSave.players ? playSave.players.map((player) => {
 					return {
 						color: player.color,

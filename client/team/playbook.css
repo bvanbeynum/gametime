@@ -66,6 +66,14 @@
 	border-top: 1px solid rgb(0 0 0);
 }
 
+.tileControls.good {
+	background-color: rgb(188 232 196);
+}
+
+.tileControls.bad {
+	background-color: rgb(239 181 181);
+}
+
 .tileControl {
 	cursor: pointer;
 	outline: none;

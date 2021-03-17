@@ -722,6 +722,7 @@ teamApp.controller("playCtl", function($rootScope, $scope, $http, $location) {
 	log.playMaker = $scope;
 	$scope.playData = {
 		...$rootScope.selectedPlay,
+		rating: $rootScope.selectedPlay.rating || 0,
 		players: $rootScope.selectedPlay.players.map(player => ({...player, route: player.route || [] }))
 		};
 	
@@ -933,6 +934,15 @@ teamApp.controller("playCtl", function($rootScope, $scope, $http, $location) {
 		}
 		
 		buildRoutes();
+	};
+	
+	$scope.ratePlay = () => {
+		$scope.playData.rating++;
+		
+		if ($scope.playData.rating > 1) {
+			$scope.playData.rating = -1;
+		}
+		
 	};
 	
 	$scope.savePlay = () => {
