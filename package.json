@@ -6,9 +6,11 @@
   "repository": "",
   "author": "Brett van Beynum <maildrop444@gmail.com>",
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.0.20",
     "connect-busboy": "0.0.2",
     "cookie-parser": "^1.4.3",
     "express": "^4.17.1",
+    "fluent-ffmpeg": "^2.1.2",
     "mongoose": "^5.7.5",
     "nodemailer": "^4.6.8",
     "request": "^2.88.2"

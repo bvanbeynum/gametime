@@ -1,0 +1,268 @@
+<html ng-app="videoApp">
+<head>
+<title>Video Clip Generator</title>
+<style type="text/css">
+body {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	font-family: Verdana;
+	font-size: 11px;
+}
+
+.pageContainer {
+	display: flex;
+	flex: 1;
+}
+
+.sidebar {
+	padding: 10px 15px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	align-items: center;
+}
+
+video {
+	margin-top: 20px;
+	background-color: rgb(230 230 230);
+	border: 3px solid rgb(180 180 180);
+}
+
+.videoContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.cropBoxContainer {
+	position: relative;
+	/*top: -582px;*/
+	/*width: 1024px;*/
+}
+
+.cropBox {
+	position: absolute;
+	border: dashed 3px;
+	z-index: 2;
+	margin-top: 3px;
+	/*width: 1018px;*/
+	/*height: 570px;*/
+}
+
+.videoEdits {
+	display: flex;
+	flex-direction: column;
+	margin: 0px 20px;
+	background-color: rgb(230 230 230);
+	border: 3px solid rgb(180 180 180);
+	border-top: none;
+	border-bottom-left-radius: 9px;
+	border-bottom-right-radius: 9px;
+	padding: 15px 10px;
+}
+
+.editControls {
+	display: flex;
+}
+
+.editControls:nth-child(n+2) {
+	margin-top: 15px;
+}
+
+.editControls.horizontal {
+	justify-content: space-between;
+}
+
+.editControls.center {
+	justify-content: center;
+}
+
+.edit:nth-child(n+2) {
+	margin-left: 20px;
+}
+
+.edit label {
+	width: 40px;
+	display: inline-block;
+}
+
+.edit input {
+	background: rgb(0 0 0 / 0%);
+	border: none;
+	border-bottom: 1px solid;
+	outline: none;
+	width: 70px;
+}
+
+.edit button {
+	padding: 5px 12px;
+	background-color: rgb(180 234 180);
+	border-color: rgb(129 181 129);
+	border-style: solid;
+	border-radius: 5px;
+	cursor: pointer;
+	outline: none;
+}
+
+.edit button.disabled {
+	background-color: rgb(230 230 230);
+	border-color: rgb(180 180 180);
+}
+
+.arrowCanvas {
+	margin-top: -3px;
+	z-index: 2;
+	width: 200px;
+}
+
+.arrowCanvas path {
+	stroke-width: 3px;
+	stroke: rgb(180 180 180);
+	fill: rgb(230 230 230);
+}
+
+.gifContainer {
+	background: rgb(230 230 230);
+	margin-top: -3px;
+	border: 3px solid rgb(180 180 180);
+	margin-bottom: 100px;
+}
+
+.toast {
+	position: absolute;
+	font-weight: bold;
+	bottom: 3%;
+	left: 3%;
+	padding: 8px 15px;
+	display: none;
+}
+.toast.isActive {
+	display: flex;
+}
+.toast.info {
+	border: solid 2px rgb(79, 116, 128);
+	background-color: rgb(152, 188, 255);
+	color: rgb(79, 116, 128);
+}
+.toast.error {
+	border: solid 2px rgb(220, 80, 80);
+	background-color: rgb(244, 174, 174);
+	color: rgb(222, 23, 23);
+}
+
+</style>
+<body ng-controller="videoCtl">
+
+<div class="pageContainer">
+	<div class="sidebar">
+		<a ng-repeat="file in files" href="#" ng-click="loadVideo(file)">{{file}}</a>
+	</div>
+	
+	<div class="content">
+		<div class="videoContainer">
+			
+			<video id="videoPlayer">
+				<source ng-src="{{videoSrc}}" type="video/mp4" />
+			</video>
+			
+			<div class="cropBoxContainer" ng-show="isPlayable" ng-style="{'top': ((6 + videoHeight - cropTop) * -1) + 'px', 'width': videoWidth + 'px'}">
+				<div class="cropBox" ng-style="{'left': cropLeft + 'px', 'width': (cropWidth - 6) + 'px', 'height': (cropHeight - 6) + 'px'}">
+				</div>
+			</div>
+			
+			<div class="videoEdits">
+				
+				<div class="editControls">
+					<div class="edit">
+						<label for="videostart">Start</label>
+						<input id="videostart" type="number" ng-model="videoStart" />
+					</div>
+					
+					<div class="edit">
+						<label for="videoend">End</label>
+						<input id="videoend" type="number" ng-model="videoEnd" />
+					</div>
+					<div class="edit">
+						Current: {{currentTime}}
+					</div>
+				</div>
+				
+				<div class="editControls">
+					<div class="edit">
+						<label for="videotop">Top</label>
+						<input id="videotop" type="number" ng-model="cropTop" />
+					</div>
+					
+					<div class="edit">
+						<label for="videoleft">Left</label>
+						<input id="videoleft" type="number" ng-model="cropLeft" />
+					</div>
+					
+					<div class="edit">
+						<label for="videowidth">Width</label>
+						<input id="videowidth" type="number" ng-model="cropWidthTemp" ng-blur="cropChange('width')" />
+					</div>
+					
+					<div class="edit">
+						<label for="videoheight">Height</label>
+						<input id="videoheight" type="number" ng-model="cropHeightTemp" ng-blur="cropChange('height')" />
+					</div>
+				</div>
+				
+				<div class="editControls">
+					<div class="edit">
+						<label for="outputwidth">Output Width</label>
+						<input id="outputwidth" type="number" ng-model="outputWidth" />
+					</div>
+					
+					<div class="edit">
+						<label for="framerate">Frame Rate</label>
+						<input id="framerate" type="number" ng-model="frameRate" />
+					</div>
+				</div>
+				
+				<div class="editControls center">
+					<div class="edit">
+						<button ng-class="{'disabled': isConverting || !isPlayable}" ng-click="convertVideo()">Convert</button>
+					</div>
+				</div>
+				
+				<div class="editControls center" ng-hide="!outputSize">
+					<div class="edit">
+						{{outputSize}} MB
+					</div>
+				</div>
+				
+			</div>
+			
+			<svg viewBox="0 0 200 50" class="arrowCanvas" ng-hide="!gifImage">
+				<path d="M90,0 L90,30 C87,45 82,50 72,50 L128,50 C118,50 113,45 110,30 L110,0" style="stroke: none"></path>
+				<path d="M90,0 L90,30 C87,45 82,50 72,50" style="fill: none"></path>
+				<path d="M128,50 C118,50 113,45 110,30 L110,0" style="fill: none"></path>
+			</svg>
+			
+			<div class="gifContainer" ng-hide="!gifImage">
+				<img ng-src="{{gifImage}}" />
+			</div>
+		
+		</div>
+	</div>
+</div>
+
+<div class="toast" ng-class="[toast.type, { 'isActive': toast.active } ]">
+	{{toast.text}}
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+<script src="/video/video.js"></script>
+
+</body>
+</head>
+</html>

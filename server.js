@@ -32,6 +32,7 @@ app.use(busboy());
 // Routes =======================================================================
 
 require("./server/data")(app);
+require("./server/video")(app);
 require("./server/film")(app);
 require("./server/draft")(app);
 require("./server/emailer")(app);

@@ -23,11 +23,12 @@ teamApp.directive("play", () => ({
 		
 		const definitions = svg.append("defs");
 		
-		definitions.selectAll("marker")
+		definitions.selectAll("markerArrow")
 			.data(colors)
 			.enter()
 			.append("marker")
 			.attr("id", color => "arrow-" + color)
+			.attr("class", "markerArrow")
 			.attr("viewBox", "0 0 10 10")
 			.attr("refX", "1")
 			.attr("refY", "5")
@@ -38,23 +39,24 @@ teamApp.directive("play", () => ({
 			.append("polygon")
 			.attr("points", "0 1.5, 10 5, 0 8.5");
 		
-		definitions.selectAll("marker")
+		definitions.selectAll("markerBlock")
 			.data(colors)
 			.enter()
 			.append("marker")
 			.attr("id", color => "block-" + color)
-			.attr("viewBox", "0 0 10 10")
+			.attr("class", "markerBlock")
+			.attr("viewBox", "0 0 20 20")
 			.attr("refX", "1")
 			.attr("refY", "5")
-			.attr("markerWidth", "6")
-			.attr("markerHeight", "6")
+			.attr("markerWidth", "20")
+			.attr("markerHeight", "20")
 			.attr("orient", "auto-start-reverse")
 			.attr("fill", color => color)
 			.append("rect")
 			.attr("x", "0")
 			.attr("y", "1")
-			.attr("width", "3")
-			.attr("height", "10");
+			.attr("width", "5")
+			.attr("height", "20");
 		
 		scope.$watch("data", (newValue, oldValue) => {
 			
