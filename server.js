@@ -1,14 +1,15 @@
 // Setup =======================================================================
 
-var express = require("express");
-var app = express();
-var port = process.env.PORT || 8080;
+const config = require("./server/config");
 
-var mongoose = require("mongoose");
-var bodyParser = require("body-parser");
-var busboy = require("connect-busboy");
-var cookieParser = require("cookie-parser");
-var config = require("./server/config");
+const express = require("express");
+const app = express();
+const port = config.port || 8080;
+
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const busboy = require("connect-busboy");
+const cookieParser = require("cookie-parser");
 
 // Config =======================================================================
 
