@@ -48,15 +48,15 @@ teamApp.directive("play", () => ({
 			.attr("viewBox", "0 0 20 20")
 			.attr("refX", "1")
 			.attr("refY", "5")
-			.attr("markerWidth", "20")
-			.attr("markerHeight", "20")
+			.attr("markerWidth", "6")
+			.attr("markerHeight", "6")
 			.attr("orient", "auto-start-reverse")
 			.attr("fill", color => color)
 			.append("rect")
 			.attr("x", "0")
 			.attr("y", "1")
-			.attr("width", "5")
-			.attr("height", "20");
+			.attr("width", "3")
+			.attr("height", "10");
 		
 		scope.$watch("data", (newValue, oldValue) => {
 			
