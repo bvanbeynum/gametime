@@ -162,6 +162,7 @@ module.exports = {
 		name: String,
 		field: String,
 		rating: Number,
+		sort: Number,
 		players: [playerSchema]
 	}),
 	

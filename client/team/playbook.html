@@ -40,11 +40,21 @@
 		
 		<div class="playContainer">
 			
-			<div class="playTile" ng-repeat="play in formation.plays" ng-class="{'selected': play.selected}">
+			<div class="playTile" ng-repeat="play in formation.plays | orderBy: 'sort'" ng-class="{'selected': play.selected}">
 				<play data="play"></play>
 				<div class="playName">{{play.name}}</div>
 				
 				<div class="tileControls" ng-class="{'good': play.rating == 1, 'bad': play.rating == -1 }">
+					<div>
+						{{ play.sort }}
+					</div>
+
+					<div class="tileControl" ng-click="openPlay(play)">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
+							<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+						</svg>
+					</div>
+					
 					<div class="tileControl" ng-click="selectPlay(play)" ng-show="!play.selected">
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
 							<path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
@@ -57,11 +67,6 @@
 						</svg>
 					</div>
 					
-					<div class="tileControl" ng-click="openPlay(play)">
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
-							<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-						</svg>
-					</div>
 				</div>
 			</div>
 			
@@ -80,7 +85,7 @@
 	</div>
 	
 	<div class="wristCoach">
-		<div ng-repeat="cell in wristCoach" class="playCell">
+		<div ng-repeat="cell in wristCoach | orderBy: 'sort'" class="playCell">
 			<play data="cell.play" ng-class="{'flipped': cell.playPosition === 'Left'}"></play>
 			<div class="playName">{{cell.play.formation + " " + cell.play.name + " " + cell.playPosition }}</div>
 		</div>
@@ -91,7 +96,7 @@
 <div class="playSheetContainer" ng-class="{'print': printMode === 'playsheet'}">
 	
 	<div class="playsheetPlays">
-		<div ng-repeat="play in playsheetPlays" class="playsheetPlay">
+		<div ng-repeat="play in playsheetPlays | orderBy: 'sort'" class="playsheetPlay">
 			<play data="play.play" ng-class="{'flipped': play.playPosition === 'Left'}"></play>
 			<div class="playName">{{play.play.formation + " " + play.play.name + " " + play.playPosition }}</div>
 		</div>

@@ -16,6 +16,7 @@
 .propertiesContainer {
 	display: flex;
 	align-items: center;
+	margin-top: 20px;
 }
 
 .controlContainer {
@@ -30,7 +31,7 @@
 	outline: none;
 }
 
-.property input, .controlButton select {
+input.property, .controlButton select {
 	border: none;
 	border-bottom: 1px solid rgb(0 0 0);
 	margin-right: 15px;
