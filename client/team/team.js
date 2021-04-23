@@ -578,7 +578,6 @@ teamApp.controller("playbookCtl", function($rootScope, $scope, $http, $location)
 	}
 	
 	$rootScope.selectedPlay = null;
-	$scope.selectedPlays = [];
 	$scope.isLoading = true;
 	log.playBook = $scope;
 	
@@ -655,18 +654,11 @@ teamApp.controller("playbookCtl", function($rootScope, $scope, $http, $location)
 		$location.path("/playmaker");
 	};
 	
-	$scope.selectPlay = play => {
-		play.selected = !play.selected;
-		
-		if (play.selected) {
-			$scope.selectedPlays.push(play);
-		}
-		else {
-			$scope.selectedPlays = $scope.selectedPlays.filter(play => play.selected);
-		}
-	};
-	
 	$scope.print = printMode => {
+		const printPlays = $scope.plays
+			.filter(play => play.sort && play.sort >= 0)
+			.sort((playA, playB) => playA.sort - playB.sort);
+
 		if (printMode === "wrist") {
 			
 			if ($scope.printMode === "wrist") {
@@ -680,9 +672,9 @@ teamApp.controller("playbookCtl", function($rootScope, $scope, $http, $location)
 				documentStyle.textContent = "@page { size: landscape }";
 				documentHead.appendChild(documentStyle);
 				
-				$scope.wristCoach = [...Array(24)].map((cell, index) => ({
+				$scope.wristCoach = [...Array(printPlays.length * 2)].map((cell, index) => ({
 					playPosition: index % 2 === 0 ? "Left" : "Right",
-					play: $scope.selectedPlays[Math.floor(index / 2)]
+					play: printPlays[Math.floor(index / 2)]
 				}));
 			}
 			
@@ -699,9 +691,9 @@ teamApp.controller("playbookCtl", function($rootScope, $scope, $http, $location)
 				
 				$scope.printMode = "playsheet";
 				
-				$scope.playsheetPlays = [...Array($scope.selectedPlays.length * 2)].map((cell, index) => ({
-					play: $scope.selectedPlays[Math.floor(index / 2)],
-					playPosition: index % 2 === 0 ? "Left" : "Right"
+				$scope.playsheetPlays = [...Array(printPlays.length * 2)].map((cell, index) => ({
+					playPosition: index % 2 === 0 ? "Left" : "Right",
+					play: printPlays[Math.floor(index / 2)]
 				}));
 			}
 		}
@@ -937,12 +929,7 @@ teamApp.controller("playCtl", function($rootScope, $scope, $http, $location) {
 	};
 	
 	$scope.ratePlay = () => {
-		$scope.playData.rating++;
-		
-		if ($scope.playData.rating > 1) {
-			$scope.playData.rating = -1;
-		}
-		
+		$scope.playData.rating = $scope.playData.rating == -1 ? 0 : -1;
 	};
 	
 	$scope.savePlay = () => {
