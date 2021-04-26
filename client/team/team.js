@@ -616,7 +616,7 @@ teamApp.controller("playbookCtl", function($rootScope, $scope, $http, $location)
 		$scope.players = response.data.players;
 		
 		$scope.routeColors = [
-			...new Set($scope.players.map(player => player.routeColor))
+			...new Set($scope.players.filter(player => player.routeColor).map(player => player.routeColor))
 			]
 			.sort((colorA, colorB) => colorA < colorB ? -1 : 1)
 			.map(color => ({
