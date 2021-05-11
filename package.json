@@ -1,5 +1,5 @@
 {
-  "name": "gameTime",
+  "name": "gametime",
   "version": "0.0.1",
   "description": "",
   "main": "server.js",
@@ -12,7 +12,7 @@
     "express": "^4.17.1",
     "fluent-ffmpeg": "^2.1.2",
     "mongoose": "^5.7.5",
-    "nodemailer": "^4.6.8",
+    "nodemailer": "^6.4.16",
     "request": "^2.88.2"
   }
 }
