@@ -1111,7 +1111,12 @@ teamApp.controller("evaluationCtl", function($rootScope, $scope, $http, $locatio
 		
 		$scope.closePlayer();
 	};
-	
+
+	$scope.cancel = () => {
+		$scope.popup.player = null;
+		$scope.popup.active = false;
+	};
+
 });
 
 teamApp.controller("draftCtl", function($rootScope, $scope, $http, $location) {
