@@ -88,7 +88,8 @@ teamApp.controller("divisionCtl", function($rootScope, $scope, $http, $location,
 			.entries($scope.divisions)
 			.map(function (group) {
 				return {
-					name: group.key, 
+					name: group.key,
+					age: +(group.key.replace(/u/gi, "")),
 					teams: teams.filter(function (team) { return team.teamDivision.name == group.key })
 						.map(function (team) {
 							return {
@@ -117,7 +118,7 @@ teamApp.controller("divisionCtl", function($rootScope, $scope, $http, $location,
 				};
 			})
 			.sort(function (prev, next) { 
-				return prev.name < next.name ? -1 : 1;
+				return prev.age > next.age ? -1 : 1;
 			});
 		
 		$scope.isLoading = false;
