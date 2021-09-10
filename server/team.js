@@ -33,7 +33,7 @@ module.exports = (app) => {
 						
 						var users = webBody.users;
 						
-						response.status(200).json({ divisions: divisions, teams: teams, user: users.length == 1 ? users[0] : null });
+						response.status(200).json({ divisions: divisions, teams: teams, user: users && users.length == 1 ? users[0] : null });
 					});
 				}
 				else {
