@@ -5,7 +5,7 @@ var fs = require("fs");
 module.exports = (app) => {
 	
 	app.get("/api/division/load", (request, response) => {
-		webRequest({url: "http://" + request.headers.host + "/data/division", json: true }, (error, webResponse, webBody) => {
+		webRequest({url: request.protocol + "://" + request.headers.host + "/data/division", json: true }, (error, webResponse, webBody) => {
 			if (error) {
 				response.status(500).json({error: error.message});
 				response.end();
@@ -14,7 +14,7 @@ module.exports = (app) => {
 			
 			var divisions = webBody.divisions;
 			
-			webRequest({url: "http://" + request.headers.host + "/data/team?managed=true", json: true }, (error, webResponse, webBody) => {
+			webRequest({url: request.protocol + "://" + request.headers.host + "/data/team?managed=true", json: true }, (error, webResponse, webBody) => {
 				if (error) {
 					response.status(500).json({error: error.message});
 					response.end();
@@ -24,7 +24,7 @@ module.exports = (app) => {
 				var teams = webBody.teams;
 				
 				if (request.cookies.t) {
-					webRequest({url: "http://" + request.headers.host + "/data/user?id=" + request.cookies.t, json: true }, (error, webResponse, webBody) => {
+					webRequest({url: request.protocol + "://" + request.headers.host + "/data/user?id=" + request.cookies.t, json: true }, (error, webResponse, webBody) => {
 						if (error) {
 							response.status(500).json({error: error.message});
 							response.end();
@@ -69,7 +69,7 @@ module.exports = (app) => {
 			return;
 		}
 		
-		webRequest({ url: "http://" + request.headers.host + "/data/player?divisionid=" + request.query.divisionid, json: true}, (error, webResponse, webBody) => {
+		webRequest({ url: request.protocol + "://" + request.headers.host + "/data/player?divisionid=" + request.query.divisionid, json: true}, (error, webResponse, webBody) => {
 			if (error) {
 				response.status(500).json({error: error.message});
 				response.end();
@@ -87,7 +87,7 @@ module.exports = (app) => {
 			return;
 		}
 		
-		webRequest.post({url: "http://" + request.headers.host + "/data/player", form: { player: request.body.player } }, (error, webResponse, webBody) => {
+		webRequest.post({url: request.protocol + "://" + request.headers.host + "/data/player", form: { player: request.body.player } }, (error, webResponse, webBody) => {
 			if (error) {
 				response.status(500).json({error: error.message});
 				response.end();
@@ -101,7 +101,7 @@ module.exports = (app) => {
 	});
 
 	app.get("/login", (request, response) => {
-		webRequest({url: "http://" + request.headers.host + "/data/user?authToken=" + request.query.t, json: true }, (error, webResponse, webBody) => {
+		webRequest({url: request.protocol + "://" + request.headers.host + "/data/user?authToken=" + request.query.t, json: true }, (error, webResponse, webBody) => {
 			if (error) {
 				response.status(500).json({error: error.message});
 				response.end();
